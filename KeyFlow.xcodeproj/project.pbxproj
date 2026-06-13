@@ -1,0 +1,410 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2A5E4B602C58000100A10001 /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B502C58000100A10001 /* KeyFlowApp.swift */; };
+		2A5E4B612C58000100A10001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B512C58000100A10001 /* ContentView.swift */; };
+		2A5E4B622C58000100A10001 /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */; };
+		2A5E4B642C58000100A10001 /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B542C58000100A10001 /* KeyRule.swift */; };
+		2A5E4B652C58000100A10001 /* KeyCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B552C58000100A10001 /* KeyCatalog.swift */; };
+		2A5E4B662C58000100A10001 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B562C58000100A10001 /* PermissionService.swift */; };
+		2A5E4B672C58000100A10001 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */; };
+		2A5E4B682C58000100A10001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B582C58000100A10001 /* AppState.swift */; };
+		2A5E4B692C58000100A10001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A5E4B592C58000100A10001 /* Assets.xcassets */; };
+		2A5E4B6A2C58000100A10001 /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */; };
+		2A5E4B6B2C58000100A10001 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */; };
+		2A5E4B6C2C58000100A10001 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */; };
+		2A5E4B6D2C58000100A10001 /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2A5E4B402C58000100A10001 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A5E4B502C58000100A10001 /* KeyFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApp.swift; sourceTree = "<group>"; };
+		2A5E4B512C58000100A10001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
+		2A5E4B542C58000100A10001 /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
+		2A5E4B552C58000100A10001 /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
+		2A5E4B562C58000100A10001 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
+		2A5E4B582C58000100A10001 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		2A5E4B592C58000100A10001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2A5E4B5A2C58000100A10001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
+		2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
+		2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
+		2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2A5E4B3D2C58000100A10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2A5E4B362C58000100A10001 = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B412C58000100A10001 /* KeyFlow */,
+				2A5E4B3F2C58000100A10001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2A5E4B3F2C58000100A10001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B402C58000100A10001 /* KeyFlow.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2A5E4B412C58000100A10001 /* KeyFlow */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B422C58000100A10001 /* App */,
+				2A5E4B432C58000100A10001 /* Models */,
+				2A5E4B442C58000100A10001 /* Services */,
+				2A5E4B452C58000100A10001 /* Views */,
+				2A5E4B462C58000100A10001 /* Resources */,
+				2A5E4B5A2C58000100A10001 /* Info.plist */,
+			);
+			path = KeyFlow;
+			sourceTree = "<group>";
+		};
+		2A5E4B422C58000100A10001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B502C58000100A10001 /* KeyFlowApp.swift */,
+				2A5E4B582C58000100A10001 /* AppState.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2A5E4B432C58000100A10001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B542C58000100A10001 /* KeyRule.swift */,
+				2A5E4B552C58000100A10001 /* KeyCatalog.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		2A5E4B442C58000100A10001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B562C58000100A10001 /* PermissionService.swift */,
+				2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */,
+				2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */,
+				2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		2A5E4B452C58000100A10001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B512C58000100A10001 /* ContentView.swift */,
+				2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */,
+				2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */,
+				2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2A5E4B462C58000100A10001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2A5E4B592C58000100A10001 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2A5E4B3E2C58000100A10001 /* KeyFlow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2A5E4B4E2C58000100A10001 /* Build configuration list for PBXNativeTarget "KeyFlow" */;
+			buildPhases = (
+				2A5E4B3B2C58000100A10001 /* Sources */,
+				2A5E4B3D2C58000100A10001 /* Frameworks */,
+				2A5E4B3C2C58000100A10001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KeyFlow;
+			productName = KeyFlow;
+			productReference = 2A5E4B402C58000100A10001 /* KeyFlow.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2A5E4B372C58000100A10001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2650;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					2A5E4B3E2C58000100A10001 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+				};
+			};
+			buildConfigurationList = 2A5E4B3A2C58000100A10001 /* Build configuration list for PBXProject "KeyFlow" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 2A5E4B362C58000100A10001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2A5E4B3F2C58000100A10001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2A5E4B3E2C58000100A10001 /* KeyFlow */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		2A5E4B3C2C58000100A10001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A5E4B692C58000100A10001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2A5E4B3B2C58000100A10001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2A5E4B602C58000100A10001 /* KeyFlowApp.swift in Sources */,
+				2A5E4B612C58000100A10001 /* ContentView.swift in Sources */,
+				2A5E4B622C58000100A10001 /* KeyboardLayoutView.swift in Sources */,
+				2A5E4B642C58000100A10001 /* KeyRule.swift in Sources */,
+				2A5E4B652C58000100A10001 /* KeyCatalog.swift in Sources */,
+				2A5E4B662C58000100A10001 /* PermissionService.swift in Sources */,
+				2A5E4B672C58000100A10001 /* KeyboardEventEngine.swift in Sources */,
+				2A5E4B682C58000100A10001 /* AppState.swift in Sources */,
+				2A5E4B6A2C58000100A10001 /* AppDiscoveryService.swift in Sources */,
+				2A5E4B6B2C58000100A10001 /* KeyCaptureMonitor.swift in Sources */,
+				2A5E4B6C2C58000100A10001 /* LiquidGlassStyle.swift in Sources */,
+				2A5E4B6D2C58000100A10001 /* WindowGlassConfigurator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2A5E4B4A2C58000100A10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		2A5E4B4B2C58000100A10001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		2A5E4B4C2C58000100A10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyFlow/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		2A5E4B4D2C58000100A10001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyFlow/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2A5E4B3A2C58000100A10001 /* Build configuration list for PBXProject "KeyFlow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A5E4B4A2C58000100A10001 /* Debug */,
+				2A5E4B4B2C58000100A10001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2A5E4B4E2C58000100A10001 /* Build configuration list for PBXNativeTarget "KeyFlow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A5E4B4C2C58000100A10001 /* Debug */,
+				2A5E4B4D2C58000100A10001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2A5E4B372C58000100A10001 /* Project object */;
+}

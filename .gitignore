@@ -1,0 +1,10 @@
+.DS_Store
+DerivedData/
+.derivedData/
+build/
+
+*.xcuserstate
+xcuserdata/
+
+*.moved-aside
+*.xcscmblueprint
