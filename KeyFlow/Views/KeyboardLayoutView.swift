@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct KeyboardLayoutView: View {
@@ -843,31 +844,85 @@ private struct AppSelectionField: View {
     @Binding var selectedAppIdentifier: String
 
     @State private var query = ""
+    @State private var isPickerPresented = false
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                if !isPickerPresented {
+                    query = ""
+                }
+                isPickerPresented.toggle()
+            } label: {
+                HStack(spacing: 9) {
+                    AppIconView(app: selectedApp, size: 24)
+
+                    Text(selectedApp?.name ?? "Select App")
+                        .font(.system(size: 13, weight: .medium))
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 10)
+                .frame(height: 38)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .background {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.72))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                    )
+            }
+            .popover(isPresented: $isPickerPresented, arrowEdge: .bottom) {
+                appPicker
+                    .frame(width: 320)
+                    .padding(10)
+            }
+
+            if apps.isEmpty {
+                Label("No apps found", systemImage: "app.dashed")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .task(id: apps.map(\.bundleIdentifier)) {
+            await AppIconCache.shared.warmIcons(for: apps)
+        }
+    }
+
+    private var appPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             TextField("Search apps", text: $query)
                 .textFieldStyle(.roundedBorder)
 
-            if apps.isEmpty {
-                Text("No apps found.")
+            if visibleApps.isEmpty {
+                Text(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "No apps found." : "No matching apps.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-            } else if visibleApps.isEmpty {
-                Text("No matching apps.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 10)
             } else {
                 ScrollView {
                     LazyVStack(spacing: 2) {
                         ForEach(visibleApps) { app in
-                            appRow(app)
+                            AppSelectionRow(
+                                app: app,
+                                isSelected: selectedAppIdentifier == app.bundleIdentifier
+                            ) {
+                                selectedAppIdentifier = app.bundleIdentifier
+                                isPickerPresented = false
+                            }
                         }
                     }
+                    .padding(.vertical, 2)
                 }
-                .frame(maxHeight: 190)
+                .frame(height: 240)
             }
         }
     }
@@ -901,31 +956,92 @@ private struct AppSelectionField: View {
         apps.first { $0.bundleIdentifier == selectedAppIdentifier }
     }
 
-    private func appRow(_ app: InstalledApp) -> some View {
+}
+
+private struct AppSelectionRow: View {
+    let app: InstalledApp
+    let isSelected: Bool
+    let select: () -> Void
+
+    var body: some View {
         Button {
-            selectedAppIdentifier = app.bundleIdentifier
+            select()
         } label: {
-            HStack(spacing: 8) {
-                Image(systemName: selectedAppIdentifier == app.bundleIdentifier ? "checkmark.circle.fill" : "app")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(selectedAppIdentifier == app.bundleIdentifier ? Color.accentColor : Color.secondary)
-                    .frame(width: 18)
+            HStack(spacing: 9) {
+                AppIconView(app: app, size: 26)
 
                 Text(app.name)
+                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
                     .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer(minLength: 8)
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(Color.accentColor)
+                        .frame(width: 16)
+                }
             }
-            .font(.system(size: 13))
             .padding(.horizontal, 8)
-            .frame(height: 28)
+            .frame(height: 34)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .background {
-            if selectedAppIdentifier == app.bundleIdentifier {
+            if isSelected {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .fill(Color.accentColor.opacity(0.12))
+            }
+        }
+    }
+}
+
+private struct AppIconView: View {
+    let app: InstalledApp?
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let app {
+                Image(nsImage: AppIconCache.shared.icon(for: app))
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: "app")
+                    .font(.system(size: size * 0.56, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+@MainActor
+private final class AppIconCache {
+    static let shared = AppIconCache()
+
+    private var iconsByBundleIdentifier: [String: NSImage] = [:]
+
+    func icon(for app: InstalledApp) -> NSImage {
+        if let icon = iconsByBundleIdentifier[app.bundleIdentifier] {
+            return icon
+        }
+
+        let icon = NSWorkspace.shared.icon(forFile: app.url.path)
+        icon.size = NSSize(width: 32, height: 32)
+        iconsByBundleIdentifier[app.bundleIdentifier] = icon
+        return icon
+    }
+
+    func warmIcons(for apps: [InstalledApp]) async {
+        var loadedCount = 0
+
+        for app in apps where iconsByBundleIdentifier[app.bundleIdentifier] == nil {
+            _ = icon(for: app)
+            loadedCount += 1
+
+            if loadedCount.isMultiple(of: 8) {
+                await Task.yield()
             }
         }
     }

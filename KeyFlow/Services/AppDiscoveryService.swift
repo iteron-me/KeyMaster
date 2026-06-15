@@ -35,13 +35,9 @@ struct AppDiscoveryService: Sendable {
                     continue
                 }
 
-                let displayName = bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
-                    ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
-                    ?? url.deletingPathExtension().lastPathComponent
-
                 appsByBundleIdentifier[bundleIdentifier] = InstalledApp(
                     id: bundleIdentifier,
-                    name: displayName,
+                    name: Self.displayName(for: bundle, at: url),
                     bundleIdentifier: bundleIdentifier,
                     url: url
                 )
@@ -52,4 +48,32 @@ struct AppDiscoveryService: Sendable {
             $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
         }
     }
+
+    private static func displayName(for bundle: Bundle, at url: URL) -> String {
+        for key in displayNameKeys {
+            if let localizedName = bundle.localizedInfoDictionary?[key] as? String,
+               !localizedName.isEmpty {
+                return localizedName
+            }
+        }
+
+        for key in displayNameKeys {
+            if let name = bundle.object(forInfoDictionaryKey: key) as? String,
+               !name.isEmpty {
+                return name
+            }
+        }
+
+        let fileDisplayName = FileManager.default.displayName(atPath: url.path)
+        if !fileDisplayName.isEmpty {
+            return fileDisplayName
+        }
+
+        return url.deletingPathExtension().lastPathComponent
+    }
+
+    private static let displayNameKeys = [
+        "CFBundleDisplayName",
+        "CFBundleName"
+    ]
 }

@@ -80,7 +80,7 @@ For permission testing, prefer a stable app path:
 ./scripts/dev-run.sh
 ```
 
-This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `/Applications/KeyFlow.app`, clears extended attributes, and opens that stable app bundle. Grant macOS permissions to `/Applications/KeyFlow.app`, not to the temporary DerivedData app.
+This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `/Applications/KeyFlow.app`, clears extended attributes, applies a stable local code requirement for `app.keyflow.mac`, and opens that stable app bundle. Grant macOS permissions to `/Applications/KeyFlow.app`, not to the temporary DerivedData app.
 
 ## Permissions
 
@@ -94,6 +94,8 @@ Required for the current shortcut engine:
 Post Events is shown because future key remapping will need it, but the current App/Web/Command actions do not depend on it.
 
 If Accessibility is checked but KeyFlow still shows it as missing, you are probably running a different app bundle than the one you authorized. Use the in-app `Running:` path and Finder button to confirm the exact bundle.
+
+For local development, always launch through `./scripts/dev-run.sh`. Plain ad-hoc Debug builds are identified by a changing code hash, which can make macOS privacy permissions look like they disappeared after every rebuild. The dev-run script re-signs the installed app with a stable requirement so one authorization can survive rebuilds.
 
 ## Documentation
 
