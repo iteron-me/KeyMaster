@@ -4,8 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DERIVED_DATA="/private/tmp/KeyFlowDerived"
 SOURCE_APP="$DERIVED_DATA/Build/Products/Debug/KeyFlow.app"
-DIST_DIR="$ROOT_DIR/dist"
-DIST_APP="$DIST_DIR/KeyFlow.app"
+INSTALL_APP="/Applications/KeyFlow.app"
 
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
@@ -19,9 +18,10 @@ xcodebuild \
   -derivedDataPath "$DERIVED_DATA" \
   build
 
-mkdir -p "$DIST_DIR"
-rm -rf "$DIST_APP"
-ditto "$SOURCE_APP" "$DIST_APP"
-xattr -cr "$DIST_APP"
+osascript -e 'tell application "KeyFlow" to quit' >/dev/null 2>&1 || true
 
-open "$DIST_APP"
+rm -rf "$INSTALL_APP"
+ditto "$SOURCE_APP" "$INSTALL_APP"
+xattr -cr "$INSTALL_APP"
+
+open "$INSTALL_APP"
