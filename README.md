@@ -20,8 +20,23 @@ This repository contains the first buildable Xcode project:
 ## Requirements
 
 - Xcode 26.5 or newer.
+- XcodeGen for regenerating `KeyFlow.xcodeproj` from `project.yml`.
 - macOS 26.0 deployment target for SwiftUI Liquid Glass.
 - Accessibility / input permissions for real keyboard interception.
+
+Install XcodeGen with:
+
+```sh
+brew install xcodegen
+```
+
+## Project Generation
+
+`project.yml` is the source of truth for Xcode project configuration. Regenerate the Xcode project after changing targets, files, build settings, or schemes:
+
+```sh
+./scripts/generate-xcodeproj.sh
+```
 
 ## Open in Xcode
 
@@ -45,13 +60,16 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 
 ## CLI Build
 
-Use a DerivedData path outside the Desktop folder to avoid local file-provider extended attributes affecting code signing:
+Regenerate the project first, then use a DerivedData path outside the Desktop folder to avoid local file-provider extended attributes affecting code signing:
 
 ```sh
+./scripts/generate-xcodeproj.sh
+
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
 xcodebuild -project KeyFlow.xcodeproj \
   -scheme KeyFlow \
   -configuration Debug \
+  -destination 'platform=macOS' \
   -derivedDataPath /private/tmp/KeyFlowDerived \
   build
 ```
@@ -62,7 +80,7 @@ For permission testing, prefer a stable app path:
 ./scripts/dev-run.sh
 ```
 
-This builds the app, copies it to `dist/KeyFlow.app`, clears extended attributes, and opens that stable app bundle. Grant macOS permissions to `dist/KeyFlow.app`, not to the temporary DerivedData app.
+This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `dist/KeyFlow.app`, clears extended attributes, and opens that stable app bundle. Grant macOS permissions to `dist/KeyFlow.app`, not to the temporary DerivedData app.
 
 ## Permissions
 

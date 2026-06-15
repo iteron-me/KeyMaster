@@ -9,10 +9,13 @@ DIST_APP="$DIST_DIR/KeyFlow.app"
 
 export DEVELOPER_DIR="/Applications/Xcode.app/Contents/Developer"
 
+"$ROOT_DIR/scripts/generate-xcodeproj.sh"
+
 xcodebuild \
   -project "$ROOT_DIR/KeyFlow.xcodeproj" \
   -scheme KeyFlow \
   -configuration Debug \
+  -destination 'platform=macOS' \
   -derivedDataPath "$DERIVED_DATA" \
   build
 
@@ -22,4 +25,3 @@ ditto "$SOURCE_APP" "$DIST_APP"
 xattr -cr "$DIST_APP"
 
 open "$DIST_APP"
-

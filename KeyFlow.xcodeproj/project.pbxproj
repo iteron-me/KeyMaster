@@ -7,225 +7,398 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2A5E4B602C58000100A10001 /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B502C58000100A10001 /* KeyFlowApp.swift */; };
-		2A5E4B612C58000100A10001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B512C58000100A10001 /* ContentView.swift */; };
-		2A5E4B622C58000100A10001 /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */; };
-		2A5E4B642C58000100A10001 /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B542C58000100A10001 /* KeyRule.swift */; };
-		2A5E4B652C58000100A10001 /* KeyCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B552C58000100A10001 /* KeyCatalog.swift */; };
-		2A5E4B662C58000100A10001 /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B562C58000100A10001 /* PermissionService.swift */; };
-		2A5E4B672C58000100A10001 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */; };
-		2A5E4B682C58000100A10001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B582C58000100A10001 /* AppState.swift */; };
-		2A5E4B692C58000100A10001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A5E4B592C58000100A10001 /* Assets.xcassets */; };
-		2A5E4B6A2C58000100A10001 /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */; };
-		2A5E4B6B2C58000100A10001 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */; };
-		2A5E4B6C2C58000100A10001 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */; };
-		2A5E4B6D2C58000100A10001 /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */; };
+		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
+		47E22C6DCD12EC5353908DF3 /* AppStatePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */; };
+		4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */; };
+		4CCC750AB91A1E514B572A5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55B02AB408B9B1F411436E34 /* Assets.xcassets */; };
+		654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */; };
+		6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BFEF8ABEC06A5E4C04EE4 /* KeyCatalog.swift */; };
+		709E8D3E2FBE19AD27F59C0D /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB52FDB8FC368E41BFCB169 /* AppState.swift */; };
+		752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */; };
+		76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */; };
+		79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAC33A0163579C56BF09D5C /* PermissionService.swift */; };
+		CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */; };
+		CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0336361413355CCA0228D1B /* KeyFlowApp.swift */; };
+		DAA7A251DFACEA7C43397CEA /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */; };
+		FCA57798EF43EF17046E5EB4 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB82688BE416792911721663 /* KeyCaptureMonitor.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A4777DD877AF2F7E4234DE54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7F6BB6B7A91699D22858D6C5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2079CEA377E9D14DAFAAF20E;
+			remoteInfo = KeyFlow;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		2A5E4B402C58000100A10001 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A5E4B502C58000100A10001 /* KeyFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApp.swift; sourceTree = "<group>"; };
-		2A5E4B512C58000100A10001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
-		2A5E4B542C58000100A10001 /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
-		2A5E4B552C58000100A10001 /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
-		2A5E4B562C58000100A10001 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
-		2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
-		2A5E4B582C58000100A10001 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		2A5E4B592C58000100A10001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		2A5E4B5A2C58000100A10001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
-		2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
-		2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
-		2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
+		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
+		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		55B02AB408B9B1F411436E34 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatePerformanceTests.swift; sourceTree = "<group>"; };
+		73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
+		90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AB82688BE416792911721663 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
+		AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
+		B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
+		CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
+		CF6BFEF8ABEC06A5E4C04EE4 /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
+		CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
+		D0336361413355CCA0228D1B /* KeyFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApp.swift; sourceTree = "<group>"; };
+		D7B3894D1ABF390D92C05489 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-/* End PBXFileSystemSynchronizedRootGroup section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		2A5E4B3D2C58000100A10001 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
-		2A5E4B362C58000100A10001 = {
+		13D0F420E5395F97C17FBD2F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				2A5E4B412C58000100A10001 /* KeyFlow */,
-				2A5E4B3F2C58000100A10001 /* Products */,
+				55B02AB408B9B1F411436E34 /* Assets.xcassets */,
 			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
-		2A5E4B3F2C58000100A10001 /* Products */ = {
+		1A43AE874AE0BDD981110F7B /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				2A5E4B402C58000100A10001 /* KeyFlow.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		2A5E4B412C58000100A10001 /* KeyFlow */ = {
-			isa = PBXGroup;
-			children = (
-				2A5E4B422C58000100A10001 /* App */,
-				2A5E4B432C58000100A10001 /* Models */,
-				2A5E4B442C58000100A10001 /* Services */,
-				2A5E4B452C58000100A10001 /* Views */,
-				2A5E4B462C58000100A10001 /* Resources */,
-				2A5E4B5A2C58000100A10001 /* Info.plist */,
-			);
-			path = KeyFlow;
-			sourceTree = "<group>";
-		};
-		2A5E4B422C58000100A10001 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				2A5E4B502C58000100A10001 /* KeyFlowApp.swift */,
-				2A5E4B582C58000100A10001 /* AppState.swift */,
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
-		2A5E4B432C58000100A10001 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				2A5E4B542C58000100A10001 /* KeyRule.swift */,
-				2A5E4B552C58000100A10001 /* KeyCatalog.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		2A5E4B442C58000100A10001 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				2A5E4B562C58000100A10001 /* PermissionService.swift */,
-				2A5E4B572C58000100A10001 /* KeyboardEventEngine.swift */,
-				2A5E4B5B2C58000100A10001 /* AppDiscoveryService.swift */,
-				2A5E4B5C2C58000100A10001 /* KeyCaptureMonitor.swift */,
+				0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */,
+				AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */,
+				AB82688BE416792911721663 /* KeyCaptureMonitor.swift */,
+				3CAC33A0163579C56BF09D5C /* PermissionService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		2A5E4B452C58000100A10001 /* Views */ = {
+		325E0B88DC6214DB4AC6F6D9 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				2A5E4B512C58000100A10001 /* ContentView.swift */,
-				2A5E4B522C58000100A10001 /* KeyboardLayoutView.swift */,
-				2A5E4B5D2C58000100A10001 /* LiquidGlassStyle.swift */,
-				2A5E4B5E2C58000100A10001 /* WindowGlassConfigurator.swift */,
+				2FB52FDB8FC368E41BFCB169 /* AppState.swift */,
+				D0336361413355CCA0228D1B /* KeyFlowApp.swift */,
 			);
-			path = Views;
+			path = App;
 			sourceTree = "<group>";
 		};
-		2A5E4B462C58000100A10001 /* Resources */ = {
+		61B3A55B5436879AB87FD9D9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				2A5E4B592C58000100A10001 /* Assets.xcassets */,
+				CF6BFEF8ABEC06A5E4C04EE4 /* KeyCatalog.swift */,
+				CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */,
 			);
-			path = Resources;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		77F9793C1679C89B4142429E /* KeyFlow */ = {
+			isa = PBXGroup;
+			children = (
+				325E0B88DC6214DB4AC6F6D9 /* App */,
+				61B3A55B5436879AB87FD9D9 /* Models */,
+				13D0F420E5395F97C17FBD2F /* Resources */,
+				1A43AE874AE0BDD981110F7B /* Services */,
+				BEE5171B986F8442DB920FFB /* Views */,
+			);
+			path = KeyFlow;
+			sourceTree = "<group>";
+		};
+		7AAA5D1A00A0849C2FA4913F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */,
+				90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		888127DC86048D0AD6B7B2B3 /* KeyFlowTests */ = {
+			isa = PBXGroup;
+			children = (
+				6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */,
+			);
+			path = KeyFlowTests;
+			sourceTree = "<group>";
+		};
+		A2246FD9CDC13B3EC4350F73 = {
+			isa = PBXGroup;
+			children = (
+				77F9793C1679C89B4142429E /* KeyFlow */,
+				888127DC86048D0AD6B7B2B3 /* KeyFlowTests */,
+				7AAA5D1A00A0849C2FA4913F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BEE5171B986F8442DB920FFB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D7B3894D1ABF390D92C05489 /* ContentView.swift */,
+				73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */,
+				B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */,
+				CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2A5E4B3E2C58000100A10001 /* KeyFlow */ = {
+		2079CEA377E9D14DAFAAF20E /* KeyFlow */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A5E4B4E2C58000100A10001 /* Build configuration list for PBXNativeTarget "KeyFlow" */;
+			buildConfigurationList = 06E79B5E511FA3CD3A26EFD8 /* Build configuration list for PBXNativeTarget "KeyFlow" */;
 			buildPhases = (
-				2A5E4B3B2C58000100A10001 /* Sources */,
-				2A5E4B3D2C58000100A10001 /* Frameworks */,
-				2A5E4B3C2C58000100A10001 /* Resources */,
+				FB9AAFB233AF5575AA7F210A /* Sources */,
+				74BA213DDB01E2336EBC64D8 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = KeyFlow;
+			packageProductDependencies = (
+			);
 			productName = KeyFlow;
-			productReference = 2A5E4B402C58000100A10001 /* KeyFlow.app */;
+			productReference = 6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */;
 			productType = "com.apple.product-type.application";
+		};
+		89529E21F24D120CADB3BEA2 /* KeyFlowTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D9F9993A4607B1E3FAB984C0 /* Build configuration list for PBXNativeTarget "KeyFlowTests" */;
+			buildPhases = (
+				375E17121FFE6F0D7621B9D5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				41A8892BC27FD9E9BEC258CD /* PBXTargetDependency */,
+			);
+			name = KeyFlowTests;
+			packageProductDependencies = (
+			);
+			productName = KeyFlowTests;
+			productReference = 90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		2A5E4B372C58000100A10001 /* Project object */ = {
+		7F6BB6B7A91699D22858D6C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2650;
+				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
-					2A5E4B3E2C58000100A10001 = {
-						CreatedOnToolsVersion = 26.5;
+					2079CEA377E9D14DAFAAF20E = {
+						ProvisioningStyle = Automatic;
+					};
+					89529E21F24D120CADB3BEA2 = {
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = 2A5E4B3A2C58000100A10001 /* Build configuration list for PBXProject "KeyFlow" */;
+			buildConfigurationList = 6EFFF3FB9B9022E611151EB9 /* Build configuration list for PBXProject "KeyFlow" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
+				en,
 			);
-			mainGroup = 2A5E4B362C58000100A10001;
+			mainGroup = A2246FD9CDC13B3EC4350F73;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 2A5E4B3F2C58000100A10001 /* Products */;
+			productRefGroup = 7AAA5D1A00A0849C2FA4913F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2A5E4B3E2C58000100A10001 /* KeyFlow */,
+				2079CEA377E9D14DAFAAF20E /* KeyFlow */,
+				89529E21F24D120CADB3BEA2 /* KeyFlowTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		2A5E4B3C2C58000100A10001 /* Resources */ = {
+		74BA213DDB01E2336EBC64D8 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A5E4B692C58000100A10001 /* Assets.xcassets in Resources */,
+				4CCC750AB91A1E514B572A5A /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2A5E4B3B2C58000100A10001 /* Sources */ = {
+		375E17121FFE6F0D7621B9D5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A5E4B602C58000100A10001 /* KeyFlowApp.swift in Sources */,
-				2A5E4B612C58000100A10001 /* ContentView.swift in Sources */,
-				2A5E4B622C58000100A10001 /* KeyboardLayoutView.swift in Sources */,
-				2A5E4B642C58000100A10001 /* KeyRule.swift in Sources */,
-				2A5E4B652C58000100A10001 /* KeyCatalog.swift in Sources */,
-				2A5E4B662C58000100A10001 /* PermissionService.swift in Sources */,
-				2A5E4B672C58000100A10001 /* KeyboardEventEngine.swift in Sources */,
-				2A5E4B682C58000100A10001 /* AppState.swift in Sources */,
-				2A5E4B6A2C58000100A10001 /* AppDiscoveryService.swift in Sources */,
-				2A5E4B6B2C58000100A10001 /* KeyCaptureMonitor.swift in Sources */,
-				2A5E4B6C2C58000100A10001 /* LiquidGlassStyle.swift in Sources */,
-				2A5E4B6D2C58000100A10001 /* WindowGlassConfigurator.swift in Sources */,
+				47E22C6DCD12EC5353908DF3 /* AppStatePerformanceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FB9AAFB233AF5575AA7F210A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */,
+				709E8D3E2FBE19AD27F59C0D /* AppState.swift in Sources */,
+				3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */,
+				FCA57798EF43EF17046E5EB4 /* KeyCaptureMonitor.swift in Sources */,
+				6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */,
+				CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */,
+				654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */,
+				752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */,
+				76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */,
+				4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */,
+				79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */,
+				DAA7A251DFACEA7C43397CEA /* WindowGlassConfigurator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		41A8892BC27FD9E9BEC258CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2079CEA377E9D14DAFAAF20E /* KeyFlow */;
+			targetProxy = A4777DD877AF2F7E4234DE54 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		2A5E4B4A2C58000100A10001 /* Debug */ = {
+		1506F17C3DBB49069942020C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyFlow/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		541784CD74C20C770283AE14 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyFlow.app/Contents/MacOS/KeyFlow";
+			};
+			name = Debug;
+		};
+		69B6834B9C81EABAA92F3B9E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		76F5F61B335F9E84B2D60570 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyFlow.app/Contents/MacOS/KeyFlow";
+			};
+			name = Release;
+		};
+		7B76CE86595C7F3AF52F1C4E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -274,66 +447,18 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					DEBUG,
+					"$(inherited)",
+				);
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
-		2A5E4B4B2C58000100A10001 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-			};
-			name = Release;
-		};
-		2A5E4B4C2C58000100A10001 /* Debug */ = {
+		DA44B34A2B3BE0E015730091 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -357,54 +482,38 @@
 				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
-		};
-		2A5E4B4D2C58000100A10001 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
-				ENABLE_APP_SANDBOX = NO;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = KeyFlow/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2A5E4B3A2C58000100A10001 /* Build configuration list for PBXProject "KeyFlow" */ = {
+		06E79B5E511FA3CD3A26EFD8 /* Build configuration list for PBXNativeTarget "KeyFlow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A5E4B4A2C58000100A10001 /* Debug */,
-				2A5E4B4B2C58000100A10001 /* Release */,
+				DA44B34A2B3BE0E015730091 /* Debug */,
+				1506F17C3DBB49069942020C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A5E4B4E2C58000100A10001 /* Build configuration list for PBXNativeTarget "KeyFlow" */ = {
+		6EFFF3FB9B9022E611151EB9 /* Build configuration list for PBXProject "KeyFlow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2A5E4B4C2C58000100A10001 /* Debug */,
-				2A5E4B4D2C58000100A10001 /* Release */,
+				7B76CE86595C7F3AF52F1C4E /* Debug */,
+				69B6834B9C81EABAA92F3B9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D9F9993A4607B1E3FAB984C0 /* Build configuration list for PBXNativeTarget "KeyFlowTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				541784CD74C20C770283AE14 /* Debug */,
+				76F5F61B335F9E84B2D60570 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 2A5E4B372C58000100A10001 /* Project object */;
+	rootObject = 7F6BB6B7A91699D22858D6C5 /* Project object */;
 }

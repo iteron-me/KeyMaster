@@ -1,14 +1,14 @@
 import AppKit
 import Foundation
 
-struct InstalledApp: Identifiable, Hashable {
+struct InstalledApp: Identifiable, Hashable, Sendable {
     let id: String
     let name: String
     let bundleIdentifier: String
     let url: URL
 }
 
-struct AppDiscoveryService {
+struct AppDiscoveryService: Sendable {
     func installedApps() -> [InstalledApp] {
         let roots = [
             URL(fileURLWithPath: "/Applications", isDirectory: true),
