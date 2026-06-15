@@ -76,7 +76,6 @@ struct KeyboardKeyButtonStyle: ButtonStyle {
             )
             .offset(y: configuration.isPressed ? 1 : 0)
             .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .animation(.snappy(duration: 0.12), value: configuration.isPressed)
     }
 
     @ViewBuilder
