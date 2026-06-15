@@ -23,6 +23,7 @@ final class AppState: ObservableObject {
     private var rulesByShortcut: [ShortcutKey: KeyRule] = [:]
     private var installedAppsReloadTask: Task<Void, Never>?
     private var isReloadingInstalledApps = false
+    private var hasLoadedInstalledApps = false
 
     init(
         ruleStore: KeyRuleStore = FileKeyRuleStore(),
@@ -83,8 +84,12 @@ final class AppState: ObservableObject {
         syncKeyboardEngine()
     }
 
-    func reloadInstalledApps() {
+    func reloadInstalledApps(force: Bool = false) {
         guard Self.isInstalledAppDiscoveryEnabled else {
+            return
+        }
+
+        guard force || !hasLoadedInstalledApps else {
             return
         }
 
@@ -109,6 +114,7 @@ final class AppState: ObservableObject {
 
                 if !wasCancelled {
                     self.installedApps = apps
+                    self.hasLoadedInstalledApps = true
                 }
             }
         }
