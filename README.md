@@ -80,7 +80,7 @@ For permission testing, prefer a stable app path:
 ./scripts/dev-run.sh
 ```
 
-This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `dist/KeyFlow.app`, clears extended attributes, and opens that stable app bundle. Grant macOS permissions to `dist/KeyFlow.app`, not to the temporary DerivedData app.
+This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `/Applications/KeyFlow.app`, clears extended attributes, and opens that stable app bundle. Grant macOS permissions to `/Applications/KeyFlow.app`, not to the temporary DerivedData app.
 
 ## Permissions
 

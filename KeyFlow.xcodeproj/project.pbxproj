@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436DF778DF7257471128D9C5 /* KeyRuleStore.swift */; };
 		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
 		47E22C6DCD12EC5353908DF3 /* AppStatePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */; };
 		4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */; };
@@ -37,6 +38,7 @@
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		436DF778DF7257471128D9C5 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
 		55B02AB408B9B1F411436E34 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatePerformanceTests.swift; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 				0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */,
 				AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */,
 				AB82688BE416792911721663 /* KeyCaptureMonitor.swift */,
+				436DF778DF7257471128D9C5 /* KeyRuleStore.swift */,
 				3CAC33A0163579C56BF09D5C /* PermissionService.swift */,
 			);
 			path = Services;
@@ -246,6 +249,7 @@
 				6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */,
 				CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */,
 				654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */,
+				19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */,
 				752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */,
 				76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */,
 				4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */,

@@ -11,13 +11,12 @@ final class AppStatePerformanceTests: XCTestCase {
         let discoveryMayFinish = DispatchSemaphore(value: 0)
         let fixtureApp = Self.fixtureApp
 
-        let appState = AppState(
+        let appState = makeAppState(
             appDiscovery: {
                 discoveryStarted.fulfill()
                 _ = discoveryMayFinish.wait(timeout: .now() + 1)
                 return [fixtureApp]
-            },
-            loadsInstalledAppsOnInit: false
+            }
         )
 
         appState.reloadInstalledApps()
@@ -31,7 +30,7 @@ final class AppStatePerformanceTests: XCTestCase {
     }
 
     func testOpeningKeyEditorDoesNotPublishGlobalAppStateChange() {
-        let appState = AppState(loadsInstalledAppsOnInit: false)
+        let appState = makeAppState()
         var publishCount = 0
 
         appState.objectWillChange
@@ -44,7 +43,7 @@ final class AppStatePerformanceTests: XCTestCase {
     }
 
     func testRuleLookupUsesLauncherKeyCodeNotDisplayName() {
-        let appState = AppState(loadsInstalledAppsOnInit: false)
+        let appState = makeAppState()
         let key = KeyCatalog.defaultKeys[1]
 
         appState.saveRule(
@@ -59,7 +58,7 @@ final class AppStatePerformanceTests: XCTestCase {
     }
 
     func testLauncherKeyRemainsFixedToControl() {
-        let appState = AppState(loadsInstalledAppsOnInit: false)
+        let appState = makeAppState()
         let key = KeyCatalog.defaultKeys[1]
 
         appState.setLauncherKey(
@@ -75,10 +74,88 @@ final class AppStatePerformanceTests: XCTestCase {
         XCTAssertEqual(appState.rules.first?.trigger.launcherDisplayName, LauncherKey.defaultKey.displayName)
     }
 
+    func testInitializesWithPersistedRules() {
+        let key = KeyCatalog.defaultKeys[1]
+        let rule = Self.rule(for: key)
+        let store = InMemoryKeyRuleStore(initialRules: [rule])
+
+        let appState = AppState(ruleStore: store, loadsInstalledAppsOnInit: false)
+
+        XCTAssertEqual(appState.rules, [rule])
+        XCTAssertEqual(appState.rule(for: key), rule)
+    }
+
+    func testSaveRulePersistsRules() {
+        let store = InMemoryKeyRuleStore()
+        let appState = AppState(ruleStore: store, loadsInstalledAppsOnInit: false)
+        let key = KeyCatalog.defaultKeys[1]
+
+        appState.saveRule(
+            for: key,
+            action: .openURL(name: "Docs", url: "https://example.com")
+        )
+
+        XCTAssertEqual(store.saveCallCount, 1)
+        XCTAssertEqual(store.savedRules, appState.rules)
+    }
+
+    func testDeleteRulePersistsRules() {
+        let key = KeyCatalog.defaultKeys[1]
+        let store = InMemoryKeyRuleStore(initialRules: [Self.rule(for: key)])
+        let appState = AppState(ruleStore: store, loadsInstalledAppsOnInit: false)
+
+        appState.deleteRule(for: key)
+
+        XCTAssertEqual(store.saveCallCount, 1)
+        XCTAssertEqual(store.savedRules, [])
+    }
+
     private static let fixtureApp = InstalledApp(
         id: "com.example.fixture",
         name: "Fixture",
         bundleIdentifier: "com.example.fixture",
         url: URL(fileURLWithPath: "/Applications/Fixture.app")
     )
+
+    private static func rule(for key: KeyboardKey) -> KeyRule {
+        KeyRule(
+            name: "\(LauncherKey.defaultKey.displayName) + \(key.label)",
+            trigger: KeyTrigger(
+                launcherKeyCode: LauncherKey.defaultKey.keyCode,
+                launcherDisplayName: LauncherKey.defaultKey.displayName,
+                keyCode: key.keyCode
+            ),
+            action: .openURL(name: "Docs", url: "https://example.com")
+        )
+    }
+
+    private func makeAppState(
+        ruleStore: KeyRuleStore = InMemoryKeyRuleStore(),
+        appDiscovery: @escaping @Sendable () -> [InstalledApp] = { [] }
+    ) -> AppState {
+        AppState(
+            ruleStore: ruleStore,
+            appDiscovery: appDiscovery,
+            loadsInstalledAppsOnInit: false
+        )
+    }
+}
+
+private final class InMemoryKeyRuleStore: KeyRuleStore {
+    private let initialRules: [KeyRule]
+    private(set) var savedRules: [KeyRule] = []
+    private(set) var saveCallCount = 0
+
+    init(initialRules: [KeyRule] = []) {
+        self.initialRules = initialRules
+    }
+
+    func loadRules() throws -> [KeyRule] {
+        initialRules
+    }
+
+    func saveRules(_ rules: [KeyRule]) throws {
+        saveCallCount += 1
+        savedRules = rules
+    }
 }

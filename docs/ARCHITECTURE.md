@@ -29,6 +29,7 @@ The rule trigger is intentionally small: normalized modifiers plus a virtual key
 
 - `PermissionService`: checks macOS privacy and event permissions.
 - `KeyboardEventEngine`: owns the CoreGraphics event tap and dispatches matched actions.
+- `KeyRuleStore`: persists configured rules to local Application Support storage.
 - `KeySender`: emits synthetic key events.
 - `AppLauncher`: opens apps and URLs.
 - `CommandRunner`: runs trusted shell commands outside the event callback path.
@@ -51,6 +52,5 @@ The rule trigger is intentionally small: normalized modifiers plus a virtual key
 
 ## Current Prototype Limitations
 
-- Rules are in memory only.
 - App selection uses discovered local apps but has no search yet.
 - The event engine does not yet handle key-repeat policy.

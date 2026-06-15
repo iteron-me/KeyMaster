@@ -14,21 +14,26 @@ final class AppState: ObservableObject {
     @Published private(set) var installedApps: [InstalledApp] = []
     @Published private(set) var isEngineRunning = false
     @Published private(set) var permissionStatus = PermissionStatus()
+    @Published private(set) var rulePersistenceErrorMessage: String?
 
     private let permissionService = PermissionService()
     private let keyboardEngine = KeyboardEventEngine()
+    private let ruleStore: KeyRuleStore
     private let appDiscovery: @Sendable () -> [InstalledApp]
     private var rulesByShortcut: [ShortcutKey: KeyRule] = [:]
     private var installedAppsReloadTask: Task<Void, Never>?
     private var isReloadingInstalledApps = false
 
     init(
+        ruleStore: KeyRuleStore = FileKeyRuleStore(),
         appDiscovery: @escaping @Sendable () -> [InstalledApp] = {
             AppDiscoveryService().installedApps()
         },
         loadsInstalledAppsOnInit: Bool = true
     ) {
+        self.ruleStore = ruleStore
         self.appDiscovery = appDiscovery
+        loadPersistedRules()
         refreshPermissions()
 
         if loadsInstalledAppsOnInit, Self.isInstalledAppDiscoveryEnabled {
@@ -51,6 +56,7 @@ final class AppState: ObservableObject {
             rules[index].name = "\(launcherKey.displayName) + \(key.label)"
             rules[index].action = action
             rules[index].updatedAt = Date()
+            persistRules()
             syncKeyboardEngine()
             return
         }
@@ -62,12 +68,14 @@ final class AppState: ObservableObject {
                 action: action
             )
         )
+        persistRules()
         syncKeyboardEngine()
     }
 
     func deleteRule(for key: KeyboardKey) {
         let trigger = trigger(for: key)
         rules.removeAll { $0.trigger == trigger }
+        persistRules()
         syncKeyboardEngine()
     }
 
@@ -157,6 +165,25 @@ final class AppState: ObservableObject {
         keyboardEngine.stop()
         keyboardEngine.start(rules: rules)
         isEngineRunning = keyboardEngine.isRunning
+    }
+
+    private func loadPersistedRules() {
+        do {
+            rules = try ruleStore.loadRules()
+            rulePersistenceErrorMessage = nil
+        } catch {
+            rules = []
+            rulePersistenceErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func persistRules() {
+        do {
+            try ruleStore.saveRules(rules)
+            rulePersistenceErrorMessage = nil
+        } catch {
+            rulePersistenceErrorMessage = error.localizedDescription
+        }
     }
 
     private func trigger(for key: KeyboardKey) -> KeyTrigger {
