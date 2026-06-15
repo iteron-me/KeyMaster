@@ -15,11 +15,6 @@ struct KeyboardLayoutView: View {
         }
         .frame(width: Self.contentWidth, alignment: .leading)
         .padding(14)
-        .liquidGlassPanel(
-            cornerRadius: LiquidGlassStyle.panelRadius,
-            tint: .white.opacity(0.08),
-            isElevated: true
-        )
         .overlayPreferenceValue(KeyBoundsPreferenceKey.self) { keyBounds in
             GeometryReader { proxy in
                 editorOverlay(keyBounds: keyBounds, in: proxy)
@@ -344,23 +339,36 @@ private struct KeyButton: View {
     let isEditing: Bool
     let openEditor: () -> Void
 
-    var body: some View {
-        Button {
-            openEditor()
-        } label: {
-            ZStack(alignment: .topTrailing) {
-                KeyLegendView(key: key)
+    @GestureState private var isPressed = false
 
-                if let rule {
-                    ActionBadge(kind: rule.action.kind)
-                        .padding(5)
-                }
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            KeyLegendView(key: key)
+                .allowsHitTesting(false)
+
+            if let rule {
+                ActionBadge(kind: rule.action.kind)
+                    .padding(5)
+                    .allowsHitTesting(false)
             }
         }
         .foregroundStyle(.primary)
-        .buttonStyle(KeyboardKeyButtonStyle(tint: rule?.action.kind.tint))
-        .overlay(ruleBorder)
-        .overlay(editingBorder)
+        .keyboardKeySurface(tint: rule?.action.kind.tint, isPressed: isPressed)
+        .overlay {
+            ruleBorder
+                .allowsHitTesting(false)
+        }
+        .overlay {
+            editingBorder
+                .allowsHitTesting(false)
+        }
+        .gesture(pressGesture)
+        .accessibilityElement()
+        .accessibilityLabel(key.label)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction {
+            openEditor()
+        }
     }
 
     @ViewBuilder
@@ -382,6 +390,22 @@ private struct KeyButton: View {
 
     private var keyShape: RoundedRectangle {
         RoundedRectangle(cornerRadius: LiquidGlassStyle.keyRadius, style: .continuous)
+    }
+
+    private var pressGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .updating($isPressed) { _, state, _ in
+                state = true
+            }
+            .onEnded { value in
+                guard value.translation.width.magnitude < 12,
+                      value.translation.height.magnitude < 12
+                else {
+                    return
+                }
+
+                openEditor()
+            }
     }
 }
 
