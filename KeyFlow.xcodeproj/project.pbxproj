@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436DF778DF7257471128D9C5 /* KeyRuleStore.swift */; };
 		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
-		47E22C6DCD12EC5353908DF3 /* AppStatePerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */; };
 		4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */; };
 		4CCC750AB91A1E514B572A5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55B02AB408B9B1F411436E34 /* Assets.xcassets */; };
 		654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */; };
@@ -24,16 +23,6 @@
 		FCA57798EF43EF17046E5EB4 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB82688BE416792911721663 /* KeyCaptureMonitor.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		A4777DD877AF2F7E4234DE54 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 7F6BB6B7A91699D22858D6C5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2079CEA377E9D14DAFAAF20E;
-			remoteInfo = KeyFlow;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -41,9 +30,7 @@
 		436DF778DF7257471128D9C5 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
 		55B02AB408B9B1F411436E34 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatePerformanceTests.swift; sourceTree = "<group>"; };
 		73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
-		90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyFlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB82688BE416792911721663 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
 		AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
 		B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
@@ -109,24 +96,14 @@
 			isa = PBXGroup;
 			children = (
 				6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */,
-				90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		888127DC86048D0AD6B7B2B3 /* KeyFlowTests */ = {
-			isa = PBXGroup;
-			children = (
-				6F325DD92C851FAC55A431F8 /* AppStatePerformanceTests.swift */,
-			);
-			path = KeyFlowTests;
 			sourceTree = "<group>";
 		};
 		A2246FD9CDC13B3EC4350F73 = {
 			isa = PBXGroup;
 			children = (
 				77F9793C1679C89B4142429E /* KeyFlow */,
-				888127DC86048D0AD6B7B2B3 /* KeyFlowTests */,
 				7AAA5D1A00A0849C2FA4913F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -163,24 +140,6 @@
 			productReference = 6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */;
 			productType = "com.apple.product-type.application";
 		};
-		89529E21F24D120CADB3BEA2 /* KeyFlowTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D9F9993A4607B1E3FAB984C0 /* Build configuration list for PBXNativeTarget "KeyFlowTests" */;
-			buildPhases = (
-				375E17121FFE6F0D7621B9D5 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				41A8892BC27FD9E9BEC258CD /* PBXTargetDependency */,
-			);
-			name = KeyFlowTests;
-			packageProductDependencies = (
-			);
-			productName = KeyFlowTests;
-			productReference = 90F5BD4C5BD10A0C8851F929 /* KeyFlowTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -191,9 +150,6 @@
 				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					2079CEA377E9D14DAFAAF20E = {
-						ProvisioningStyle = Automatic;
-					};
-					89529E21F24D120CADB3BEA2 = {
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -213,7 +169,6 @@
 			projectRoot = "";
 			targets = (
 				2079CEA377E9D14DAFAAF20E /* KeyFlow */,
-				89529E21F24D120CADB3BEA2 /* KeyFlowTests */,
 			);
 		};
 /* End PBXProject section */
@@ -230,14 +185,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		375E17121FFE6F0D7621B9D5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				47E22C6DCD12EC5353908DF3 /* AppStatePerformanceTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FB9AAFB233AF5575AA7F210A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -259,14 +206,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		41A8892BC27FD9E9BEC258CD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2079CEA377E9D14DAFAAF20E /* KeyFlow */;
-			targetProxy = A4777DD877AF2F7E4234DE54 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1506F17C3DBB49069942020C /* Release */ = {
@@ -293,28 +232,6 @@
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
-		};
-		541784CD74C20C770283AE14 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyFlow.app/Contents/MacOS/KeyFlow";
-			};
-			name = Debug;
 		};
 		69B6834B9C81EABAA92F3B9E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -370,28 +287,6 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		76F5F61B335F9E84B2D60570 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = app.keyflow.mac.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 6.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyFlow.app/Contents/MacOS/KeyFlow";
 			};
 			name = Release;
 		};
@@ -504,15 +399,6 @@
 			buildConfigurations = (
 				7B76CE86595C7F3AF52F1C4E /* Debug */,
 				69B6834B9C81EABAA92F3B9E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D9F9993A4607B1E3FAB984C0 /* Build configuration list for PBXNativeTarget "KeyFlowTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				541784CD74C20C770283AE14 /* Debug */,
-				76F5F61B335F9E84B2D60570 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
