@@ -12,6 +12,7 @@ final class AppState: ObservableObject {
         }
     }
     @Published private(set) var installedApps: [InstalledApp] = []
+    @Published private(set) var actionHistory = KeyActionHistory()
     @Published private(set) var isEngineRunning = false
     @Published private(set) var permissionStatus = PermissionStatus()
     @Published private(set) var rulePersistenceErrorMessage: String?
@@ -35,6 +36,7 @@ final class AppState: ObservableObject {
         self.ruleStore = ruleStore
         self.appDiscovery = appDiscovery
         loadPersistedRules()
+        loadActionHistory()
         refreshPermissions()
 
         if loadsInstalledAppsOnInit, Self.isInstalledAppDiscoveryEnabled {
@@ -52,6 +54,7 @@ final class AppState: ObservableObject {
 
     func saveRule(for key: KeyboardKey, action: KeyAction) {
         let trigger = trigger(for: key)
+        recordHistory(for: action)
 
         if let index = rules.firstIndex(where: { $0.trigger == trigger }) {
             rules[index].name = "\(launcherKey.displayName) + \(key.label)"
@@ -71,6 +74,14 @@ final class AppState: ObservableObject {
         )
         persistRules()
         syncKeyboardEngine()
+    }
+
+    func saveRule(for key: KeyboardKey, webHistoryItem item: WebActionHistoryItem) {
+        saveRule(for: key, action: .openURL(name: item.name, url: item.url))
+    }
+
+    func saveRule(for key: KeyboardKey, commandHistoryItem item: CommandActionHistoryItem) {
+        saveRule(for: key, action: .runCommand(name: item.name, command: item.command))
     }
 
     func deleteRule(for key: KeyboardKey) {
@@ -183,9 +194,51 @@ final class AppState: ObservableObject {
         }
     }
 
+    private func loadActionHistory() {
+        do {
+            var loadedHistory = try ruleStore.loadActionHistory()
+
+            for rule in rules {
+                _ = loadedHistory.record(rule.action)
+            }
+
+            actionHistory = loadedHistory
+            rulePersistenceErrorMessage = nil
+
+            do {
+                try ruleStore.saveActionHistory(loadedHistory)
+            } catch {
+                rulePersistenceErrorMessage = error.localizedDescription
+            }
+        } catch {
+            actionHistory = KeyActionHistory()
+            rulePersistenceErrorMessage = error.localizedDescription
+        }
+    }
+
     private func persistRules() {
         do {
             try ruleStore.saveRules(rules)
+            rulePersistenceErrorMessage = nil
+        } catch {
+            rulePersistenceErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func recordHistory(for action: KeyAction) {
+        var updatedHistory = actionHistory
+
+        guard updatedHistory.record(action) else {
+            return
+        }
+
+        actionHistory = updatedHistory
+        persistActionHistory()
+    }
+
+    private func persistActionHistory() {
+        do {
+            try ruleStore.saveActionHistory(actionHistory)
             rulePersistenceErrorMessage = nil
         } catch {
             rulePersistenceErrorMessage = error.localizedDescription

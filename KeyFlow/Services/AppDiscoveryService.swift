@@ -50,6 +50,11 @@ struct AppDiscoveryService: Sendable {
     }
 
     private static func displayName(for bundle: Bundle, at url: URL) -> String {
+        let fileDisplayName = FileManager.default.displayName(atPath: url.path)
+        if !fileDisplayName.isEmpty {
+            return fileDisplayName
+        }
+
         for key in displayNameKeys {
             if let localizedName = bundle.localizedInfoDictionary?[key] as? String,
                !localizedName.isEmpty {
@@ -62,11 +67,6 @@ struct AppDiscoveryService: Sendable {
                !name.isEmpty {
                 return name
             }
-        }
-
-        let fileDisplayName = FileManager.default.displayName(atPath: url.path)
-        if !fileDisplayName.isEmpty {
-            return fileDisplayName
         }
 
         return url.deletingPathExtension().lastPathComponent
