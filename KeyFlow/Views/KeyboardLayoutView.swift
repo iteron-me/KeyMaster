@@ -4,6 +4,7 @@ import SwiftUI
 struct KeyboardLayoutView: View {
     @EnvironmentObject private var appState: AppState
     @State private var editingKey: KeyboardKey?
+    @State private var menuPresenter: KeyActionMenuWindowPresenter?
 
     var body: some View {
         VStack(alignment: .leading, spacing: Self.spacing) {
@@ -15,11 +16,6 @@ struct KeyboardLayoutView: View {
         }
         .frame(width: Self.contentWidth, alignment: .leading)
         .padding(14)
-        .overlayPreferenceValue(KeyBoundsPreferenceKey.self) { keyBounds in
-            GeometryReader { proxy in
-                editorOverlay(keyBounds: keyBounds, in: proxy)
-            }
-        }
         .overlay {
             permissionOverlay
         }
@@ -65,56 +61,6 @@ struct KeyboardLayoutView: View {
         }
 
         return "Grant \(missingPermissions.joined(separator: " and ")) permission"
-    }
-
-    @ViewBuilder
-    private func editorOverlay(
-        keyBounds: [String: Anchor<CGRect>],
-        in proxy: GeometryProxy
-    ) -> some View {
-        if let editingKey, let keyAnchor = keyBounds[editingKey.id] {
-            let keyFrame = proxy[keyAnchor]
-            let placement = editorPlacement(for: keyFrame, in: proxy.size)
-
-            ZStack(alignment: .topLeading) {
-                Color.clear
-                    .contentShape(Rectangle())
-                    .onTapGesture(perform: closeEditor)
-
-                VStack(alignment: .leading, spacing: 0) {
-                    if placement.arrowEdge == .top {
-                        KeyEditorArrow()
-                            .frame(width: Self.editorArrowWidth, height: Self.editorArrowHeight)
-                            .offset(x: placement.arrowX - Self.editorArrowWidth / 2)
-                    }
-
-                    KeyActionPopover(
-                        key: editingKey,
-                        initialRule: appState.rule(for: editingKey),
-                        launcherDisplayName: appState.launcherKey.displayName,
-                        defaultAppIdentifier: appState.installedApps.first?.bundleIdentifier ?? "",
-                        close: closeEditor
-                    )
-                    .id(editorID(for: editingKey))
-                    .environmentObject(appState)
-                    .frame(width: Self.editorWidth)
-                    .liquidGlassPanel(
-                        cornerRadius: 18,
-                        tint: .white.opacity(0.09),
-                        isElevated: true
-                    )
-
-                    if placement.arrowEdge == .bottom {
-                        KeyEditorArrow()
-                            .rotationEffect(.degrees(180))
-                            .frame(width: Self.editorArrowWidth, height: Self.editorArrowHeight)
-                            .offset(x: placement.arrowX - Self.editorArrowWidth / 2)
-                    }
-                }
-                .frame(width: Self.editorWidth, alignment: .leading)
-                .offset(x: placement.origin.x, y: placement.origin.y)
-            }
-        }
     }
 
     @ViewBuilder
@@ -175,17 +121,14 @@ struct KeyboardLayoutView: View {
             key: key,
             rule: rule,
             isEditing: editingKey == key,
-            openEditor: {
-                openEditor(for: key)
+            openEditor: { sourceView in
+                openEditor(for: key, from: sourceView)
             }
         )
         .frame(width: width ?? Self.keyWidth(for: key), height: height)
-        .anchorPreference(key: KeyBoundsPreferenceKey.self, value: .bounds) { anchor in
-            [key.id: anchor]
-        }
     }
 
-    private func openEditor(for key: KeyboardKey) {
+    private func openEditor(for key: KeyboardKey, from sourceView: NSView) {
         var transaction = Transaction()
         transaction.disablesAnimations = true
         transaction.animation = nil
@@ -194,6 +137,17 @@ struct KeyboardLayoutView: View {
             appState.select(key)
             editingKey = key
         }
+
+        if menuPresenter == nil {
+            menuPresenter = KeyActionMenuWindowPresenter()
+        }
+
+        menuPresenter?.present(
+            key: key,
+            appState: appState,
+            from: sourceView,
+            close: closeEditor
+        )
     }
 
     private func closeEditor() {
@@ -204,58 +158,12 @@ struct KeyboardLayoutView: View {
         withTransaction(transaction) {
             editingKey = nil
         }
-    }
 
-    private func editorID(for key: KeyboardKey) -> String {
-        "\(appState.launcherKey.keyCode)-\(key.id)"
-    }
-
-    private func editorPlacement(
-        for keyFrame: CGRect,
-        in containerSize: CGSize
-    ) -> KeyEditorPlacement {
-        let totalHeight = Self.editorHeight + Self.editorArrowHeight
-        let preferredX = keyFrame.midX - Self.editorWidth / 2
-        let maxX = max(Self.editorMargin, containerSize.width - Self.editorWidth - Self.editorMargin)
-        let originX = min(max(preferredX, Self.editorMargin), maxX)
-        let arrowX = min(
-            max(keyFrame.midX - originX, Self.editorArrowWidth),
-            Self.editorWidth - Self.editorArrowWidth
-        )
-
-        let belowY = keyFrame.maxY + Self.editorKeyGap
-        let aboveY = keyFrame.minY - Self.editorKeyGap - totalHeight
-
-        if belowY + totalHeight <= containerSize.height - Self.editorMargin {
-            return KeyEditorPlacement(
-                origin: CGPoint(x: originX, y: belowY),
-                arrowX: arrowX,
-                arrowEdge: .top
-            )
+        if menuPresenter != nil {
+            let presenter = menuPresenter
+            menuPresenter = nil
+            presenter?.close()
         }
-
-        if aboveY >= Self.editorMargin {
-            return KeyEditorPlacement(
-                origin: CGPoint(x: originX, y: aboveY),
-                arrowX: arrowX,
-                arrowEdge: .bottom
-            )
-        }
-
-        return KeyEditorPlacement(
-            origin: CGPoint(
-                x: originX,
-                y: max(
-                    Self.editorMargin,
-                    min(
-                        containerSize.height - Self.editorHeight - Self.editorMargin,
-                        containerSize.height / 2 - Self.editorHeight / 2
-                    )
-                )
-            ),
-            arrowX: arrowX,
-            arrowEdge: .none
-        )
     }
 
     private static func keyWidth(for key: KeyboardKey) -> CGFloat {
@@ -280,12 +188,6 @@ struct KeyboardLayoutView: View {
     static let keyHeight: CGFloat = 46
     static let spacing: CGFloat = 6
     static let horizontalPadding: CGFloat = 14
-    static let editorWidth: CGFloat = 360
-    static let editorHeight: CGFloat = 360
-    static let editorArrowWidth: CGFloat = 18
-    static let editorArrowHeight: CGFloat = 9
-    static let editorKeyGap: CGFloat = 8
-    static let editorMargin: CGFloat = 10
     static let arrowStackSpacing: CGFloat = 2
     static let arrowHalfHeight: CGFloat = (keyHeight - arrowStackSpacing) / 2
     static let contentWidth: CGFloat = [
@@ -337,9 +239,10 @@ private struct KeyButton: View {
     let key: KeyboardKey
     let rule: KeyRule?
     let isEditing: Bool
-    let openEditor: () -> Void
+    let openEditor: (NSView) -> Void
 
     @GestureState private var isPressed = false
+    @State private var sourceView: NSView?
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
@@ -347,7 +250,7 @@ private struct KeyButton: View {
                 .allowsHitTesting(false)
 
             if let rule {
-                ActionBadge(kind: rule.action.kind)
+                ActionBadge(action: rule.action)
                     .padding(5)
                     .allowsHitTesting(false)
             }
@@ -362,12 +265,16 @@ private struct KeyButton: View {
             editingBorder
                 .allowsHitTesting(false)
         }
+        .background {
+            KeyMenuSourceView(sourceView: $sourceView)
+                .allowsHitTesting(false)
+        }
         .gesture(pressGesture)
         .accessibilityElement()
         .accessibilityLabel(key.label)
         .accessibilityAddTraits(.isButton)
         .accessibilityAction {
-            openEditor()
+            openEditorIfPossible()
         }
     }
 
@@ -404,64 +311,1121 @@ private struct KeyButton: View {
                     return
                 }
 
-                openEditor()
+                openEditorIfPossible()
             }
+    }
+
+    private func openEditorIfPossible() {
+        guard let sourceView else {
+            return
+        }
+
+        openEditor(sourceView)
     }
 }
 
-private struct KeyBoundsPreferenceKey: PreferenceKey {
-    static let defaultValue: [String: Anchor<CGRect>] = [:]
+private struct KeyMenuSourceView: NSViewRepresentable {
+    @Binding var sourceView: NSView?
 
-    static func reduce(
-        value: inout [String: Anchor<CGRect>],
-        nextValue: () -> [String: Anchor<CGRect>]
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView(frame: .zero)
+        DispatchQueue.main.async {
+            if sourceView !== view {
+                sourceView = view
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        DispatchQueue.main.async {
+            if sourceView !== nsView {
+                sourceView = nsView
+            }
+        }
+    }
+}
+
+@MainActor
+private final class KeyActionMenuWindowPresenter: NSObject, NSMenuDelegate {
+    private weak var appState: AppState?
+    private var key: KeyboardKey?
+    private var menu: NSMenu?
+    private var lazySubmenuKinds: [ObjectIdentifier: ActionKind] = [:]
+    private var loadedLazySubmenus: Set<ObjectIdentifier> = []
+    private var closeHandler: (() -> Void)?
+    private var didFinish = false
+
+    func present(
+        key: KeyboardKey,
+        appState: AppState,
+        from sourceView: NSView,
+        close: @escaping () -> Void
     ) {
-        value.merge(nextValue(), uniquingKeysWith: { _, newValue in newValue })
+        dismissMenu(notifying: false, cancelTracking: true)
+
+        self.appState = appState
+        self.key = key
+        self.closeHandler = close
+        didFinish = false
+        lazySubmenuKinds.removeAll()
+        loadedLazySubmenus.removeAll()
+
+        let menu = makeMainMenu(
+            key: key,
+            appState: appState
+        )
+        menu.delegate = self
+        self.menu = menu
+
+        menu.popUp(
+            positioning: nil,
+            at: NSPoint(
+                x: sourceView.bounds.maxX + Self.menuGap,
+                y: sourceView.bounds.maxY
+            ),
+            in: sourceView
+        )
+    }
+
+    func close() {
+        dismissMenu(notifying: true, cancelTracking: true)
+    }
+
+    func menuDidClose(_ menu: NSMenu) {
+        guard menu === self.menu else {
+            return
+        }
+
+        dismissMenu(notifying: true, cancelTracking: false)
+    }
+
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        let menuID = ObjectIdentifier(menu)
+
+        guard let kind = lazySubmenuKinds[menuID],
+              !loadedLazySubmenus.contains(menuID),
+              let appState
+        else {
+            return
+        }
+
+        menu.removeAllItems()
+
+        let item = NSMenuItem()
+        item.view = submenuView(for: kind, appState: appState)
+        menu.addItem(item)
+        loadedLazySubmenus.insert(menuID)
+    }
+
+    private func makeMainMenu(
+        key: KeyboardKey,
+        appState: AppState
+    ) -> NSMenu {
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+
+        let titleItem = NSMenuItem(
+            title: "\(appState.launcherKey.displayName) + \(key.label)",
+            action: nil,
+            keyEquivalent: ""
+        )
+        titleItem.isEnabled = false
+        menu.addItem(titleItem)
+
+        if let currentRule = appState.rule(for: key) {
+            let currentItem = NSMenuItem(
+                title: "Current: \(currentRule.action.displayTitle)",
+                action: nil,
+                keyEquivalent: ""
+            )
+            currentItem.image = Self.symbolImage(currentRule.action.kind.systemImage)
+            currentItem.isEnabled = false
+            menu.addItem(currentItem)
+        }
+
+        menu.addItem(.separator())
+
+        for kind in ActionKind.allCases {
+            let item = NSMenuItem(
+                title: kind.title,
+                action: nil,
+                keyEquivalent: ""
+            )
+            item.image = Self.symbolImage(kind.systemImage)
+            item.submenu = lazySubmenu(for: kind)
+            menu.addItem(item)
+        }
+
+        if appState.rule(for: key) != nil {
+            menu.addItem(.separator())
+
+            let removeItem = NSMenuItem(
+                title: "Remove",
+                action: #selector(removeRule(_:)),
+                keyEquivalent: ""
+            )
+            removeItem.target = self
+            removeItem.image = Self.symbolImage("trash")
+            menu.addItem(removeItem)
+        }
+
+        return menu
+    }
+
+    private func lazySubmenu(for kind: ActionKind) -> NSMenu {
+        let menu = NSMenu(title: kind.title)
+        menu.autoenablesItems = false
+        menu.delegate = self
+
+        let placeholderItem = NSMenuItem(
+            title: "Loading...",
+            action: nil,
+            keyEquivalent: ""
+        )
+        placeholderItem.isEnabled = false
+        menu.addItem(placeholderItem)
+        lazySubmenuKinds[ObjectIdentifier(menu)] = kind
+
+        return menu
+    }
+
+    private func submenuView(
+        for kind: ActionKind,
+        appState: AppState
+    ) -> NSView {
+        let currentRule = key.flatMap { appState.rule(for: $0) }
+
+        switch kind {
+        case .app:
+            return AppActionMenuView(
+                apps: appState.installedApps,
+                selectedBundleIdentifier: currentRule?.action.selectedAppBundleIdentifier,
+                select: { [weak self] app in
+                    self?.save(app: app)
+                }
+            )
+        case .url:
+            return HistoryActionMenuView(
+                emptyTitle: "No Website History",
+                addTitle: "New Website",
+                valuePlaceholder: "URL",
+                initialValue: "https://",
+                iconName: "link",
+                tint: .systemGreen,
+                rows: appState.actionHistory.webItems.map { item in
+                    HistoryActionRow(
+                        id: item.id,
+                        title: item.name,
+                        subtitle: item.url,
+                        isSelected: item == currentRule?.action.selectedWebItem,
+                        select: { [weak self] in
+                            self?.save(webItem: item)
+                        }
+                    )
+                },
+                isValid: { name, value in
+                    !name.isEmpty && URL(string: value) != nil
+                },
+                saveNewItem: { [weak self] name, value in
+                    self?.save(webItem: WebActionHistoryItem(name: name, url: value))
+                }
+            )
+        case .command:
+            return HistoryActionMenuView(
+                emptyTitle: "No Command History",
+                addTitle: "New Command",
+                valuePlaceholder: "Command",
+                iconName: "terminal.fill",
+                tint: .systemOrange,
+                rows: appState.actionHistory.commandItems.map { item in
+                    HistoryActionRow(
+                        id: item.id,
+                        title: item.name,
+                        subtitle: item.command,
+                        isSelected: item == currentRule?.action.selectedCommandItem,
+                        select: { [weak self] in
+                            self?.save(commandItem: item)
+                        }
+                    )
+                },
+                isValid: { name, value in
+                    !name.isEmpty && !value.isEmpty
+                },
+                saveNewItem: { [weak self] name, value in
+                    self?.save(commandItem: CommandActionHistoryItem(name: name, command: value))
+                }
+            )
+        }
+    }
+
+    private func save(app: InstalledApp) {
+        guard let appState, let key else {
+            return
+        }
+
+        appState.saveRule(
+            for: key,
+            action: .openApp(
+                bundleIdentifier: app.bundleIdentifier,
+                displayName: app.name
+            )
+        )
+        dismissMenu(notifying: true, cancelTracking: true)
+    }
+
+    private func save(webItem item: WebActionHistoryItem) {
+        guard let appState, let key else {
+            return
+        }
+
+        appState.saveRule(for: key, webHistoryItem: item)
+        dismissMenu(notifying: true, cancelTracking: true)
+    }
+
+    private func save(commandItem item: CommandActionHistoryItem) {
+        guard let appState, let key else {
+            return
+        }
+
+        appState.saveRule(for: key, commandHistoryItem: item)
+        dismissMenu(notifying: true, cancelTracking: true)
+    }
+
+    @objc
+    private func removeRule(_ sender: NSMenuItem) {
+        guard let appState, let key else {
+            return
+        }
+
+        appState.deleteRule(for: key)
+        dismissMenu(notifying: true, cancelTracking: true)
+    }
+
+    private func dismissMenu(
+        notifying shouldNotify: Bool,
+        cancelTracking: Bool
+    ) {
+        guard !didFinish else {
+            return
+        }
+
+        didFinish = true
+
+        let menu = menu
+        let closeHandler = closeHandler
+        self.menu = nil
+        self.closeHandler = nil
+        lazySubmenuKinds.removeAll()
+        loadedLazySubmenus.removeAll()
+        appState = nil
+        key = nil
+
+        if cancelTracking {
+            menu?.cancelTracking()
+        }
+
+        if shouldNotify {
+            closeHandler?()
+        }
+    }
+
+    private static func symbolImage(_ name: String) -> NSImage? {
+        NSImage(systemSymbolName: name, accessibilityDescription: nil)
+    }
+
+    private static let menuGap: CGFloat = 8
+}
+
+private enum ActionMenuMetrics {
+    static let width: CGFloat = 286
+    static let contentWidth: CGFloat = width - padding * 2
+    static let appListHeight: CGFloat = 176
+    static let historyMenuHeight: CGFloat = 284
+    static let rowHeight: CGFloat = 34
+    static let historyRowHeight: CGFloat = 42
+    static let padding: CGFloat = 8
+}
+
+@MainActor
+private func updateDocumentFrame(
+    for stackView: NSStackView,
+    in scrollView: NSScrollView
+) {
+    stackView.layoutSubtreeIfNeeded()
+
+    let fittingSize = stackView.fittingSize
+    let contentWidth = max(
+        scrollView.contentView.bounds.width,
+        ActionMenuMetrics.contentWidth
+    )
+    stackView.frame = NSRect(
+        x: 0,
+        y: 0,
+        width: contentWidth,
+        height: max(fittingSize.height, scrollView.contentView.bounds.height)
+    )
+}
+
+private final class MenuStackView: NSStackView {
+    override var isFlipped: Bool {
+        true
     }
 }
 
-private struct KeyEditorPlacement {
-    let origin: CGPoint
-    let arrowX: CGFloat
-    let arrowEdge: KeyEditorArrowEdge
-}
+private final class AppActionMenuView: NSView, NSSearchFieldDelegate {
+    private let apps: [InstalledApp]
+    private let selectedBundleIdentifier: String?
+    private let select: (InstalledApp) -> Void
+    private let searchField = MenuSearchTextField()
+    private let scrollView = NSScrollView()
+    private let stackView = MenuStackView()
+    private var rebuildGeneration = 0
 
-private enum KeyEditorArrowEdge {
-    case top
-    case bottom
-    case none
-}
+    init(
+        apps: [InstalledApp],
+        selectedBundleIdentifier: String?,
+        select: @escaping (InstalledApp) -> Void
+    ) {
+        self.apps = apps
+        self.selectedBundleIdentifier = selectedBundleIdentifier
+        self.select = select
+        super.init(frame: NSRect(
+            x: 0,
+            y: 0,
+            width: ActionMenuMetrics.width,
+            height: ActionMenuMetrics.appListHeight + 46
+        ))
 
-private struct KeyEditorArrow: View {
-    var body: some View {
-        KeyEditorArrowShape()
-            .fill(.regularMaterial)
-            .overlay {
-                KeyEditorArrowShape()
-                    .strokeBorder(.white.opacity(0.32), lineWidth: 1)
+        setupViews()
+        scheduleRowsRebuild()
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    func controlTextDidChange(_ obj: Notification) {
+        scheduleRowsRebuild()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {
+                return
             }
-            .shadow(color: .black.opacity(0.08), radius: 3, y: 1)
+
+            self.window?.makeFirstResponder(self.searchField)
+        }
+    }
+
+    private func setupViews() {
+        searchField.placeholderString = "Search apps"
+        searchField.delegate = self
+
+        stackView.orientation = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 2
+        stackView.edgeInsets = NSEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+        stackView.frame = NSRect(
+            x: 0,
+            y: 0,
+            width: ActionMenuMetrics.contentWidth,
+            height: 1
+        )
+        stackView.autoresizingMask = [.width]
+
+        scrollView.documentView = stackView
+        scrollView.hasVerticalScroller = true
+        scrollView.drawsBackground = false
+        scrollView.borderType = .noBorder
+
+        addSubview(searchField)
+        addSubview(scrollView)
+
+        searchField.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            searchField.topAnchor.constraint(equalTo: topAnchor, constant: ActionMenuMetrics.padding),
+            searchField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: ActionMenuMetrics.padding),
+            searchField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -ActionMenuMetrics.padding),
+            searchField.heightAnchor.constraint(equalToConstant: 28),
+
+            scrollView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 6),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: ActionMenuMetrics.padding),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -ActionMenuMetrics.padding),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -ActionMenuMetrics.padding)
+        ])
+    }
+
+    private func scheduleRowsRebuild() {
+        rebuildGeneration += 1
+        let generation = rebuildGeneration
+
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        stackView.addArrangedSubview(ActionMenuEmptyRow(title: "Loading Apps..."))
+        updateDocumentFrame(for: stackView, in: scrollView)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.rebuildGeneration == generation else {
+                return
+            }
+
+            self.rebuildRows(generation: generation)
+        }
+    }
+
+    private func rebuildRows(generation: Int) {
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        let rows = matchingApps
+
+        guard !rows.isEmpty else {
+            stackView.addArrangedSubview(ActionMenuEmptyRow(title: "No Apps Found"))
+            updateDocumentFrame(for: stackView, in: scrollView)
+            return
+        }
+
+        appendRows(
+            rows,
+            startingAt: 0,
+            generation: generation
+        )
+    }
+
+    private func appendRows(
+        _ rows: [InstalledApp],
+        startingAt startIndex: Int,
+        generation: Int
+    ) {
+        guard rebuildGeneration == generation else {
+            return
+        }
+
+        let endIndex = min(startIndex + Self.rowsPerBatch, rows.count)
+
+        for index in startIndex..<endIndex {
+            let app = rows[index]
+            addRow(for: app)
+        }
+
+        updateDocumentFrame(for: stackView, in: scrollView)
+
+        guard endIndex < rows.count else {
+            return
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.appendRows(
+                rows,
+                startingAt: endIndex,
+                generation: generation
+            )
+        }
+    }
+
+    private func addRow(for app: InstalledApp) {
+        let row = ActionMenuRowView(
+            title: app.name,
+            subtitle: nil,
+            image: AppIconCache.shared.cachedIcon(for: app),
+            tint: .controlAccentColor,
+            isSelected: app.bundleIdentifier == selectedBundleIdentifier,
+            rowHeight: ActionMenuMetrics.rowHeight,
+            action: { [select] in
+                select(app)
+            }
+        )
+        row.toolTip = app.name
+        stackView.addArrangedSubview(row)
+
+        AppIconCache.shared.icon(for: app) { [weak row] icon in
+            row?.setImage(icon)
+        }
+    }
+
+    private var matchingApps: [InstalledApp] {
+        let query = searchField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !query.isEmpty else {
+            return apps
+        }
+
+        return apps.filter {
+            $0.name.localizedCaseInsensitiveContains(query)
+                || $0.bundleIdentifier.localizedCaseInsensitiveContains(query)
+        }
+    }
+
+    private static let rowsPerBatch = 24
+}
+
+private struct HistoryActionRow {
+    let id: String
+    let title: String
+    let subtitle: String
+    let isSelected: Bool
+    let select: () -> Void
+}
+
+private final class HistoryActionMenuView: NSView, NSTextFieldDelegate {
+    private let emptyTitle: String
+    private let addTitle: String
+    private let valuePlaceholder: String
+    private let initialValue: String
+    private let iconName: String
+    private let tint: NSColor
+    private let rows: [HistoryActionRow]
+    private let isValid: (String, String) -> Bool
+    private let saveNewItem: (String, String) -> Void
+
+    private let contentStack = NSStackView()
+    private let formStack = NSStackView()
+    private let nameField = MenuTextField()
+    private let valueField = MenuTextField()
+    private let scrollView = NSScrollView()
+    private let listStack = MenuStackView()
+
+    init(
+        emptyTitle: String,
+        addTitle: String,
+        valuePlaceholder: String,
+        initialValue: String = "",
+        iconName: String,
+        tint: NSColor,
+        rows: [HistoryActionRow],
+        isValid: @escaping (String, String) -> Bool,
+        saveNewItem: @escaping (String, String) -> Void
+    ) {
+        self.emptyTitle = emptyTitle
+        self.addTitle = addTitle
+        self.valuePlaceholder = valuePlaceholder
+        self.initialValue = initialValue
+        self.iconName = iconName
+        self.tint = tint
+        self.rows = rows
+        self.isValid = isValid
+        self.saveNewItem = saveNewItem
+        super.init(frame: NSRect(
+            x: 0,
+            y: 0,
+            width: ActionMenuMetrics.width,
+            height: ActionMenuMetrics.historyMenuHeight
+        ))
+
+        setupViews()
+        rebuildRows()
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    func controlTextDidChange(_ obj: Notification) {
+        updateSaveButtonState()
+    }
+
+    override func layout() {
+        super.layout()
+        updateDocumentFrame(for: listStack, in: scrollView)
+    }
+
+    private func setupViews() {
+        contentStack.orientation = .vertical
+        contentStack.alignment = .leading
+        contentStack.spacing = 6
+        contentStack.edgeInsets = NSEdgeInsets(
+            top: ActionMenuMetrics.padding,
+            left: ActionMenuMetrics.padding,
+            bottom: ActionMenuMetrics.padding,
+            right: ActionMenuMetrics.padding
+        )
+
+        let addRow = ActionMenuRowView(
+            title: addTitle,
+            subtitle: nil,
+            image: NSImage(systemSymbolName: "plus", accessibilityDescription: nil),
+            tint: tint,
+            isSelected: false,
+            rowHeight: 32,
+            action: { [weak self] in
+                self?.toggleForm()
+            }
+        )
+
+        setupForm()
+
+        listStack.orientation = .vertical
+        listStack.alignment = .leading
+        listStack.spacing = 2
+        listStack.edgeInsets = NSEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+        listStack.frame = NSRect(
+            x: 0,
+            y: 0,
+            width: ActionMenuMetrics.contentWidth,
+            height: 1
+        )
+        listStack.autoresizingMask = [.width]
+
+        scrollView.documentView = listStack
+        scrollView.hasVerticalScroller = true
+        scrollView.drawsBackground = false
+        scrollView.borderType = .noBorder
+
+        addSubview(contentStack)
+        contentStack.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        contentStack.addArrangedSubview(addRow)
+        contentStack.addArrangedSubview(formStack)
+        contentStack.addArrangedSubview(scrollView)
+
+        formStack.isHidden = true
+
+        NSLayoutConstraint.activate([
+            contentStack.topAnchor.constraint(equalTo: topAnchor),
+            contentStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            addRow.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -ActionMenuMetrics.padding * 2),
+            formStack.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -ActionMenuMetrics.padding * 2),
+            scrollView.widthAnchor.constraint(equalTo: contentStack.widthAnchor, constant: -ActionMenuMetrics.padding * 2),
+            scrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 76)
+        ])
+    }
+
+    private func setupForm() {
+        formStack.orientation = .vertical
+        formStack.alignment = .leading
+        formStack.spacing = 6
+        formStack.edgeInsets = NSEdgeInsets(top: 7, left: 8, bottom: 8, right: 8)
+        formStack.wantsLayer = true
+        formStack.layer?.cornerRadius = 8
+        formStack.layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.65).cgColor
+
+        nameField.placeholderString = "Name"
+        valueField.placeholderString = valuePlaceholder
+        valueField.stringValue = initialValue
+        nameField.delegate = self
+        valueField.delegate = self
+
+        let buttonRow = NSStackView()
+        buttonRow.orientation = .horizontal
+        buttonRow.alignment = .centerY
+        buttonRow.spacing = 8
+
+        let cancelButton = NSButton(title: "Cancel", target: self, action: #selector(cancelForm))
+        cancelButton.bezelStyle = .rounded
+
+        let spacer = NSView()
+        let saveButton = NSButton(title: "Save", target: self, action: #selector(saveForm))
+        saveButton.bezelStyle = .rounded
+        saveButton.keyEquivalent = "\r"
+        saveButton.identifier = Self.saveButtonIdentifier
+
+        buttonRow.addArrangedSubview(cancelButton)
+        buttonRow.addArrangedSubview(spacer)
+        buttonRow.addArrangedSubview(saveButton)
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+
+        formStack.addArrangedSubview(nameField)
+        formStack.addArrangedSubview(valueField)
+        formStack.addArrangedSubview(buttonRow)
+
+        NSLayoutConstraint.activate([
+            nameField.widthAnchor.constraint(equalTo: formStack.widthAnchor, constant: -16),
+            valueField.widthAnchor.constraint(equalTo: formStack.widthAnchor, constant: -16),
+            buttonRow.widthAnchor.constraint(equalTo: formStack.widthAnchor, constant: -16)
+        ])
+
+        updateSaveButtonState()
+    }
+
+    private func rebuildRows() {
+        listStack.arrangedSubviews.forEach {
+            listStack.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+
+        guard !rows.isEmpty else {
+            listStack.addArrangedSubview(ActionMenuEmptyRow(title: emptyTitle))
+            updateDocumentFrame(for: listStack, in: scrollView)
+            return
+        }
+
+        for row in rows {
+            let rowView = ActionMenuRowView(
+                title: row.title,
+                subtitle: row.subtitle,
+                image: NSImage(systemSymbolName: iconName, accessibilityDescription: nil),
+                tint: tint,
+                isSelected: row.isSelected,
+                rowHeight: ActionMenuMetrics.historyRowHeight,
+                action: row.select
+            )
+            rowView.toolTip = row.subtitle
+            listStack.addArrangedSubview(rowView)
+        }
+
+        updateDocumentFrame(for: listStack, in: scrollView)
+    }
+
+    private func toggleForm() {
+        formStack.isHidden.toggle()
+
+        if !formStack.isHidden {
+            window?.makeFirstResponder(nameField)
+        }
+    }
+
+    @objc
+    private func cancelForm() {
+        formStack.isHidden = true
+    }
+
+    @objc
+    private func saveForm() {
+        let name = nameField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value = valueField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard isValid(name, value) else {
+            NSSound.beep()
+            return
+        }
+
+        saveNewItem(name, value)
+    }
+
+    private func updateSaveButtonState() {
+        guard let saveButton = formStack
+            .arrangedSubviews
+            .compactMap({ $0 as? NSStackView })
+            .flatMap(\.arrangedSubviews)
+            .compactMap({ $0 as? NSButton })
+            .first(where: { $0.identifier == Self.saveButtonIdentifier })
+        else {
+            return
+        }
+
+        let name = nameField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value = valueField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        saveButton.isEnabled = isValid(name, value)
+    }
+
+    private static let saveButtonIdentifier = NSUserInterfaceItemIdentifier("ActionMenuSaveButton")
+}
+
+private final class ActionMenuRowView: NSControl {
+    private let iconView = NSImageView()
+    private let titleField = NSTextField(labelWithString: "")
+    private let subtitleField = NSTextField(labelWithString: "")
+    private let trailingView = NSImageView()
+    private let tint: NSColor
+    private let rowHeight: CGFloat
+    private let actionHandler: () -> Void
+    private var trackingArea: NSTrackingArea?
+    private var isHovering = false {
+        didSet {
+            updateAppearance()
+        }
+    }
+    private var isSelected: Bool {
+        didSet {
+            updateAppearance()
+        }
+    }
+
+    init(
+        title: String,
+        subtitle: String?,
+        image: NSImage?,
+        tint: NSColor,
+        isSelected: Bool,
+        rowHeight: CGFloat,
+        action: @escaping () -> Void
+    ) {
+        self.tint = tint
+        self.isSelected = isSelected
+        self.rowHeight = rowHeight
+        self.actionHandler = action
+        super.init(frame: .zero)
+
+        setupViews(
+            title: title,
+            subtitle: subtitle,
+            image: image
+        )
+        updateAppearance()
+    }
+
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: ActionMenuMetrics.width - ActionMenuMetrics.padding * 2, height: rowHeight)
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+
+        if let trackingArea {
+            removeTrackingArea(trackingArea)
+        }
+
+        let area = NSTrackingArea(
+            rect: bounds,
+            options: [.activeAlways, .mouseEnteredAndExited, .inVisibleRect],
+            owner: self
+        )
+        addTrackingArea(area)
+        trackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        isHovering = true
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        isHovering = false
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard bounds.contains(convert(event.locationInWindow, from: nil)) else {
+            return
+        }
+
+        actionHandler()
+    }
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        true
+    }
+
+    func setImage(_ image: NSImage?) {
+        iconView.image = image
+        iconView.contentTintColor = image?.isTemplate == true ? tint : nil
+    }
+
+    private func setupViews(
+        title: String,
+        subtitle: String?,
+        image: NSImage?
+    ) {
+        wantsLayer = true
+        layer?.cornerRadius = 6
+
+        iconView.image = image
+        iconView.imageScaling = .scaleProportionallyUpOrDown
+        iconView.contentTintColor = image?.isTemplate == true ? tint : nil
+
+        titleField.stringValue = title
+        titleField.font = .systemFont(ofSize: 12, weight: isSelected ? .semibold : .medium)
+        titleField.lineBreakMode = .byTruncatingTail
+
+        subtitleField.stringValue = subtitle ?? ""
+        subtitleField.font = .systemFont(ofSize: 10)
+        subtitleField.lineBreakMode = .byTruncatingTail
+        subtitleField.isHidden = subtitle == nil
+
+        trailingView.image = isSelected
+            ? NSImage(systemSymbolName: "checkmark", accessibilityDescription: nil)
+            : nil
+        trailingView.imageScaling = .scaleProportionallyUpOrDown
+        trailingView.contentTintColor = .secondaryLabelColor
+
+        let labelStack = NSStackView(views: subtitle == nil ? [titleField] : [titleField, subtitleField])
+        labelStack.orientation = .vertical
+        labelStack.alignment = .leading
+        labelStack.spacing = 1
+
+        let rowStack = NSStackView(views: [iconView, labelStack, trailingView])
+        rowStack.orientation = .horizontal
+        rowStack.alignment = .centerY
+        rowStack.spacing = 8
+        rowStack.edgeInsets = NSEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+
+        addSubview(rowStack)
+        rowStack.translatesAutoresizingMaskIntoConstraints = false
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        trailingView.translatesAutoresizingMaskIntoConstraints = false
+
+        labelStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        labelStack.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+
+        NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: rowHeight),
+            rowStack.topAnchor.constraint(equalTo: topAnchor),
+            rowStack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            rowStack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            rowStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+
+            iconView.widthAnchor.constraint(equalToConstant: 18),
+            iconView.heightAnchor.constraint(equalToConstant: 18),
+            trailingView.widthAnchor.constraint(equalToConstant: 16),
+            trailingView.heightAnchor.constraint(equalToConstant: 16)
+        ])
+    }
+
+    private func updateAppearance() {
+        if isHovering {
+            layer?.backgroundColor = NSColor.controlAccentColor.cgColor
+            titleField.textColor = .white
+            subtitleField.textColor = NSColor.white.withAlphaComponent(0.82)
+            iconView.contentTintColor = .white
+            trailingView.contentTintColor = .white
+            return
+        }
+
+        if isSelected {
+            layer?.backgroundColor = tint.withAlphaComponent(0.16).cgColor
+        } else {
+            layer?.backgroundColor = .clear
+        }
+
+        titleField.textColor = .labelColor
+        subtitleField.textColor = .secondaryLabelColor
+        iconView.contentTintColor = iconView.image?.isTemplate == true ? tint : nil
+        trailingView.contentTintColor = .secondaryLabelColor
     }
 }
 
-private struct KeyEditorArrowShape: InsettableShape {
-    var insetAmount: CGFloat = 0
+private final class ActionMenuEmptyRow: NSView {
+    init(title: String) {
+        super.init(frame: NSRect(
+            x: 0,
+            y: 0,
+            width: ActionMenuMetrics.width - ActionMenuMetrics.padding * 2,
+            height: ActionMenuMetrics.rowHeight
+        ))
 
-    func path(in rect: CGRect) -> Path {
-        let rect = rect.insetBy(dx: insetAmount, dy: insetAmount)
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.closeSubpath()
-        return path
+        let label = NSTextField(labelWithString: title)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
+        label.textColor = .secondaryLabelColor
+        label.alignment = .center
+
+        addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: ActionMenuMetrics.rowHeight),
+            label.topAnchor.constraint(equalTo: topAnchor),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: trailingAnchor),
+            label.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
     }
 
-    func inset(by amount: CGFloat) -> KeyEditorArrowShape {
-        var shape = self
-        shape.insetAmount += amount
-        return shape
+    required init?(coder: NSCoder) {
+        nil
     }
+}
+
+private final class MenuSearchTextField: NSSearchField {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        true
+    }
+}
+
+private final class MenuTextField: NSTextField {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        true
+    }
+}
+
+@MainActor
+private final class AppIconCache {
+    static let shared = AppIconCache()
+
+    private var iconsByBundleIdentifier: [String: NSImage] = [:]
+    private var pendingHandlersByBundleIdentifier: [String: [(NSImage) -> Void]] = [:]
+
+    func cachedIcon(for app: InstalledApp) -> NSImage {
+        if let icon = iconsByBundleIdentifier[app.bundleIdentifier] {
+            return icon
+        }
+
+        return Self.placeholderIcon
+    }
+
+    func icon(
+        for app: InstalledApp,
+        completion: @escaping (NSImage) -> Void
+    ) {
+        icon(
+            forBundleIdentifier: app.bundleIdentifier,
+            path: app.url.path,
+            completion: completion
+        )
+    }
+
+    func icon(
+        forBundleIdentifier bundleIdentifier: String,
+        completion: @escaping (NSImage) -> Void
+    ) {
+        icon(
+            forBundleIdentifier: bundleIdentifier,
+            path: nil,
+            completion: completion
+        )
+    }
+
+    private func icon(
+        forBundleIdentifier bundleIdentifier: String,
+        path: String?,
+        completion: @escaping (NSImage) -> Void
+    ) {
+        if let icon = iconsByBundleIdentifier[bundleIdentifier] {
+            completion(icon)
+            return
+        }
+
+        if pendingHandlersByBundleIdentifier[bundleIdentifier] != nil {
+            pendingHandlersByBundleIdentifier[bundleIdentifier]?.append(completion)
+            return
+        }
+
+        pendingHandlersByBundleIdentifier[bundleIdentifier] = [completion]
+
+        Task.detached(priority: .utility) {
+            let resolvedPath = path ?? NSWorkspace.shared
+                .urlForApplication(withBundleIdentifier: bundleIdentifier)?
+                .path
+            let icon = if let resolvedPath {
+                NSWorkspace.shared.icon(forFile: resolvedPath)
+            } else {
+                NSImage(systemSymbolName: "app", accessibilityDescription: nil)
+                    ?? NSImage(size: NSSize(width: 16, height: 16))
+            }
+            icon.size = NSSize(width: 16, height: 16)
+
+            await MainActor.run {
+                self.iconsByBundleIdentifier[bundleIdentifier] = icon
+                let handlers = self.pendingHandlersByBundleIdentifier.removeValue(forKey: bundleIdentifier) ?? []
+
+                for handler in handlers {
+                    handler(icon)
+                }
+            }
+        }
+    }
+
+    private static let placeholderIcon: NSImage = {
+        let image = NSImage(systemSymbolName: "app", accessibilityDescription: nil)
+            ?? NSImage(size: NSSize(width: 16, height: 16))
+        image.size = NSSize(width: 16, height: 16)
+        return image
+    }()
 }
 
 private struct KeyLegendView: View {
@@ -533,18 +1497,108 @@ private struct KeyLegendView: View {
 }
 
 private struct ActionBadge: View {
-    let kind: ActionKind
+    let action: KeyAction
+
+    @State private var appIcon: NSImage?
 
     var body: some View {
-        Image(systemName: kind.systemImage)
-            .font(.system(size: 10, weight: .bold))
-            .foregroundStyle(.white)
-            .frame(width: 18, height: 18)
-            .background(kind.tint.gradient, in: Circle())
-            .overlay(
-                Circle()
-                    .strokeBorder(.white.opacity(0.55), lineWidth: 0.8)
+        switch action {
+        case .openApp(let bundleIdentifier, _):
+            appBadge(bundleIdentifier: bundleIdentifier)
+        case .openURL(let name, _):
+            labelBadge(
+                systemImage: ActionKind.url.systemImage,
+                text: name,
+                tint: .green
             )
+        case .runCommand(let name, _):
+            labelBadge(
+                systemImage: ActionKind.command.systemImage,
+                text: name,
+                tint: .orange
+            )
+        }
+    }
+
+    private func appBadge(bundleIdentifier: String) -> some View {
+        Group {
+            if let appIcon {
+                Image(nsImage: appIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding(2)
+            } else {
+                Image(systemName: ActionKind.app.systemImage)
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white)
+            }
+        }
+        .frame(width: 20, height: 20)
+        .background(.thinMaterial, in: Circle())
+        .overlay(
+            Circle()
+                .strokeBorder(Color.white.opacity(0.62), lineWidth: 0.8)
+        )
+        .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
+        .onAppear {
+            loadAppIcon(bundleIdentifier: bundleIdentifier)
+        }
+        .onChange(of: bundleIdentifier) { _, newBundleIdentifier in
+            loadAppIcon(bundleIdentifier: newBundleIdentifier)
+        }
+    }
+
+    private func labelBadge(
+        systemImage: String,
+        text: String,
+        tint: Color
+    ) -> some View {
+        HStack(spacing: 2) {
+            Image(systemName: systemImage)
+                .font(.system(size: 7, weight: .bold))
+                .frame(width: 8)
+
+            Text(text.badgeAbbreviation)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+        }
+        .foregroundStyle(.white)
+        .frame(width: 38, height: 18)
+        .background(tint.gradient, in: Capsule())
+        .overlay(
+            Capsule()
+                .strokeBorder(Color.white.opacity(0.56), lineWidth: 0.8)
+        )
+        .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
+    }
+
+    private func loadAppIcon(bundleIdentifier: String) {
+        appIcon = nil
+
+        AppIconCache.shared.icon(forBundleIdentifier: bundleIdentifier) { icon in
+            appIcon = icon
+        }
+    }
+}
+
+private extension String {
+    var badgeAbbreviation: String {
+        let words = split { !$0.isLetter && !$0.isNumber }
+        let abbreviation: String
+
+        if words.count >= 2 {
+            abbreviation = words
+                .prefix(2)
+                .compactMap(\.first)
+                .map(String.init)
+                .joined()
+        } else {
+            abbreviation = String(prefix(3))
+        }
+
+        let trimmed = abbreviation.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "--" : trimmed.uppercased()
     }
 }
 
@@ -680,397 +1734,6 @@ private extension KeyboardKey {
         .union(["space"])
 }
 
-private struct KeyActionPopover: View {
-    @EnvironmentObject private var appState: AppState
-
-    let key: KeyboardKey
-    let initialRule: KeyRule?
-    let launcherDisplayName: String
-    let close: () -> Void
-
-    @State private var selectedKind: ActionKind
-    @State private var selectedAppIdentifier: String
-    @State private var webName: String
-    @State private var webURL: String
-    @State private var commandName: String
-    @State private var command: String
-
-    init(
-        key: KeyboardKey,
-        initialRule: KeyRule?,
-        launcherDisplayName: String,
-        defaultAppIdentifier: String,
-        close: @escaping () -> Void
-    ) {
-        self.key = key
-        self.initialRule = initialRule
-        self.launcherDisplayName = launcherDisplayName
-        self.close = close
-
-        var kind = ActionKind.app
-        var appIdentifier = defaultAppIdentifier
-        var urlName = "Website"
-        var urlValue = "https://"
-        var commandTitle = "Lock Screen"
-        var commandValue = "/System/Library/CoreServices/Menu\\ Extras/User.menu/Contents/Resources/CGSession -suspend"
-
-        if let initialRule {
-            kind = initialRule.action.kind
-
-            switch initialRule.action {
-            case .openApp(let bundleIdentifier, _):
-                appIdentifier = bundleIdentifier
-            case .openURL(let name, let url):
-                urlName = name
-                urlValue = url
-            case .runCommand(let name, let value):
-                commandTitle = name
-                commandValue = value
-            }
-        }
-
-        _selectedKind = State(initialValue: kind)
-        _selectedAppIdentifier = State(initialValue: appIdentifier)
-        _webName = State(initialValue: urlName)
-        _webURL = State(initialValue: urlValue)
-        _commandName = State(initialValue: commandTitle)
-        _command = State(initialValue: commandValue)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 10) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(launcherDisplayName) + \(key.label)")
-                        .font(.system(size: 14, weight: .semibold))
-                        .lineLimit(1)
-
-                    Text(actionSummary)
-                        .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-
-                Spacer()
-
-                if initialRule != nil {
-                    Button(role: .destructive) {
-                        appState.deleteRule(for: key)
-                        close()
-                    } label: {
-                        Image(systemName: "trash")
-                    }
-                    .buttonStyle(.borderless)
-                    .controlSize(.small)
-                }
-            }
-
-            Picker("Action", selection: $selectedKind) {
-                ForEach(ActionKind.allCases) { kind in
-                    Label(kind.title, systemImage: kind.systemImage)
-                        .tag(kind)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .controlSize(.small)
-
-            form
-
-            HStack(spacing: 8) {
-                Spacer()
-                Button("Cancel") {
-                    close()
-                }
-                .controlSize(.small)
-
-                Button("Save") {
-                    appState.saveRule(for: key, action: buildAction())
-                    close()
-                }
-                .liquidGlassButtonStyle(isProminent: true)
-                .controlSize(.small)
-                .disabled(!canSave)
-            }
-        }
-        .padding(14)
-        .onChange(of: appState.installedApps) { _, apps in
-            if selectedKind == .app, selectedAppIdentifier.isEmpty {
-                selectedAppIdentifier = apps.first?.bundleIdentifier ?? ""
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var form: some View {
-        switch selectedKind {
-        case .app:
-            AppSelectionField(
-                apps: appState.installedApps,
-                selectedAppIdentifier: $selectedAppIdentifier
-            )
-        case .url:
-            TextField("Name", text: $webName)
-                .controlSize(.small)
-            TextField("URL", text: $webURL)
-                .controlSize(.small)
-        case .command:
-            TextField("Name", text: $commandName)
-                .controlSize(.small)
-            TextField("Command", text: $command, axis: .vertical)
-                .lineLimit(2...4)
-                .controlSize(.small)
-        }
-    }
-
-    private var actionSummary: String {
-        switch selectedKind {
-        case .app:
-            "Open application"
-        case .url:
-            "Open web link"
-        case .command:
-            "Run shell command"
-        }
-    }
-
-    private var canSave: Bool {
-        switch selectedKind {
-        case .app:
-            !selectedAppIdentifier.isEmpty
-        case .url:
-            !webName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                && URL(string: webURL) != nil
-        case .command:
-            !commandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                && !command.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        }
-    }
-
-    private func buildAction() -> KeyAction {
-        switch selectedKind {
-        case .app:
-            let app = appState.installedApps.first { $0.bundleIdentifier == selectedAppIdentifier }
-            return .openApp(
-                bundleIdentifier: selectedAppIdentifier,
-                displayName: app?.name ?? selectedAppIdentifier
-            )
-        case .url:
-            return .openURL(name: webName, url: webURL)
-        case .command:
-            return .runCommand(name: commandName, command: command)
-        }
-    }
-}
-
-private struct AppSelectionField: View {
-    let apps: [InstalledApp]
-    @Binding var selectedAppIdentifier: String
-
-    @State private var query = ""
-    @State private var isPickerPresented = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Button {
-                if !isPickerPresented {
-                    query = ""
-                }
-                isPickerPresented.toggle()
-            } label: {
-                HStack(spacing: 9) {
-                    AppIconView(app: selectedApp, size: 24)
-
-                    Text(selectedApp?.name ?? "Select App")
-                        .font(.system(size: 13, weight: .medium))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 10)
-                .frame(height: 38)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .background {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color(nsColor: .controlBackgroundColor).opacity(0.72))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
-                    )
-            }
-            .popover(isPresented: $isPickerPresented, arrowEdge: .bottom) {
-                appPicker
-                    .frame(width: 320)
-                    .padding(10)
-            }
-
-            if apps.isEmpty {
-                Label("No apps found", systemImage: "app.dashed")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .task(id: apps.map(\.bundleIdentifier)) {
-            await AppIconCache.shared.warmIcons(for: apps)
-        }
-    }
-
-    private var appPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            TextField("Search apps", text: $query)
-                .textFieldStyle(.roundedBorder)
-
-            if visibleApps.isEmpty {
-                Text(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "No apps found." : "No matching apps.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 10)
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 2) {
-                        ForEach(visibleApps) { app in
-                            AppSelectionRow(
-                                app: app,
-                                isSelected: selectedAppIdentifier == app.bundleIdentifier
-                            ) {
-                                selectedAppIdentifier = app.bundleIdentifier
-                                isPickerPresented = false
-                            }
-                        }
-                    }
-                    .padding(.vertical, 2)
-                }
-                .frame(height: 240)
-            }
-        }
-    }
-
-    private var visibleApps: [InstalledApp] {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let matches: [InstalledApp]
-
-        if trimmedQuery.isEmpty {
-            matches = apps
-        } else {
-            matches = apps.filter { app in
-                app.name.localizedCaseInsensitiveContains(trimmedQuery)
-                    || app.bundleIdentifier.localizedCaseInsensitiveContains(trimmedQuery)
-            }
-        }
-
-        var visible = matches
-
-        if
-            let selectedApp,
-            !visible.contains(where: { $0.bundleIdentifier == selectedApp.bundleIdentifier })
-        {
-            visible.insert(selectedApp, at: 0)
-        }
-
-        return visible
-    }
-
-    private var selectedApp: InstalledApp? {
-        apps.first { $0.bundleIdentifier == selectedAppIdentifier }
-    }
-
-}
-
-private struct AppSelectionRow: View {
-    let app: InstalledApp
-    let isSelected: Bool
-    let select: () -> Void
-
-    var body: some View {
-        Button {
-            select()
-        } label: {
-            HStack(spacing: 9) {
-                AppIconView(app: app, size: 26)
-
-                Text(app.name)
-                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(Color.accentColor)
-                        .frame(width: 16)
-                }
-            }
-            .padding(.horizontal, 8)
-            .frame(height: 34)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .background {
-            if isSelected {
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(Color.accentColor.opacity(0.12))
-            }
-        }
-    }
-}
-
-private struct AppIconView: View {
-    let app: InstalledApp?
-    let size: CGFloat
-
-    var body: some View {
-        Group {
-            if let app {
-                Image(nsImage: AppIconCache.shared.icon(for: app))
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } else {
-                Image(systemName: "app")
-                    .font(.system(size: size * 0.56, weight: .medium))
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(width: size, height: size)
-    }
-}
-
-@MainActor
-private final class AppIconCache {
-    static let shared = AppIconCache()
-
-    private var iconsByBundleIdentifier: [String: NSImage] = [:]
-
-    func icon(for app: InstalledApp) -> NSImage {
-        if let icon = iconsByBundleIdentifier[app.bundleIdentifier] {
-            return icon
-        }
-
-        let icon = NSWorkspace.shared.icon(forFile: app.url.path)
-        icon.size = NSSize(width: 32, height: 32)
-        iconsByBundleIdentifier[app.bundleIdentifier] = icon
-        return icon
-    }
-
-    func warmIcons(for apps: [InstalledApp]) async {
-        var loadedCount = 0
-
-        for app in apps where iconsByBundleIdentifier[app.bundleIdentifier] == nil {
-            _ = icon(for: app)
-            loadedCount += 1
-
-            if loadedCount.isMultiple(of: 8) {
-                await Task.yield()
-            }
-        }
-    }
-}
-
 private extension ActionKind {
     var tint: Color {
         switch self {
@@ -1078,5 +1741,31 @@ private extension ActionKind {
         case .url: .green
         case .command: .orange
         }
+    }
+}
+
+private extension KeyAction {
+    var selectedAppBundleIdentifier: String? {
+        guard case .openApp(let bundleIdentifier, _) = self else {
+            return nil
+        }
+
+        return bundleIdentifier
+    }
+
+    var selectedWebItem: WebActionHistoryItem? {
+        guard case .openURL(let name, let url) = self else {
+            return nil
+        }
+
+        return WebActionHistoryItem(name: name, url: url)
+    }
+
+    var selectedCommandItem: CommandActionHistoryItem? {
+        guard case .runCommand(let name, let command) = self else {
+            return nil
+        }
+
+        return CommandActionHistoryItem(name: name, command: command)
     }
 }

@@ -103,6 +103,63 @@ enum ActionKind: String, CaseIterable, Codable, Identifiable {
     }
 }
 
+struct KeyActionHistory: Codable, Equatable {
+    var webItems: [WebActionHistoryItem] = []
+    var commandItems: [CommandActionHistoryItem] = []
+
+    mutating func record(_ action: KeyAction) -> Bool {
+        let previous = self
+
+        switch action {
+        case .openApp:
+            break
+        case .openURL(let name, let url):
+            let item = WebActionHistoryItem(
+                name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+                url: url.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+            upsert(item, in: &webItems)
+        case .runCommand(let name, let command):
+            let item = CommandActionHistoryItem(
+                name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+                command: command.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+            upsert(item, in: &commandItems)
+        }
+
+        return self != previous
+    }
+
+    private func upsert<Item: Equatable>(_ item: Item, in items: inout [Item]) {
+        items.removeAll { $0 == item }
+        items.insert(item, at: 0)
+
+        if items.count > Self.maximumItemsPerKind {
+            items.removeLast(items.count - Self.maximumItemsPerKind)
+        }
+    }
+
+    private static let maximumItemsPerKind = 30
+}
+
+struct WebActionHistoryItem: Identifiable, Codable, Equatable, Hashable {
+    var name: String
+    var url: String
+
+    var id: String {
+        "\(name)|\(url)"
+    }
+}
+
+struct CommandActionHistoryItem: Identifiable, Codable, Equatable, Hashable {
+    var name: String
+    var command: String
+
+    var id: String {
+        "\(name)|\(command)"
+    }
+}
+
 struct LauncherKey: Codable, Equatable, Hashable {
     var keyCode: Int
     var displayName: String
