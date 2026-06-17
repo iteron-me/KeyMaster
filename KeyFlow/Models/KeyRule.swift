@@ -130,6 +130,14 @@ struct KeyActionHistory: Codable, Equatable {
         return self != previous
     }
 
+    mutating func delete(_ item: WebActionHistoryItem) -> Bool {
+        delete(item, from: &webItems)
+    }
+
+    mutating func delete(_ item: CommandActionHistoryItem) -> Bool {
+        delete(item, from: &commandItems)
+    }
+
     private func upsert<Item: Equatable>(_ item: Item, in items: inout [Item]) {
         items.removeAll { $0 == item }
         items.insert(item, at: 0)
@@ -137,6 +145,12 @@ struct KeyActionHistory: Codable, Equatable {
         if items.count > Self.maximumItemsPerKind {
             items.removeLast(items.count - Self.maximumItemsPerKind)
         }
+    }
+
+    private func delete<Item: Equatable>(_ item: Item, from items: inout [Item]) -> Bool {
+        let previousCount = items.count
+        items.removeAll { $0 == item }
+        return items.count != previousCount
     }
 
     private static let maximumItemsPerKind = 30
