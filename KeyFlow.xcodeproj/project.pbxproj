@@ -18,6 +18,7 @@
 		752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */; };
 		76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */; };
 		79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAC33A0163579C56BF09D5C /* PermissionService.swift */; };
+		90BDC1FE234BC57DBE319F0B /* AnchoredFloatingWindowPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */; };
 		93285782C57D18C2561C345B /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */; };
 		CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */; };
 		CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0336361413355CCA0228D1B /* KeyFlowApp.swift */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
@@ -117,6 +119,7 @@
 		BEE5171B986F8442DB920FFB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */,
 				3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */,
 				D7B3894D1ABF390D92C05489 /* ContentView.swift */,
 				FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */,
@@ -198,6 +201,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90BDC1FE234BC57DBE319F0B /* AnchoredFloatingWindowPresenter.swift in Sources */,
 				CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */,
 				93285782C57D18C2561C345B /* AppIconCache.swift in Sources */,
 				709E8D3E2FBE19AD27F59C0D /* AppState.swift in Sources */,
