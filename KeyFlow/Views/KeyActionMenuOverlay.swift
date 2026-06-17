@@ -38,11 +38,6 @@ struct KeyActionMenuContent: View {
         )
         .padding(ActionMenuMetrics.contentPadding)
         .contentShape(Rectangle())
-        .onHover { isHovering in
-            if !isHovering {
-                activeKind = nil
-            }
-        }
         .onChange(of: activeKind) { _, newValue in
             activeKindChanged(newValue)
         }
@@ -308,7 +303,7 @@ private struct AppActionPicker: View {
                 .textFieldStyle(.roundedBorder)
 
             ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
+                LazyVStack(alignment: .leading, spacing: 0) {
                     if matchingApps.isEmpty {
                         ActionMenuEmptyState(title: appState.installedApps.isEmpty ? "Loading Apps..." : "No Apps Found")
                     } else {
@@ -324,7 +319,10 @@ private struct AppActionPicker: View {
                     }
                 }
                 .padding(.vertical, 2)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
+            .contentShape(Rectangle())
+            .background(Color.primary.opacity(0.001))
             .frame(height: ActionMenuMetrics.appListHeight)
         }
         .frame(width: ActionMenuMetrics.submenuWidth)
@@ -393,9 +391,15 @@ private struct HistoryActionPicker: View {
     let isValid: (String, String) -> Bool
     let saveNewItem: (String, String) -> Void
 
+    private enum AddField: Hashable {
+        case name
+        case value
+    }
+
     @State private var isAdding = false
     @State private var name = ""
     @State private var value: String
+    @FocusState private var focusedAddField: AddField?
 
     init(
         emptyTitle: String,
@@ -422,75 +426,153 @@ private struct HistoryActionPicker: View {
 
     var body: some View {
         VStack(spacing: 6) {
-            Button {
-                isAdding.toggle()
-            } label: {
-                Label(addTitle, systemImage: "plus")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .buttonStyle(ActionMenuPlainButtonStyle(tint: tint))
+            addButton
 
-            if isAdding {
-                VStack(spacing: 6) {
-                    TextField("Name", text: $name)
-                        .textFieldStyle(.roundedBorder)
-
-                    TextField(valuePlaceholder, text: $value)
-                        .textFieldStyle(.roundedBorder)
-
-                    HStack(spacing: 8) {
-                        Button("Cancel") {
-                            isAdding = false
-                        }
-                        .controlSize(.small)
-
-                        Spacer()
-
-                        Button("Add") {
-                            let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                            let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
-                            saveNewItem(trimmedName, trimmedValue)
-                        }
-                        .controlSize(.small)
-                        .disabled(!canSave)
-                    }
-                }
-                .padding(.vertical, 4)
-            }
-
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 2) {
-                    if rows.isEmpty {
-                        ActionMenuEmptyState(title: emptyTitle)
-                    } else {
-                        ForEach(rows) { row in
-                            ActionMenuRow(
-                                title: row.title,
-                                subtitle: row.subtitle,
-                                systemImage: iconName,
-                                image: nil,
-                                tint: tint,
-                                isSelected: row.isSelected,
-                                select: row.select,
-                                delete: row.delete
-                            )
-                            .help(row.subtitle)
-                        }
-                    }
-                }
-                .padding(.vertical, 2)
-            }
-            .frame(height: rows.isEmpty ? 76 : ActionMenuMetrics.historyListHeight)
+            historyList
         }
+        .overlay(alignment: .top) {
+            if isAdding {
+                addItemPanel
+                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .top)))
+                    .zIndex(1)
+            }
+        }
+        .animation(.easeOut(duration: 0.16), value: isAdding)
         .frame(width: ActionMenuMetrics.submenuWidth)
         .padding(ActionMenuMetrics.padding)
         .actionMenuSurface()
+    }
+
+    private var addButton: some View {
+        Button {
+            showAddPanel()
+        } label: {
+            Label(addTitle, systemImage: "plus")
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(ActionMenuPlainButtonStyle(tint: tint))
+    }
+
+    private var historyList: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                if rows.isEmpty {
+                    ActionMenuEmptyState(title: emptyTitle)
+                } else {
+                    ForEach(rows) { row in
+                        ActionMenuRow(
+                            title: row.title,
+                            subtitle: row.subtitle,
+                            systemImage: iconName,
+                            image: nil,
+                            tint: tint,
+                            isSelected: row.isSelected,
+                            select: row.select,
+                            delete: row.delete
+                        )
+                        .help(row.subtitle)
+                    }
+                }
+            }
+            .padding(.vertical, 2)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+        }
+        .contentShape(Rectangle())
+        .background(Color.primary.opacity(0.001))
+        .frame(height: rows.isEmpty ? 76 : ActionMenuMetrics.historyListHeight)
+    }
+
+    private var addItemPanel: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Label(addTitle, systemImage: iconName)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(tint)
+
+                Spacer()
+            }
+
+            TextField("Name", text: $name)
+                .textFieldStyle(.roundedBorder)
+                .focused($focusedAddField, equals: .name)
+                .onSubmit {
+                    focusedAddField = .value
+                }
+
+            TextField(valuePlaceholder, text: $value)
+                .textFieldStyle(.roundedBorder)
+                .focused($focusedAddField, equals: .value)
+                .onSubmit {
+                    submitNewItem()
+                }
+
+            HStack(spacing: 8) {
+                Spacer()
+
+                Button {
+                    hideAddPanel()
+                } label: {
+                    Text("Cancel")
+                        .frame(width: 58)
+                }
+                .buttonStyle(ActionMenuFormButtonStyle(tint: tint, role: .secondary))
+
+                Button {
+                    submitNewItem()
+                } label: {
+                    Label("Add", systemImage: "checkmark")
+                        .frame(width: 58)
+                }
+                .buttonStyle(ActionMenuFormButtonStyle(tint: tint, role: .primary))
+                .disabled(!canSave)
+            }
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(.regularMaterial)
+                .shadow(color: .black.opacity(0.16), radius: 14, y: 6)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(tint.opacity(0.24), lineWidth: 1)
+                .allowsHitTesting(false)
+        }
+        .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var canSave: Bool {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
         return isValid(trimmedName, trimmedValue)
+    }
+
+    private func showAddPanel() {
+        guard !isAdding else {
+            return
+        }
+
+        isAdding = true
+
+        DispatchQueue.main.async {
+            focusedAddField = .name
+        }
+    }
+
+    private func hideAddPanel() {
+        isAdding = false
+        focusedAddField = nil
+    }
+
+    private func submitNewItem() {
+        guard canSave else {
+            return
+        }
+
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        saveNewItem(trimmedName, trimmedValue)
     }
 }
 
@@ -620,6 +702,67 @@ private struct ActionMenuPlainButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
                     .fill(configuration.isPressed ? tint : tint.opacity(0.12))
             }
+    }
+}
+
+private struct ActionMenuFormButtonStyle: ButtonStyle {
+    enum Role {
+        case primary
+        case secondary
+    }
+
+    let tint: Color
+    let role: Role
+
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.system(size: 12, weight: .semibold))
+            .lineLimit(1)
+            .foregroundStyle(foregroundColor(isPressed: configuration.isPressed))
+            .padding(.horizontal, 10)
+            .frame(height: 28)
+            .background {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(backgroundColor(isPressed: configuration.isPressed))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .strokeBorder(borderColor, lineWidth: 1)
+                    .allowsHitTesting(false)
+            }
+    }
+
+    private func foregroundColor(isPressed: Bool) -> Color {
+        switch role {
+        case .primary:
+            isEnabled ? .white : .secondary
+        case .secondary:
+            isPressed ? .primary : .secondary
+        }
+    }
+
+    private func backgroundColor(isPressed: Bool) -> Color {
+        switch role {
+        case .primary:
+            if !isEnabled {
+                return Color.primary.opacity(0.07)
+            }
+
+            return isPressed ? tint.opacity(0.82) : tint
+        case .secondary:
+            return isPressed ? Color.primary.opacity(0.12) : Color.primary.opacity(0.06)
+        }
+    }
+
+    private var borderColor: Color {
+        switch role {
+        case .primary:
+            isEnabled ? tint.opacity(0.34) : Color.primary.opacity(0.08)
+        case .secondary:
+            Color.primary.opacity(0.10)
+        }
     }
 }
 
