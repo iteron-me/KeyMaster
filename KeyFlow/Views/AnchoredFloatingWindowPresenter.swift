@@ -7,6 +7,7 @@ struct AnchoredFloatingWindowConfiguration {
     var spacing: CGFloat = 8
     var closesOnOutsideClick = true
     var attachesToParentWindow = true
+    var activatesApplication = true
 }
 
 @MainActor
@@ -59,6 +60,7 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.collectionBehavior = [.transient, .ignoresCycle]
+        window.acceptsMouseMovedEvents = true
         window.setFrame(frame(for: sourceView, in: parentWindow, configuration: configuration), display: false)
 
         self.hostingController = controller
@@ -83,18 +85,31 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
                 matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
             ) { [weak self] event in
                 Task { @MainActor [weak self] in
-                    guard let self, event.window !== self.window else {
+                    guard let self else {
                         return
                     }
 
-                    self.close(notifying: true)
+                    if !self.contains(event) {
+                        self.close(notifying: true)
+                    }
                 }
 
                 return event
             }
         }
 
-        window.makeKeyAndOrderFront(nil)
+        if configuration.activatesApplication {
+            NSApp.activate(ignoringOtherApps: true)
+        }
+
+        window.orderFrontRegardless()
+        window.makeMain()
+        window.makeKey()
+
+        DispatchQueue.main.async { [weak window] in
+            window?.makeMain()
+            window?.makeKey()
+        }
     }
 
     func close(notifying shouldNotify: Bool = true) {
@@ -183,6 +198,22 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
             self.parentWindowCloseObserver = nil
         }
     }
+
+    private func contains(_ event: NSEvent) -> Bool {
+        guard let window else {
+            return false
+        }
+
+        let eventPoint: NSPoint
+
+        if let eventWindow = event.window {
+            eventPoint = eventWindow.convertPoint(toScreen: event.locationInWindow)
+        } else {
+            eventPoint = NSEvent.mouseLocation
+        }
+
+        return window.frame.contains(eventPoint)
+    }
 }
 
 private final class AnchoredFloatingWindow: NSWindow {
@@ -191,6 +222,6 @@ private final class AnchoredFloatingWindow: NSWindow {
     }
 
     override var canBecomeMain: Bool {
-        false
+        true
     }
 }

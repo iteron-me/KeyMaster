@@ -197,6 +197,7 @@ struct KeyboardLayoutView: View {
         rowWidth(for: KeyCatalog.defaultRows[3])
     ].max() ?? 0
     static let panelWidth: CGFloat = contentWidth + horizontalPadding * 2
+    static let panelHeight: CGFloat = keyHeight * 5 + spacing * 4 + horizontalPadding * 2
 
     private static let bottomRowKeys = KeyCatalog.defaultRows[4]
     private static let bottomLeftKeys = Array(bottomRowKeys.prefix(4))
@@ -242,6 +243,7 @@ private struct KeyButton: View {
     let openEditor: (NSView) -> Void
 
     @GestureState private var isPressed = false
+    @State private var isHovered = false
     @State private var sourceView: NSView?
 
     var body: some View {
@@ -256,7 +258,11 @@ private struct KeyButton: View {
             }
         }
         .foregroundStyle(.primary)
-        .keyboardKeySurface(tint: rule?.action.kind.tint, isPressed: isPressed)
+        .keyboardKeySurface(
+            tint: rule?.action.kind.tint,
+            isPressed: isPressed,
+            isHovered: isHovered
+        )
         .overlay {
             ruleBorder
                 .allowsHitTesting(false)
@@ -270,6 +276,7 @@ private struct KeyButton: View {
                 .allowsHitTesting(false)
         }
         .gesture(pressGesture)
+        .onHover { isHovered = $0 }
         .accessibilityElement()
         .accessibilityLabel(key.label)
         .accessibilityAddTraits(.isButton)

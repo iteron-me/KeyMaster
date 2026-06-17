@@ -7,15 +7,25 @@ struct KeyFlowPanelView: View {
     var body: some View {
         KeyboardLayoutView()
             .padding(2)
-        .containerBackground(.clear, for: .window)
-        .onAppear {
-            appState.refreshPermissions()
-            appState.reloadInstalledApps()
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
+            .frame(
+                width: KeyboardLayoutView.panelWidth + 4,
+                height: KeyboardLayoutView.panelHeight + 4
+            )
+            .contentShape(Rectangle())
+            .liquidGlassPanel(
+                cornerRadius: LiquidGlassStyle.windowRadius,
+                tint: .black.opacity(0.06),
+                usesMaterial: true,
+                showsShadow: false
+            )
+            .onAppear {
                 appState.refreshPermissions()
+                appState.reloadInstalledApps()
             }
-        }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    appState.refreshPermissions()
+                }
+            }
     }
 }
