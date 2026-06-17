@@ -6,7 +6,6 @@ struct KeyFlowPanelView: View {
 
     var body: some View {
         KeyboardLayoutView()
-            .frame(width: KeyboardLayoutView.panelWidth, alignment: .center)
             .padding(2)
         .containerBackground(.clear, for: .window)
         .onAppear {

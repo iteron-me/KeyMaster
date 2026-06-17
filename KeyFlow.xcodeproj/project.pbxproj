@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436DF778DF7257471128D9C5 /* KeyRuleStore.swift */; };
+		361C3DB6DA556C6D4F67C0F3 /* KeyActionMenuOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */; };
 		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
 		4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */; };
 		4CCC750AB91A1E514B572A5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55B02AB408B9B1F411436E34 /* Assets.xcassets */; };
@@ -17,8 +18,10 @@
 		752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */; };
 		76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */; };
 		79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAC33A0163579C56BF09D5C /* PermissionService.swift */; };
+		93285782C57D18C2561C345B /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */; };
 		CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */; };
 		CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0336361413355CCA0228D1B /* KeyFlowApp.swift */; };
+		D9CAB41A4A013C04686B4C71 /* KeyActionMenuPopoverPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E346EC7FA39A4A3D60E1F1 /* KeyActionMenuPopoverPresenter.swift */; };
 		DAA7A251DFACEA7C43397CEA /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */; };
 		FCA57798EF43EF17046E5EB4 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB82688BE416792911721663 /* KeyCaptureMonitor.swift */; };
 /* End PBXBuildFile section */
@@ -27,10 +30,12 @@
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCache.swift; sourceTree = "<group>"; };
 		436DF778DF7257471128D9C5 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
 		55B02AB408B9B1F411436E34 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
+		78E346EC7FA39A4A3D60E1F1 /* KeyActionMenuPopoverPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuPopoverPresenter.swift; sourceTree = "<group>"; };
 		AB82688BE416792911721663 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
 		AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
 		B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
@@ -39,6 +44,7 @@
 		CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
 		D0336361413355CCA0228D1B /* KeyFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApp.swift; sourceTree = "<group>"; };
 		D7B3894D1ABF390D92C05489 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -111,7 +117,10 @@
 		BEE5171B986F8442DB920FFB /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */,
 				D7B3894D1ABF390D92C05489 /* ContentView.swift */,
+				FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */,
+				78E346EC7FA39A4A3D60E1F1 /* KeyActionMenuPopoverPresenter.swift */,
 				73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */,
 				B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */,
 				CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */,
@@ -190,8 +199,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */,
+				93285782C57D18C2561C345B /* AppIconCache.swift in Sources */,
 				709E8D3E2FBE19AD27F59C0D /* AppState.swift in Sources */,
 				3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */,
+				361C3DB6DA556C6D4F67C0F3 /* KeyActionMenuOverlay.swift in Sources */,
+				D9CAB41A4A013C04686B4C71 /* KeyActionMenuPopoverPresenter.swift in Sources */,
 				FCA57798EF43EF17046E5EB4 /* KeyCaptureMonitor.swift in Sources */,
 				6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */,
 				CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */,

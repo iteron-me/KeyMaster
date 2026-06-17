@@ -91,6 +91,28 @@ final class AppState: ObservableObject {
         syncKeyboardEngine()
     }
 
+    func deleteWebHistoryItem(_ item: WebActionHistoryItem) {
+        var updatedHistory = actionHistory
+
+        guard updatedHistory.delete(item) else {
+            return
+        }
+
+        actionHistory = updatedHistory
+        persistActionHistory()
+    }
+
+    func deleteCommandHistoryItem(_ item: CommandActionHistoryItem) {
+        var updatedHistory = actionHistory
+
+        guard updatedHistory.delete(item) else {
+            return
+        }
+
+        actionHistory = updatedHistory
+        persistActionHistory()
+    }
+
     func setLauncherKey(_ key: LauncherKey) {
         syncKeyboardEngine()
     }
