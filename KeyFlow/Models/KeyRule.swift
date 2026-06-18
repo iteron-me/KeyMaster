@@ -11,9 +11,104 @@ struct KeyRule: Identifiable, Codable, Equatable {
 }
 
 struct KeyTrigger: Codable, Equatable, Hashable {
-    var launcherKeyCode: Int
-    var launcherDisplayName: String
+    var modifiers: Set<ModifierKey>
     var keyCode: Int
+    var keyDisplayName: String
+
+    init(
+        modifiers: Set<ModifierKey>,
+        keyCode: Int,
+        keyDisplayName: String
+    ) {
+        self.modifiers = modifiers
+        self.keyCode = keyCode
+        self.keyDisplayName = keyDisplayName
+    }
+
+    var displayTitle: String {
+        KeyStroke(
+            modifiers: modifiers,
+            keyCode: keyCode,
+            keyDisplayName: keyDisplayName
+        )
+        .displayTitle
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case modifiers
+        case keyCode
+        case keyDisplayName
+        case launcherKeyCode
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        keyCode = try container.decode(Int.self, forKey: .keyCode)
+        keyDisplayName = try container.decodeIfPresent(String.self, forKey: .keyDisplayName)
+            ?? KeyCatalog.displayName(forKeyCode: keyCode)
+
+        if let modifiers = try container.decodeIfPresent([ModifierKey].self, forKey: .modifiers) {
+            self.modifiers = Set(modifiers)
+            return
+        }
+
+        let launcherKeyCode = try container.decode(Int.self, forKey: .launcherKeyCode)
+        modifiers = ModifierKey.key(forLegacyKeyCode: launcherKeyCode).map { [$0] } ?? []
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(modifiers.sortedForDisplay, forKey: .modifiers)
+        try container.encode(keyCode, forKey: .keyCode)
+        try container.encode(keyDisplayName, forKey: .keyDisplayName)
+    }
+}
+
+struct KeyStroke: Codable, Equatable, Hashable {
+    var modifiers: Set<ModifierKey>
+    var keyCode: Int
+    var keyDisplayName: String
+
+    init(
+        modifiers: Set<ModifierKey>,
+        keyCode: Int,
+        keyDisplayName: String
+    ) {
+        self.modifiers = modifiers
+        self.keyCode = keyCode
+        self.keyDisplayName = keyDisplayName
+    }
+
+    var displayTitle: String {
+        let modifierSymbols = modifiers.displaySymbols
+
+        if modifierSymbols.isEmpty {
+            return keyDisplayName
+        }
+
+        return "\(modifierSymbols) \(keyDisplayName)"
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case modifiers
+        case keyCode
+        case keyDisplayName
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        modifiers = Set(try container.decodeIfPresent([ModifierKey].self, forKey: .modifiers) ?? [])
+        keyCode = try container.decode(Int.self, forKey: .keyCode)
+        keyDisplayName = try container.decodeIfPresent(String.self, forKey: .keyDisplayName)
+            ?? KeyCatalog.displayName(forKeyCode: keyCode)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(modifiers.sortedForDisplay, forKey: .modifiers)
+        try container.encode(keyCode, forKey: .keyCode)
+        try container.encode(keyDisplayName, forKey: .keyDisplayName)
+    }
 }
 
 enum ModifierKey: String, CaseIterable, Codable, Identifiable {
@@ -41,12 +136,46 @@ enum ModifierKey: String, CaseIterable, Codable, Identifiable {
         case .shift: "shift"
         }
     }
+
+    var shortSymbol: String {
+        switch self {
+        case .control: "⌃"
+        case .option: "⌥"
+        case .command: "⌘"
+        case .shift: "⇧"
+        }
+    }
+
+    fileprivate var displayOrder: Int {
+        switch self {
+        case .control: 0
+        case .option: 1
+        case .shift: 2
+        case .command: 3
+        }
+    }
+
+    static func key(forLegacyKeyCode keyCode: Int) -> ModifierKey? {
+        switch keyCode {
+        case 55, 54:
+            .command
+        case 59, 62:
+            .control
+        case 58, 61:
+            .option
+        case 56, 60:
+            .shift
+        default:
+            nil
+        }
+    }
 }
 
 enum KeyAction: Codable, Equatable {
     case openApp(bundleIdentifier: String, displayName: String)
     case openURL(name: String, url: String)
     case runCommand(name: String, command: String)
+    case sendKeyStroke(KeyStroke)
 
     var displayTitle: String {
         switch self {
@@ -56,6 +185,8 @@ enum KeyAction: Codable, Equatable {
             name
         case .runCommand(let name, _):
             name
+        case .sendKeyStroke(let keyStroke):
+            keyStroke.displayTitle
         }
     }
 
@@ -67,6 +198,17 @@ enum KeyAction: Codable, Equatable {
             .url
         case .runCommand:
             .command
+        case .sendKeyStroke:
+            .mapping
+        }
+    }
+
+    var allowsRepeat: Bool {
+        switch self {
+        case .sendKeyStroke:
+            true
+        case .openApp, .openURL, .runCommand:
+            false
         }
     }
 }
@@ -75,6 +217,7 @@ enum ActionKind: String, CaseIterable, Codable, Identifiable {
     case app
     case url
     case command
+    case mapping
 
     var id: String { rawValue }
 
@@ -83,14 +226,16 @@ enum ActionKind: String, CaseIterable, Codable, Identifiable {
         case .app: "App"
         case .url: "Web"
         case .command: "Command"
+        case .mapping: "Key Mapping"
         }
     }
 
     var systemImage: String {
         switch self {
-        case .app: "app.fill"
-        case .url: "link"
+        case .app: "macwindow"
+        case .url: "globe"
         case .command: "terminal.fill"
+        case .mapping: "keyboard"
         }
     }
 
@@ -99,6 +244,7 @@ enum ActionKind: String, CaseIterable, Codable, Identifiable {
         case .app: "blue"
         case .url: "green"
         case .command: "orange"
+        case .mapping: "purple"
         }
     }
 }
@@ -111,7 +257,7 @@ struct KeyActionHistory: Codable, Equatable {
         let previous = self
 
         switch action {
-        case .openApp:
+        case .openApp, .sendKeyStroke:
             break
         case .openURL(let name, let url):
             let item = WebActionHistoryItem(
@@ -171,6 +317,22 @@ struct CommandActionHistoryItem: Identifiable, Codable, Equatable, Hashable {
 
     var id: String {
         "\(name)|\(command)"
+    }
+}
+
+extension Set where Element == ModifierKey {
+    var sortedForDisplay: [ModifierKey] {
+        sorted { lhs, rhs in
+            lhs.displayOrder < rhs.displayOrder
+        }
+    }
+
+    var displayTitle: String {
+        sortedForDisplay.map(\.displayName).joined(separator: " + ")
+    }
+
+    var displaySymbols: String {
+        sortedForDisplay.map(\.shortSymbol).joined(separator: " ")
     }
 }
 
