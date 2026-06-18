@@ -1,4 +1,5 @@
 import AppKit
+import CoreServices
 import CoreGraphics
 import Foundation
 
@@ -132,6 +133,7 @@ final class KeyboardEventEngine {
             return Unmanaged.passUnretained(event)
         }
 
+        let isAutoRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
         pressedKeyCodes.insert(keyCode)
 
         if launcherKeyCodes.contains(keyCode) {
@@ -152,6 +154,10 @@ final class KeyboardEventEngine {
         }
 
         suppressedKeyCodes.insert(keyCode)
+        guard !isAutoRepeat else {
+            return nil
+        }
+
         perform(rule.action)
         return nil
     }
@@ -270,11 +276,37 @@ private enum AppLauncher {
             return
         }
 
-        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else {
+        if let foregroundApplication = foregroundApplication(bundleIdentifier: bundleIdentifier) {
+            _ = foregroundApplication.hide()
             return
         }
 
-        NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
+        let runningApplication = preferredRunningApplication(bundleIdentifier: bundleIdentifier)
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier)
+            ?? runningApplication?.bundleURL
+        else {
+            return
+        }
+
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.activates = true
+        configuration.promptsUserIfNeeded = true
+        configuration.allowsRunningApplicationSubstitution = true
+
+        if runningApplication != nil {
+            configuration.appleEvent = reopenAppleEvent(bundleIdentifier: bundleIdentifier)
+        }
+
+        NSWorkspace.shared.openApplication(at: url, configuration: configuration) { launchedApplication, _ in
+            Task { @MainActor in
+                let application = launchedApplication
+                    ?? preferredRunningApplication(bundleIdentifier: bundleIdentifier)
+
+                if let application {
+                    bringToFront(application)
+                }
+            }
+        }
     }
 
     static func openURL(_ value: String) {
@@ -283,6 +315,48 @@ private enum AppLauncher {
         }
 
         NSWorkspace.shared.open(url)
+    }
+
+    private static func foregroundApplication(bundleIdentifier: String) -> NSRunningApplication? {
+        if let frontmostApplication = NSWorkspace.shared.frontmostApplication,
+           frontmostApplication.bundleIdentifier == bundleIdentifier {
+            return frontmostApplication
+        }
+
+        return NSRunningApplication.runningApplications(
+            withBundleIdentifier: bundleIdentifier
+        )
+        .first(where: \.isActive)
+    }
+
+    private static func preferredRunningApplication(bundleIdentifier: String) -> NSRunningApplication? {
+        let runningApplications = NSRunningApplication.runningApplications(
+            withBundleIdentifier: bundleIdentifier
+        )
+
+        return runningApplications.first(where: \.isActive)
+            ?? runningApplications.first(where: { $0.activationPolicy == .regular })
+            ?? runningApplications.first
+    }
+
+    private static func bringToFront(_ application: NSRunningApplication) {
+        _ = application.unhide()
+        _ = application.activate(options: [.activateAllWindows])
+    }
+
+    private static func reopenAppleEvent(bundleIdentifier: String) -> NSAppleEventDescriptor {
+        let event = NSAppleEventDescriptor.appleEvent(
+            withEventClass: AEEventClass(kCoreEventClass),
+            eventID: AEEventID(kAEReopenApplication),
+            targetDescriptor: NSAppleEventDescriptor(bundleIdentifier: bundleIdentifier),
+            returnID: AEReturnID(kAutoGenerateReturnID),
+            transactionID: AETransactionID(kAnyTransactionID)
+        )
+        event.setParam(
+            NSAppleEventDescriptor(boolean: true),
+            forKeyword: AEKeyword(kAEApplicationActivationExpected)
+        )
+        return event
     }
 }
 
