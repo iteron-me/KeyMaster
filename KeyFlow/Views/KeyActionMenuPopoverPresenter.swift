@@ -26,7 +26,6 @@ final class KeyActionMenuPopoverPresenter {
 
         let initialSize = Self.contentSize()
         let presenter = AnchoredFloatingWindowPresenter()
-        let menuContent = AnyView(content(for: key, appState: appState))
         windowPresenter = presenter
         presenter.present(
             from: sourceView,
@@ -34,8 +33,14 @@ final class KeyActionMenuPopoverPresenter {
             onClose: { [weak self] in
                 self?.dismiss(notifying: true)
             }
-        ) {
-            menuContent
+        ) { edge in
+            AnyView(
+                content(
+                    for: key,
+                    appState: appState,
+                    placementEdge: edge
+                )
+            )
         }
     }
 
@@ -43,9 +48,14 @@ final class KeyActionMenuPopoverPresenter {
         dismiss(notifying: true)
     }
 
-    private func content(for key: KeyboardKey, appState: AppState) -> some View {
+    private func content(
+        for key: KeyboardKey,
+        appState: AppState,
+        placementEdge: NSRectEdge
+    ) -> some View {
         KeyActionMenuContent(
             key: key,
+            placementEdge: placementEdge,
             close: { [weak self] in
                 self?.close()
             }

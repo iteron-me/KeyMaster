@@ -3,6 +3,7 @@ import SwiftUI
 
 struct KeyActionMenuContent: View {
     let key: KeyboardKey
+    let placementEdge: NSRectEdge
     let close: () -> Void
     var activeKindChanged: (ActionKind?) -> Void = { _ in }
 
@@ -12,26 +13,20 @@ struct KeyActionMenuContent: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: ActionMenuMetrics.menuGap) {
+            if isLeadingSubmenu {
+                submenuSlot
+            }
+
             ActionKindMenu(
                 key: key,
                 modifiers: $editingModifiers,
                 activeKind: $activeKind,
+                submenuPlacementEdge: placementEdge,
                 close: close
             )
 
-            if let activeKind {
-                ActionKindSubmenu(
-                    key: key,
-                    modifiers: editingModifiers,
-                    kind: activeKind,
-                    close: close
-                )
-            } else {
-                Color.clear
-                    .frame(
-                        width: ActionMenuMetrics.submenuOuterWidth,
-                        height: ActionMenuMetrics.submenuHeight
-                    )
+            if !isLeadingSubmenu {
+                submenuSlot
             }
         }
         .frame(
@@ -52,12 +47,35 @@ struct KeyActionMenuContent: View {
             }
         }
     }
+
+    @ViewBuilder
+    private var submenuSlot: some View {
+        if let activeKind {
+            ActionKindSubmenu(
+                key: key,
+                modifiers: editingModifiers,
+                kind: activeKind,
+                close: close
+            )
+        } else {
+            Color.clear
+                .frame(
+                    width: ActionMenuMetrics.submenuOuterWidth,
+                    height: ActionMenuMetrics.submenuHeight
+                )
+        }
+    }
+
+    private var isLeadingSubmenu: Bool {
+        placementEdge == .minX
+    }
 }
 
 private struct ActionKindMenu: View {
     let key: KeyboardKey
     @Binding var modifiers: Set<ModifierKey>
     @Binding var activeKind: ActionKind?
+    let submenuPlacementEdge: NSRectEdge
     let close: () -> Void
 
     @EnvironmentObject private var appState: AppState
@@ -65,21 +83,17 @@ private struct ActionKindMenu: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            VStack(alignment: .leading, spacing: 5) {
-                RuleSummaryStrip(
-                    key: key,
-                    selectedModifiers: modifiers,
-                    currentRule: currentRule,
-                    select: { selectedModifiers in
-                        modifiers = selectedModifiers
-                        activeKind = appState.rule(for: key, modifiers: selectedModifiers)?.action.kind
-                    }
-                )
-
-                HeaderActionSummary(rule: currentRule)
-            }
+            RuleBindingStrip(
+                key: key,
+                selectedModifiers: modifiers,
+                currentRule: currentRule,
+                select: { selectedModifiers in
+                    modifiers = selectedModifiers
+                    activeKind = appState.rule(for: key, modifiers: selectedModifiers)?.action.kind
+                }
+            )
             .padding(.horizontal, 10)
-            .padding(.vertical, 7)
+            .padding(.vertical, 8)
             .onHover { isHovering in
                 if isHovering {
                     activeKind = nil
@@ -92,6 +106,7 @@ private struct ActionKindMenu: View {
                 ActionMenuKindRow(
                     kind: kind,
                     isActive: activeKind == kind,
+                    submenuPlacementEdge: submenuPlacementEdge,
                     hover: { isHovering in
                         if isHovering {
                             activeKind = kind
@@ -143,7 +158,7 @@ private struct ActionKindMenu: View {
     }
 }
 
-private struct RuleSummaryStrip: View {
+private struct RuleBindingStrip: View {
     let key: KeyboardKey
     let selectedModifiers: Set<ModifierKey>
     let currentRule: KeyRule?
@@ -152,31 +167,30 @@ private struct RuleSummaryStrip: View {
     @EnvironmentObject private var appState: AppState
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 5) {
-                if !hasSelectedRule {
-                    TriggerSummaryChip(
-                        title: selectedTrigger.displayTitle,
-                        tint: .secondary,
-                        isSelected: true,
-                        select: {}
-                    )
-                }
-
-                ForEach(rules) { rule in
-                    TriggerSummaryChip(
-                        title: rule.trigger.displayTitle,
-                        tint: rule.action.kind.tint,
-                        isSelected: rule.trigger.modifiers == selectedModifiers,
-                        select: {
-                            select(rule.trigger.modifiers)
-                        }
-                    )
-                }
+        FlowLayout(spacing: 5, rowSpacing: 5) {
+            if !hasSelectedRule {
+                BindingSummaryCapsule(
+                    trigger: selectedTrigger,
+                    action: nil,
+                    tint: .secondary,
+                    isSelected: true,
+                    select: {}
+                )
             }
-            .padding(.vertical, 1)
+
+            ForEach(rules) { rule in
+                BindingSummaryCapsule(
+                    trigger: rule.trigger,
+                    action: rule.action,
+                    tint: rule.action.kind.tint,
+                    isSelected: rule.trigger.modifiers == selectedModifiers,
+                    select: {
+                        select(rule.trigger.modifiers)
+                    }
+                )
+            }
         }
-        .frame(height: 29)
+        .frame(width: ActionMenuMetrics.bindingStripWidth, alignment: .leading)
     }
 
     private var rules: [KeyRule] {
@@ -196,8 +210,9 @@ private struct RuleSummaryStrip: View {
     }
 }
 
-private struct TriggerSummaryChip: View {
-    let title: String
+private struct BindingSummaryCapsule: View {
+    let trigger: KeyTrigger
+    let action: KeyAction?
     let tint: Color
     let isSelected: Bool
     let select: () -> Void
@@ -206,57 +221,209 @@ private struct TriggerSummaryChip: View {
         Button {
             select()
         } label: {
-            Text(title)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .lineLimit(1)
-                .foregroundStyle(isSelected ? .white : tint)
-                .padding(.horizontal, 8)
-                .frame(height: 26)
-                .background {
-                    Capsule()
-                        .fill(isSelected ? tint : tint.opacity(0.13))
-                }
-                .overlay {
-                    Capsule()
-                        .strokeBorder(tint.opacity(isSelected ? 0.20 : 0.26), lineWidth: 1)
-                }
+            HStack(spacing: 5) {
+                Text(trigger.badgeTitle)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
+
+                Image(systemName: "arrow.right")
+                    .font(.system(size: 9, weight: .bold))
+                    .imageScale(.small)
+                    .opacity(0.82)
+
+                BindingActionSummary(action: action, tint: tint, isSelected: isSelected)
+            }
+            .foregroundStyle(isSelected ? .white : tint)
+            .padding(.horizontal, 7)
+            .frame(height: ActionMenuMetrics.bindingCapsuleHeight)
+            .background {
+                Capsule()
+                    .fill(isSelected ? tint : tint.opacity(0.13))
+            }
+            .overlay {
+                Capsule()
+                    .strokeBorder(tint.opacity(isSelected ? 0.20 : 0.26), lineWidth: 1)
+            }
         }
         .buttonStyle(.plain)
-        .help(title)
+        .help(helpTitle)
+    }
+
+    private var helpTitle: String {
+        if let action {
+            return "\(trigger.displayTitle) -> \(action.displayTitle)"
+        }
+
+        return "\(trigger.displayTitle) -> No action"
     }
 }
 
-private struct HeaderActionSummary: View {
-    let rule: KeyRule?
+private struct BindingActionSummary: View {
+    let action: KeyAction?
+    let tint: Color
+    let isSelected: Bool
 
     var body: some View {
-        HStack(spacing: 6) {
-            if let kind = rule?.action.kind {
-                ActionKindIcon(kind: kind, color: tint, size: 14)
-                    .frame(width: 14, height: 14)
-            } else {
+        Group {
+            switch action {
+            case .openApp(let bundleIdentifier, let displayName):
+                BindingAppIcon(bundleIdentifier: bundleIdentifier)
+                    .help(displayName)
+            case .openURL(let name, _):
+                titledAction(kind: .url, title: name)
+            case .runCommand(let name, _):
+                titledAction(kind: .command, title: name)
+            case .sendKeyStroke(let keyStroke):
+                Text(keyStroke.compactDisplayTitle)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.78)
+            case nil:
                 Image(systemName: "circle.dashed")
                     .font(.system(size: 10, weight: .semibold))
                     .frame(width: 14, height: 14)
-                    .foregroundStyle(tint)
             }
+        }
+        .foregroundStyle(isSelected ? .white : tint)
+    }
+
+    private func titledAction(kind: ActionKind, title: String) -> some View {
+        HStack(spacing: 3) {
+            ActionKindIcon(
+                kind: kind,
+                color: isSelected ? .white : kind.tint,
+                size: 13
+            )
 
             Text(title)
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .bold))
                 .lineLimit(1)
-                .minimumScaleFactor(0.82)
-                .foregroundStyle(rule == nil ? .secondary : .primary)
+                .minimumScaleFactor(0.78)
+                .frame(maxWidth: ActionMenuMetrics.bindingTitleMaxWidth, alignment: .leading)
         }
-        .frame(maxWidth: .infinity, minHeight: 16, alignment: .leading)
+    }
+}
+
+private struct BindingAppIcon: View {
+    let bundleIdentifier: String
+
+    @State private var appIcon: NSImage?
+
+    var body: some View {
+        Group {
+            if let appIcon {
+                Image(nsImage: appIcon)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } else {
+                Image(systemName: ActionKind.app.systemImage)
+                    .font(.system(size: 11, weight: .semibold))
+                    .symbolVariant(.fill)
+            }
+        }
+        .frame(width: 16, height: 16)
+        .onAppear {
+            loadAppIcon(bundleIdentifier: bundleIdentifier)
+        }
+        .onChange(of: bundleIdentifier) { _, newBundleIdentifier in
+            loadAppIcon(bundleIdentifier: newBundleIdentifier)
+        }
     }
 
-    private var title: String {
-        rule?.action.displayTitle ?? "No action"
+    private func loadAppIcon(bundleIdentifier: String) {
+        appIcon = nil
+
+        AppIconCache.shared.icon(forBundleIdentifier: bundleIdentifier) { icon in
+            appIcon = icon
+        }
+    }
+}
+
+private struct FlowLayout: Layout {
+    let spacing: CGFloat
+    let rowSpacing: CGFloat
+
+    func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout Void
+    ) -> CGSize {
+        layout(
+            subviews: subviews,
+            width: proposal.width ?? .infinity
+        )
+        .size
     }
 
-    private var tint: Color {
-        rule?.action.kind.tint ?? .secondary
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout Void
+    ) {
+        let result = layout(subviews: subviews, width: bounds.width)
+
+        for item in result.items {
+            subviews[item.index].place(
+                at: CGPoint(
+                    x: bounds.minX + item.origin.x,
+                    y: bounds.minY + item.origin.y
+                ),
+                proposal: ProposedViewSize(item.size)
+            )
+        }
     }
+
+    private func layout(subviews: Subviews, width: CGFloat) -> FlowLayoutResult {
+        guard !subviews.isEmpty else {
+            return FlowLayoutResult(size: .zero, items: [])
+        }
+
+        let maxWidth = width.isFinite ? width : CGFloat.greatestFiniteMagnitude
+        var items: [FlowLayoutResult.Item] = []
+        var origin = CGPoint.zero
+        var rowHeight = CGFloat.zero
+        var layoutWidth = CGFloat.zero
+
+        for index in subviews.indices {
+            let size = subviews[index].sizeThatFits(.unspecified)
+
+            if origin.x > 0, origin.x + size.width > maxWidth {
+                origin.x = 0
+                origin.y += rowHeight + rowSpacing
+                rowHeight = 0
+            }
+
+            items.append(
+                FlowLayoutResult.Item(
+                    index: index,
+                    origin: origin,
+                    size: size
+                )
+            )
+
+            layoutWidth = max(layoutWidth, origin.x + size.width)
+            origin.x += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
+
+        return FlowLayoutResult(
+            size: CGSize(width: min(layoutWidth, maxWidth), height: origin.y + rowHeight),
+            items: items
+        )
+    }
+}
+
+private struct FlowLayoutResult {
+    struct Item {
+        var index: Int
+        var origin: CGPoint
+        var size: CGSize
+    }
+
+    var size: CGSize
+    var items: [Item]
 }
 
 private struct ActionKindIcon: View {
@@ -282,6 +449,7 @@ private struct ActionKindIcon: View {
 private struct ActionMenuKindRow: View {
     let kind: ActionKind
     let isActive: Bool
+    let submenuPlacementEdge: NSRectEdge
     let hover: (Bool) -> Void
     let select: () -> Void
 
@@ -312,6 +480,10 @@ private struct ActionMenuKindRow: View {
 
     private var rowLabel: some View {
         HStack(spacing: 8) {
+            if isLeadingSubmenu {
+                submenuChevron
+            }
+
             ActionKindIcon(
                 kind: kind,
                 color: isHighlighted ? .white : kind.tint,
@@ -323,9 +495,9 @@ private struct ActionMenuKindRow: View {
 
             Spacer(minLength: 6)
 
-            Image(systemName: "chevron.right")
-                .font(.system(size: 10, weight: .semibold))
-                .foregroundStyle(isHighlighted ? .white.opacity(0.85) : .secondary)
+            if !isLeadingSubmenu {
+                submenuChevron
+            }
         }
         .foregroundStyle(isHighlighted ? .white : .primary)
         .padding(.horizontal, 8)
@@ -337,6 +509,21 @@ private struct ActionMenuKindRow: View {
                     .fill(Color.accentColor)
             }
         }
+    }
+
+    private var submenuChevron: some View {
+        Image(systemName: submenuChevronName)
+            .font(.system(size: 10, weight: .semibold))
+            .foregroundStyle(isHighlighted ? .white.opacity(0.85) : .secondary)
+            .frame(width: 10)
+    }
+
+    private var isLeadingSubmenu: Bool {
+        submenuPlacementEdge == .minX
+    }
+
+    private var submenuChevronName: String {
+        isLeadingSubmenu ? "chevron.left" : "chevron.right"
     }
 }
 
@@ -613,6 +800,10 @@ private struct KeyMappingPicker: View {
         .actionMenuSurface()
         .onAppear {
             capturedKeyStroke = selectedKeyStroke
+        }
+        .onChange(of: selectedKeyStroke) { _, newSelectedKeyStroke in
+            capturedKeyStroke = newSelectedKeyStroke
+            stopCapture()
         }
         .onDisappear {
             stopCapture()
@@ -1147,6 +1338,9 @@ private struct LocalModifierChangeModifier: ViewModifier {
 
 enum ActionMenuMetrics {
     static let primaryWidth: CGFloat = 168
+    static let bindingStripWidth: CGFloat = primaryWidth - 20
+    static let bindingCapsuleHeight: CGFloat = 26
+    static let bindingTitleMaxWidth: CGFloat = 54
     static let primaryVisualHeight: CGFloat = 184
     static let submenuWidth: CGFloat = 286
     static let contentPadding: CGFloat = 1
@@ -1239,6 +1433,29 @@ private extension KeyAction {
         }
 
         return keyStroke
+    }
+}
+
+private extension KeyTrigger {
+    var badgeTitle: String {
+        KeyStroke(
+            modifiers: modifiers,
+            keyCode: keyCode,
+            keyDisplayName: keyDisplayName
+        )
+        .compactDisplayTitle
+    }
+}
+
+private extension KeyStroke {
+    var compactDisplayTitle: String {
+        let modifierSymbols = modifiers.displaySymbols.replacingOccurrences(of: " ", with: "")
+
+        if modifierSymbols.isEmpty {
+            return keyDisplayName
+        }
+
+        return "\(modifierSymbols)\(keyDisplayName)"
     }
 }
 
