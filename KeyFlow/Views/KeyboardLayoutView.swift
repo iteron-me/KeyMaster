@@ -555,7 +555,7 @@ private struct ActionBadge: View {
                 .minimumScaleFactor(0.72)
         }
         .foregroundStyle(.white)
-        .frame(width: 38, height: 18)
+        .frame(width: 30, height: 18)
         .background(tint.gradient, in: Capsule())
         .overlay(
             Capsule()
@@ -650,7 +650,7 @@ private struct RuleBadgeStack: View {
                 OverflowRuleBadge(count: overflowCount)
             }
         }
-        .frame(width: 16, alignment: .topTrailing)
+        .frame(width: 28, alignment: .topTrailing)
         .accessibilityLabel(accessibilityTitle)
     }
 
@@ -675,15 +675,15 @@ private struct CompactActionBadge: View {
     let action: KeyAction
 
     var body: some View {
-        Image(systemName: action.kind.systemImage)
-            .font(.system(size: 8, weight: .bold))
-            .symbolVariant(.fill)
-            .symbolRenderingMode(.monochrome)
+        Text(action.displayTitle.badgeAbbreviation)
+            .font(.system(size: 7, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
-            .frame(width: 16, height: 16)
-            .background(action.kind.tint.gradient, in: Circle())
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(width: 28, height: 14)
+            .background(action.kind.tint.gradient, in: Capsule())
             .overlay(
-                Circle()
+                Capsule()
                     .strokeBorder(Color.white.opacity(0.58), lineWidth: 0.8)
             )
             .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
@@ -712,6 +712,10 @@ private struct OverflowRuleBadge: View {
 
 private extension String {
     var badgeAbbreviation: String {
+        if let shortcutBadgeAbbreviation {
+            return shortcutBadgeAbbreviation
+        }
+
         let words = split { !$0.isLetter && !$0.isNumber }
         let abbreviation: String
 
@@ -722,12 +726,40 @@ private extension String {
                 .map(String.init)
                 .joined()
         } else {
-            abbreviation = String(prefix(3))
+            abbreviation = String(prefix(2))
         }
 
-        let trimmed = abbreviation.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = String(abbreviation.prefix(2)).trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed.isEmpty ? "--" : trimmed.uppercased()
     }
+
+    private var shortcutBadgeAbbreviation: String? {
+        let components = split(separator: " ").map(String.init)
+        let modifierComponents = components.filter(\.isModifierBadgeSymbol)
+
+        guard let modifier = modifierComponents.last else {
+            return nil
+        }
+
+        let key = components
+            .last { !$0.isModifierBadgeSymbol }?
+            .first
+            .map(String.init)
+
+        return (modifier + (key ?? "")).badgeNormalized
+    }
+
+    private var badgeNormalized: String {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        let badge = String(trimmed.prefix(2))
+        return badge.isEmpty ? "--" : badge.uppercased()
+    }
+
+    private var isModifierBadgeSymbol: Bool {
+        Self.modifierBadgeSymbols.contains(self)
+    }
+
+    private static let modifierBadgeSymbols: Set<String> = ["⌃", "⌥", "⌘", "⇧"]
 }
 
 private extension KeyboardKey {

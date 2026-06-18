@@ -25,7 +25,7 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         from sourceView: NSView,
         configuration: AnchoredFloatingWindowConfiguration,
         onClose: @escaping () -> Void,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: (NSRectEdge) -> Content
     ) {
         close(notifying: false)
 
@@ -38,7 +38,8 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         closeHandler = onClose
         isClosing = false
 
-        let controller = NSHostingController(rootView: AnyView(content()))
+        let placement = placement(for: sourceView, in: parentWindow, configuration: configuration)
+        let controller = NSHostingController(rootView: AnyView(content(placement.edge)))
         controller.sizingOptions = [.preferredContentSize]
         controller.preferredContentSize = configuration.contentSize
         controller.view.frame = NSRect(origin: .zero, size: configuration.contentSize)
@@ -61,7 +62,7 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         window.titlebarAppearsTransparent = true
         window.collectionBehavior = [.transient, .ignoresCycle]
         window.acceptsMouseMovedEvents = true
-        window.setFrame(frame(for: sourceView, in: parentWindow, configuration: configuration), display: false)
+        window.setFrame(placement.frame, display: false)
 
         self.hostingController = controller
         self.window = window
@@ -151,40 +152,156 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         close(notifying: true)
     }
 
-    private func frame(
+    private func placement(
         for sourceView: NSView,
         in parentWindow: NSWindow,
         configuration: AnchoredFloatingWindowConfiguration
-    ) -> NSRect {
+    ) -> AnchoredFloatingWindowPlacement {
         let sourceRectInWindow = sourceView.convert(sourceView.bounds, to: nil)
         let sourceRectOnScreen = parentWindow.convertToScreen(sourceRectInWindow)
         let contentSize = configuration.contentSize
-        let origin: NSPoint
+        let visibleFrame = parentWindow.screen?.visibleFrame
+            ?? NSScreen.main?.visibleFrame
+            ?? NSRect(origin: .zero, size: contentSize)
+        let edge = resolvedEdge(
+            preferredEdge: configuration.preferredEdge,
+            sourceRect: sourceRectOnScreen,
+            contentSize: contentSize,
+            spacing: configuration.spacing,
+            visibleFrame: visibleFrame
+        )
+        let origin = clampedOrigin(
+            origin(
+                for: edge,
+                sourceRect: sourceRectOnScreen,
+                contentSize: contentSize,
+                spacing: configuration.spacing
+            ),
+            contentSize: contentSize,
+            visibleFrame: visibleFrame
+        )
 
-        switch configuration.preferredEdge {
+        return AnchoredFloatingWindowPlacement(
+            frame: NSRect(origin: origin, size: contentSize),
+            edge: edge
+        )
+    }
+
+    private func origin(
+        for edge: NSRectEdge,
+        sourceRect: NSRect,
+        contentSize: NSSize,
+        spacing: CGFloat
+    ) -> NSPoint {
+        switch edge {
         case .minX:
-            origin = NSPoint(
-                x: sourceRectOnScreen.minX - contentSize.width - configuration.spacing,
-                y: sourceRectOnScreen.midY - contentSize.height / 2
+            NSPoint(
+                x: sourceRect.minX - contentSize.width - spacing,
+                y: sourceRect.midY - contentSize.height / 2
             )
         case .minY:
-            origin = NSPoint(
-                x: sourceRectOnScreen.midX - contentSize.width / 2,
-                y: sourceRectOnScreen.minY - contentSize.height - configuration.spacing
+            NSPoint(
+                x: sourceRect.midX - contentSize.width / 2,
+                y: sourceRect.minY - contentSize.height - spacing
             )
         case .maxY:
-            origin = NSPoint(
-                x: sourceRectOnScreen.midX - contentSize.width / 2,
-                y: sourceRectOnScreen.maxY + configuration.spacing
+            NSPoint(
+                x: sourceRect.midX - contentSize.width / 2,
+                y: sourceRect.maxY + spacing
             )
         default:
-            origin = NSPoint(
-                x: sourceRectOnScreen.maxX + configuration.spacing,
-                y: sourceRectOnScreen.midY - contentSize.height / 2
+            NSPoint(
+                x: sourceRect.maxX + spacing,
+                y: sourceRect.midY - contentSize.height / 2
             )
         }
+    }
 
-        return NSRect(origin: origin, size: contentSize)
+    private func resolvedEdge(
+        preferredEdge: NSRectEdge,
+        sourceRect: NSRect,
+        contentSize: NSSize,
+        spacing: CGFloat,
+        visibleFrame: NSRect
+    ) -> NSRectEdge {
+        switch preferredEdge {
+        case .maxX:
+            let rightFrame = NSRect(
+                origin: origin(
+                    for: .maxX,
+                    sourceRect: sourceRect,
+                    contentSize: contentSize,
+                    spacing: spacing
+                ),
+                size: contentSize
+            )
+
+            guard rightFrame.maxX > visibleFrame.maxX else {
+                return .maxX
+            }
+
+            let leftFrame = NSRect(
+                origin: origin(
+                    for: .minX,
+                    sourceRect: sourceRect,
+                    contentSize: contentSize,
+                    spacing: spacing
+                ),
+                size: contentSize
+            )
+
+            if leftFrame.minX >= visibleFrame.minX {
+                return .minX
+            }
+
+            return .maxX
+        case .minX:
+            let leftFrame = NSRect(
+                origin: origin(
+                    for: .minX,
+                    sourceRect: sourceRect,
+                    contentSize: contentSize,
+                    spacing: spacing
+                ),
+                size: contentSize
+            )
+
+            guard leftFrame.minX < visibleFrame.minX else {
+                return .minX
+            }
+
+            let rightFrame = NSRect(
+                origin: origin(
+                    for: .maxX,
+                    sourceRect: sourceRect,
+                    contentSize: contentSize,
+                    spacing: spacing
+                ),
+                size: contentSize
+            )
+
+            if rightFrame.maxX <= visibleFrame.maxX {
+                return .maxX
+            }
+
+            return .minX
+        default:
+            return preferredEdge
+        }
+    }
+
+    private func clampedOrigin(
+        _ origin: NSPoint,
+        contentSize: NSSize,
+        visibleFrame: NSRect
+    ) -> NSPoint {
+        let maxX = visibleFrame.maxX - contentSize.width
+        let maxY = visibleFrame.maxY - contentSize.height
+
+        return NSPoint(
+            x: maxX >= visibleFrame.minX ? min(max(origin.x, visibleFrame.minX), maxX) : visibleFrame.minX,
+            y: maxY >= visibleFrame.minY ? min(max(origin.y, visibleFrame.minY), maxY) : visibleFrame.minY
+        )
     }
 
     private func removeObservers() {
@@ -214,6 +331,11 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
 
         return window.frame.contains(eventPoint)
     }
+}
+
+private struct AnchoredFloatingWindowPlacement {
+    var frame: NSRect
+    var edge: NSRectEdge
 }
 
 private final class AnchoredFloatingWindow: NSWindow {
