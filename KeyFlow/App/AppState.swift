@@ -4,8 +4,9 @@ import Foundation
 final class AppState: ObservableObject {
     private static let isInstalledAppDiscoveryEnabled = true
 
-    let launcherKey = LauncherKey.defaultKey
     private(set) var selectedKey: KeyboardKey?
+    @Published private(set) var activeModifiers: Set<ModifierKey> = []
+    @Published private(set) var activeModifierKeyCodes: Set<Int> = []
     @Published private(set) var rules: [KeyRule] = [] {
         didSet {
             rebuildRuleIndex()
@@ -19,9 +20,11 @@ final class AppState: ObservableObject {
 
     private let permissionService = PermissionService()
     private let keyboardEngine = KeyboardEventEngine()
+    private let modifierLayerMonitor = ModifierLayerMonitor()
     private let ruleStore: KeyRuleStore
     private let appDiscovery: @Sendable () -> [InstalledApp]
     private var rulesByShortcut: [ShortcutKey: KeyRule] = [:]
+    private var rulesByKeyCode: [Int: [KeyRule]] = [:]
     private var installedAppsReloadTask: Task<Void, Never>?
     private var isReloadingInstalledApps = false
     private var hasLoadedInstalledApps = false
@@ -38,6 +41,9 @@ final class AppState: ObservableObject {
         loadPersistedRules()
         loadActionHistory()
         refreshPermissions()
+        modifierLayerMonitor.start { [weak self] snapshot in
+            self?.setActiveModifierSnapshot(snapshot)
+        }
 
         if loadsInstalledAppsOnInit, Self.isInstalledAppDiscoveryEnabled {
             reloadInstalledApps()
@@ -49,15 +55,39 @@ final class AppState: ObservableObject {
     }
 
     func rule(for key: KeyboardKey) -> KeyRule? {
-        rulesByShortcut[shortcutKey(for: key)]
+        rule(for: key, modifiers: activeModifiers)
+    }
+
+    func rule(for key: KeyboardKey, modifiers: Set<ModifierKey>) -> KeyRule? {
+        rulesByShortcut[ShortcutKey(modifiers: modifiers, keyCode: key.keyCode)]
+    }
+
+    func rules(for key: KeyboardKey) -> [KeyRule] {
+        rulesByKeyCode[key.keyCode] ?? []
+    }
+
+    func hasRules(for key: KeyboardKey) -> Bool {
+        !(rulesByKeyCode[key.keyCode] ?? []).isEmpty
+    }
+
+    func visibleRules(for key: KeyboardKey) -> [KeyRule] {
+        if activeModifiers.isEmpty {
+            return rules(for: key)
+        }
+
+        return rule(for: key, modifiers: activeModifiers).map { [$0] } ?? []
     }
 
     func saveRule(for key: KeyboardKey, action: KeyAction) {
-        let trigger = trigger(for: key)
+        saveRule(for: key, modifiers: activeModifiers, action: action)
+    }
+
+    func saveRule(for key: KeyboardKey, modifiers: Set<ModifierKey>, action: KeyAction) {
+        let trigger = trigger(for: key, modifiers: modifiers)
         recordHistory(for: action)
 
         if let index = rules.firstIndex(where: { $0.trigger == trigger }) {
-            rules[index].name = "\(launcherKey.displayName) + \(key.label)"
+            rules[index].name = trigger.displayTitle
             rules[index].action = action
             rules[index].updatedAt = Date()
             persistRules()
@@ -67,7 +97,7 @@ final class AppState: ObservableObject {
 
         rules.append(
             KeyRule(
-                name: "\(launcherKey.displayName) + \(key.label)",
+                name: trigger.displayTitle,
                 trigger: trigger,
                 action: action
             )
@@ -77,16 +107,30 @@ final class AppState: ObservableObject {
     }
 
     func saveRule(for key: KeyboardKey, webHistoryItem item: WebActionHistoryItem) {
-        saveRule(for: key, action: .openURL(name: item.name, url: item.url))
+        saveRule(for: key, modifiers: activeModifiers, action: .openURL(name: item.name, url: item.url))
     }
 
     func saveRule(for key: KeyboardKey, commandHistoryItem item: CommandActionHistoryItem) {
-        saveRule(for: key, action: .runCommand(name: item.name, command: item.command))
+        saveRule(for: key, modifiers: activeModifiers, action: .runCommand(name: item.name, command: item.command))
+    }
+
+    func saveRule(for key: KeyboardKey, keyStroke: KeyStroke) {
+        saveRule(for: key, modifiers: activeModifiers, action: .sendKeyStroke(keyStroke))
     }
 
     func deleteRule(for key: KeyboardKey) {
-        let trigger = trigger(for: key)
+        deleteRule(for: key, modifiers: activeModifiers)
+    }
+
+    func deleteRule(for key: KeyboardKey, modifiers: Set<ModifierKey>) {
+        let trigger = trigger(for: key, modifiers: modifiers)
         rules.removeAll { $0.trigger == trigger }
+        persistRules()
+        syncKeyboardEngine()
+    }
+
+    func deleteRule(_ rule: KeyRule) {
+        rules.removeAll { $0.id == rule.id }
         persistRules()
         syncKeyboardEngine()
     }
@@ -115,6 +159,16 @@ final class AppState: ObservableObject {
 
     func setLauncherKey(_ key: LauncherKey) {
         syncKeyboardEngine()
+    }
+
+    func setActiveModifiers(_ modifiers: Set<ModifierKey>) {
+        activeModifiers = modifiers
+        activeModifierKeyCodes = []
+    }
+
+    func setActiveModifierSnapshot(_ snapshot: ModifierSnapshot) {
+        activeModifiers = snapshot.modifiers
+        activeModifierKeyCodes = snapshot.keyCodes
     }
 
     func reloadInstalledApps(force: Bool = false) {
@@ -208,7 +262,11 @@ final class AppState: ObservableObject {
 
     private func loadPersistedRules() {
         do {
-            rules = try ruleStore.loadRules()
+            rules = try ruleStore.loadRules().map { rule in
+                var rule = rule
+                rule.name = rule.trigger.displayTitle
+                return rule
+            }
             rulePersistenceErrorMessage = nil
         } catch {
             rules = []
@@ -267,18 +325,11 @@ final class AppState: ObservableObject {
         }
     }
 
-    private func trigger(for key: KeyboardKey) -> KeyTrigger {
+    private func trigger(for key: KeyboardKey, modifiers: Set<ModifierKey>) -> KeyTrigger {
         KeyTrigger(
-            launcherKeyCode: launcherKey.keyCode,
-            launcherDisplayName: launcherKey.displayName,
-            keyCode: key.keyCode
-        )
-    }
-
-    private func shortcutKey(for key: KeyboardKey) -> ShortcutKey {
-        ShortcutKey(
-            launcherKeyCode: launcherKey.keyCode,
-            keyCode: key.keyCode
+            modifiers: modifiers,
+            keyCode: key.keyCode,
+            keyDisplayName: key.label
         )
     }
 
@@ -287,21 +338,33 @@ final class AppState: ObservableObject {
             uniqueKeysWithValues: rules.map {
                 (
                     ShortcutKey(
-                        launcherKeyCode: $0.trigger.launcherKeyCode,
+                        modifiers: $0.trigger.modifiers,
                         keyCode: $0.trigger.keyCode
                     ),
                     $0
                 )
             }
         )
+        rulesByKeyCode = Dictionary(grouping: rules.sorted { lhs, rhs in
+            if lhs.trigger.modifiers.count != rhs.trigger.modifiers.count {
+                return lhs.trigger.modifiers.count < rhs.trigger.modifiers.count
+            }
+
+            return lhs.updatedAt > rhs.updatedAt
+        }) { rule in
+            rule.trigger.keyCode
+        }
     }
 
     deinit {
         installedAppsReloadTask?.cancel()
+        Task { @MainActor [modifierLayerMonitor] in
+            modifierLayerMonitor.stop()
+        }
     }
 }
 
 private struct ShortcutKey: Hashable {
-    let launcherKeyCode: Int
+    let modifiers: Set<ModifierKey>
     let keyCode: Int
 }

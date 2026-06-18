@@ -8,9 +8,6 @@ final class KeyboardEventEngine {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var compiledRules: [ShortcutKey: KeyRule] = [:]
-    private var compiledRulesByModifierFamily: [ShortcutKey: KeyRule] = [:]
-    private var launcherKeyCodes: Set<Int> = []
-    private var pressedKeyCodes: Set<Int> = []
     private var suppressedKeyCodes: Set<Int> = []
 
     func start(rules: [KeyRule]) {
@@ -22,7 +19,7 @@ final class KeyboardEventEngine {
                 .map {
                     (
                         ShortcutKey(
-                            launcherKeyCode: $0.trigger.launcherKeyCode,
+                            modifiers: $0.trigger.modifiers,
                             keyCode: $0.trigger.keyCode
                         ),
                         $0
@@ -30,25 +27,6 @@ final class KeyboardEventEngine {
                 },
             uniquingKeysWith: { _, newValue in newValue }
         )
-        compiledRulesByModifierFamily = Dictionary(
-            rules
-                .filter(\.isEnabled)
-                .compactMap { rule in
-                    guard let normalizedLauncherKeyCode = normalizedModifierKeyCode(for: rule.trigger.launcherKeyCode) else {
-                        return nil
-                    }
-
-                    return (
-                        ShortcutKey(
-                            launcherKeyCode: normalizedLauncherKeyCode,
-                            keyCode: rule.trigger.keyCode
-                        ),
-                        rule
-                    )
-                },
-            uniquingKeysWith: { _, newValue in newValue }
-        )
-        launcherKeyCodes = Set(rules.filter(\.isEnabled).map(\.trigger.launcherKeyCode))
 
         let eventMask = (1 << CGEventType.keyDown.rawValue)
             | (1 << CGEventType.keyUp.rawValue)
@@ -89,9 +67,6 @@ final class KeyboardEventEngine {
         eventTap = nil
         runLoopSource = nil
         compiledRules = [:]
-        compiledRulesByModifierFamily = [:]
-        launcherKeyCodes = []
-        pressedKeyCodes = []
         suppressedKeyCodes = []
         isRunning = false
     }
@@ -106,6 +81,10 @@ final class KeyboardEventEngine {
     }
 
     private func handle(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+        if event.getIntegerValueField(.eventSourceUserData) == Self.syntheticEventMarker {
+            return Unmanaged.passUnretained(event)
+        }
+
         if type == .tapDisabledByTimeout || type == .tapDisabledByUserInput {
             if let eventTap {
                 CGEvent.tapEnable(tap: eventTap, enable: true)
@@ -117,12 +96,10 @@ final class KeyboardEventEngine {
         let keyCode = Int(event.getIntegerValueField(.keyboardEventKeycode))
 
         if type == .flagsChanged {
-            updateModifierState(keyCode: keyCode, flags: event.flags)
             return Unmanaged.passUnretained(event)
         }
 
         if type == .keyUp {
-            pressedKeyCodes.remove(keyCode)
             if suppressedKeyCodes.remove(keyCode) != nil {
                 return nil
             }
@@ -134,121 +111,49 @@ final class KeyboardEventEngine {
         }
 
         let isAutoRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
-        pressedKeyCodes.insert(keyCode)
-
-        if launcherKeyCodes.contains(keyCode) {
-            return nil
-        }
-
-        guard let launcherKeyCode = activeLauncherKeyCode(from: event) else {
-            return Unmanaged.passUnretained(event)
-        }
-
         let shortcutKey = ShortcutKey(
-            launcherKeyCode: launcherKeyCode,
+            modifiers: Self.modifiers(from: event.flags),
             keyCode: keyCode
         )
 
-        guard let rule = rule(for: shortcutKey) else {
+        guard let rule = compiledRules[shortcutKey] else {
             return Unmanaged.passUnretained(event)
         }
 
         suppressedKeyCodes.insert(keyCode)
-        guard !isAutoRepeat else {
+        guard !isAutoRepeat || rule.action.allowsRepeat else {
             return nil
         }
 
-        perform(rule.action)
+        perform(rule)
         return nil
     }
 
-    private func rule(for shortcutKey: ShortcutKey) -> KeyRule? {
-        if let rule = compiledRules[shortcutKey] {
-            return rule
+    private static func modifiers(from flags: CGEventFlags) -> Set<ModifierKey> {
+        var modifiers: Set<ModifierKey> = []
+
+        if flags.contains(.maskControl) {
+            modifiers.insert(.control)
         }
 
-        guard let normalizedLauncherKeyCode = normalizedModifierKeyCode(for: shortcutKey.launcherKeyCode) else {
-            return nil
+        if flags.contains(.maskAlternate) {
+            modifiers.insert(.option)
         }
 
-        return compiledRulesByModifierFamily[
-            ShortcutKey(
-                launcherKeyCode: normalizedLauncherKeyCode,
-                keyCode: shortcutKey.keyCode
-            )
-        ]
+        if flags.contains(.maskShift) {
+            modifiers.insert(.shift)
+        }
+
+        if flags.contains(.maskCommand) {
+            modifiers.insert(.command)
+        }
+
+        return modifiers
     }
 
-    private func updateModifierState(keyCode: Int, flags: CGEventFlags) {
-        guard launcherKeyCodes.contains(keyCode) else {
-            return
-        }
+    private func perform(_ rule: KeyRule) {
+        let action = rule.action
 
-        if modifierFlag(for: keyCode).map(flags.contains) ?? false {
-            pressedKeyCodes.insert(keyCode)
-        } else {
-            pressedKeyCodes.remove(keyCode)
-        }
-    }
-
-    private func activeLauncherKeyCode(from event: CGEvent) -> Int? {
-        for keyCode in launcherKeyCodes where pressedKeyCodes.contains(keyCode) {
-            return keyCode
-        }
-
-        let flags = event.flags
-        let modifierKeyCodes: [(Int, CGEventFlags)] = [
-            (55, .maskCommand),
-            (54, .maskCommand),
-            (59, .maskControl),
-            (62, .maskControl),
-            (58, .maskAlternate),
-            (61, .maskAlternate),
-            (56, .maskShift),
-            (60, .maskShift),
-            (57, .maskAlphaShift)
-        ]
-
-        return modifierKeyCodes.first { keyCode, flag in
-            launcherKeyCodes.contains(keyCode) && flags.contains(flag)
-        }?.0
-    }
-
-    private func modifierFlag(for keyCode: Int) -> CGEventFlags? {
-        switch keyCode {
-        case 55, 54:
-            .maskCommand
-        case 59, 62:
-            .maskControl
-        case 58, 61:
-            .maskAlternate
-        case 56, 60:
-            .maskShift
-        case 57:
-            .maskAlphaShift
-        default:
-            nil
-        }
-    }
-
-    private func normalizedModifierKeyCode(for keyCode: Int) -> Int? {
-        switch keyCode {
-        case 55, 54:
-            55
-        case 59, 62:
-            59
-        case 58, 61:
-            58
-        case 56, 60:
-            56
-        case 57:
-            57
-        default:
-            nil
-        }
-    }
-
-    private func perform(_ action: KeyAction) {
         switch action {
         case .openApp(let bundleIdentifier, _):
             Task { @MainActor in
@@ -260,13 +165,128 @@ final class KeyboardEventEngine {
             }
         case .runCommand(_, let command):
             CommandRunner.run(command)
+        case .sendKeyStroke(let keyStroke):
+            KeyStrokeSender.send(keyStroke, sourceModifiers: rule.trigger.modifiers)
         }
     }
+
+    fileprivate static let syntheticEventMarker: Int64 = 0x4B46_4D50
 }
 
 private struct ShortcutKey: Hashable {
-    let launcherKeyCode: Int
+    let modifiers: Set<ModifierKey>
     let keyCode: Int
+}
+
+private enum KeyStrokeSender {
+    static func send(_ keyStroke: KeyStroke, sourceModifiers: Set<ModifierKey>) {
+        let source = CGEventSource(stateID: .hidSystemState)
+        let releasedSourceModifiers = sourceModifiers.subtracting(keyStroke.modifiers)
+        let pressedTargetModifiers = keyStroke.modifiers.subtracting(sourceModifiers)
+        var currentModifiers = sourceModifiers
+
+        for modifier in releasedSourceModifiers.sortedForDisplay.reversed() {
+            currentModifiers.remove(modifier)
+            post(
+                keyCode: keyCode(for: modifier),
+                keyDown: false,
+                flags: cgFlags(for: currentModifiers),
+                source: source
+            )
+        }
+
+        for modifier in pressedTargetModifiers.sortedForDisplay {
+            currentModifiers.insert(modifier)
+            post(
+                keyCode: keyCode(for: modifier),
+                keyDown: true,
+                flags: cgFlags(for: currentModifiers),
+                source: source
+            )
+        }
+
+        let targetFlags = cgFlags(for: currentModifiers)
+        post(keyCode: keyStroke.keyCode, keyDown: true, flags: targetFlags, source: source)
+        post(keyCode: keyStroke.keyCode, keyDown: false, flags: targetFlags, source: source)
+
+        for modifier in pressedTargetModifiers.sortedForDisplay.reversed() {
+            currentModifiers.remove(modifier)
+            post(
+                keyCode: keyCode(for: modifier),
+                keyDown: false,
+                flags: cgFlags(for: currentModifiers),
+                source: source
+            )
+        }
+
+        for modifier in releasedSourceModifiers.sortedForDisplay {
+            currentModifiers.insert(modifier)
+            post(
+                keyCode: keyCode(for: modifier),
+                keyDown: true,
+                flags: cgFlags(for: currentModifiers),
+                source: source
+            )
+        }
+    }
+
+    private static func post(
+        keyCode: Int?,
+        keyDown: Bool,
+        flags: CGEventFlags,
+        source: CGEventSource?
+    ) {
+        guard let keyCode else {
+            return
+        }
+
+        guard let event = CGEvent(
+            keyboardEventSource: source,
+            virtualKey: CGKeyCode(keyCode),
+            keyDown: keyDown
+        ) else {
+            return
+        }
+
+        event.flags = flags
+        event.setIntegerValueField(.eventSourceUserData, value: KeyboardEventEngine.syntheticEventMarker)
+        event.post(tap: .cghidEventTap)
+    }
+
+    private static func keyCode(for modifier: ModifierKey) -> Int? {
+        switch modifier {
+        case .control:
+            59
+        case .option:
+            58
+        case .shift:
+            56
+        case .command:
+            55
+        }
+    }
+
+    private static func cgFlags(for modifiers: Set<ModifierKey>) -> CGEventFlags {
+        var flags: CGEventFlags = []
+
+        if modifiers.contains(.control) {
+            flags.insert(.maskControl)
+        }
+
+        if modifiers.contains(.option) {
+            flags.insert(.maskAlternate)
+        }
+
+        if modifiers.contains(.shift) {
+            flags.insert(.maskShift)
+        }
+
+        if modifiers.contains(.command) {
+            flags.insert(.maskCommand)
+        }
+
+        return flags
+    }
 }
 
 @MainActor

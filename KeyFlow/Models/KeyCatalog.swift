@@ -93,4 +93,12 @@ enum KeyCatalog {
     ]
 
     static let defaultKeys = defaultRows.flatMap { $0 }
+
+    static func displayName(forKeyCode keyCode: Int) -> String {
+        if let key = defaultKeys.first(where: { $0.keyCode == keyCode }) {
+            return key.label
+        }
+
+        return "Key \(keyCode)"
+    }
 }

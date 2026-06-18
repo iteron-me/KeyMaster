@@ -8,11 +8,13 @@ struct KeyActionMenuContent: View {
 
     @EnvironmentObject private var appState: AppState
     @State private var activeKind: ActionKind?
+    @State private var editingModifiers: Set<ModifierKey> = [.control]
 
     var body: some View {
         HStack(alignment: .center, spacing: ActionMenuMetrics.menuGap) {
             ActionKindMenu(
                 key: key,
+                modifiers: $editingModifiers,
                 activeKind: $activeKind,
                 close: close
             )
@@ -20,6 +22,7 @@ struct KeyActionMenuContent: View {
             if let activeKind {
                 ActionKindSubmenu(
                     key: key,
+                    modifiers: editingModifiers,
                     kind: activeKind,
                     close: close
                 )
@@ -41,11 +44,19 @@ struct KeyActionMenuContent: View {
         .onChange(of: activeKind) { _, newValue in
             activeKindChanged(newValue)
         }
+        .onAppear {
+            if !appState.activeModifiers.isEmpty {
+                editingModifiers = appState.activeModifiers
+            } else {
+                editingModifiers = [.control]
+            }
+        }
     }
 }
 
 private struct ActionKindMenu: View {
     let key: KeyboardKey
+    @Binding var modifiers: Set<ModifierKey>
     @Binding var activeKind: ActionKind?
     let close: () -> Void
 
@@ -54,20 +65,21 @@ private struct ActionKindMenu: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text("\(appState.launcherKey.displayName) + \(key.label)")
-                    .font(.system(size: 12, weight: .semibold))
-                    .lineLimit(1)
+            VStack(alignment: .leading, spacing: 5) {
+                RuleSummaryStrip(
+                    key: key,
+                    selectedModifiers: modifiers,
+                    currentRule: currentRule,
+                    select: { selectedModifiers in
+                        modifiers = selectedModifiers
+                        activeKind = appState.rule(for: key, modifiers: selectedModifiers)?.action.kind
+                    }
+                )
 
-                if let rule = appState.rule(for: key) {
-                    Label(rule.action.displayTitle, systemImage: rule.action.kind.systemImage)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
+                HeaderActionSummary(rule: currentRule)
             }
             .padding(.horizontal, 10)
-            .padding(.vertical, 6)
+            .padding(.vertical, 7)
             .onHover { isHovering in
                 if isHovering {
                     activeKind = nil
@@ -91,11 +103,11 @@ private struct ActionKindMenu: View {
                 )
             }
 
-            if appState.rule(for: key) != nil {
+            if currentRule != nil {
                 Divider()
 
                 Button {
-                    appState.deleteRule(for: key)
+                    appState.deleteRule(for: key, modifiers: modifiers)
                     close()
                 } label: {
                     Label("Remove", systemImage: "trash")
@@ -124,6 +136,146 @@ private struct ActionKindMenu: View {
         .frame(width: ActionMenuMetrics.primaryWidth, alignment: .leading)
         .padding(6)
         .actionMenuSurface()
+    }
+
+    private var currentRule: KeyRule? {
+        appState.rule(for: key, modifiers: modifiers)
+    }
+}
+
+private struct RuleSummaryStrip: View {
+    let key: KeyboardKey
+    let selectedModifiers: Set<ModifierKey>
+    let currentRule: KeyRule?
+    let select: (Set<ModifierKey>) -> Void
+
+    @EnvironmentObject private var appState: AppState
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 5) {
+                if !hasSelectedRule {
+                    TriggerSummaryChip(
+                        title: selectedTrigger.displayTitle,
+                        tint: .secondary,
+                        isSelected: true,
+                        select: {}
+                    )
+                }
+
+                ForEach(rules) { rule in
+                    TriggerSummaryChip(
+                        title: rule.trigger.displayTitle,
+                        tint: rule.action.kind.tint,
+                        isSelected: rule.trigger.modifiers == selectedModifiers,
+                        select: {
+                            select(rule.trigger.modifiers)
+                        }
+                    )
+                }
+            }
+            .padding(.vertical, 1)
+        }
+        .frame(height: 29)
+    }
+
+    private var rules: [KeyRule] {
+        appState.rules(for: key)
+    }
+
+    private var hasSelectedRule: Bool {
+        currentRule != nil
+    }
+
+    private var selectedTrigger: KeyTrigger {
+        KeyTrigger(
+            modifiers: selectedModifiers,
+            keyCode: key.keyCode,
+            keyDisplayName: key.label
+        )
+    }
+}
+
+private struct TriggerSummaryChip: View {
+    let title: String
+    let tint: Color
+    let isSelected: Bool
+    let select: () -> Void
+
+    var body: some View {
+        Button {
+            select()
+        } label: {
+            Text(title)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .lineLimit(1)
+                .foregroundStyle(isSelected ? .white : tint)
+                .padding(.horizontal, 8)
+                .frame(height: 26)
+                .background {
+                    Capsule()
+                        .fill(isSelected ? tint : tint.opacity(0.13))
+                }
+                .overlay {
+                    Capsule()
+                        .strokeBorder(tint.opacity(isSelected ? 0.20 : 0.26), lineWidth: 1)
+                }
+        }
+        .buttonStyle(.plain)
+        .help(title)
+    }
+}
+
+private struct HeaderActionSummary: View {
+    let rule: KeyRule?
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if let kind = rule?.action.kind {
+                ActionKindIcon(kind: kind, color: tint, size: 14)
+                    .frame(width: 14, height: 14)
+            } else {
+                Image(systemName: "circle.dashed")
+                    .font(.system(size: 10, weight: .semibold))
+                    .frame(width: 14, height: 14)
+                    .foregroundStyle(tint)
+            }
+
+            Text(title)
+                .font(.system(size: 11, weight: .medium))
+                .lineLimit(1)
+                .minimumScaleFactor(0.82)
+                .foregroundStyle(rule == nil ? .secondary : .primary)
+        }
+        .frame(maxWidth: .infinity, minHeight: 16, alignment: .leading)
+    }
+
+    private var title: String {
+        rule?.action.displayTitle ?? "No action"
+    }
+
+    private var tint: Color {
+        rule?.action.kind.tint ?? .secondary
+    }
+}
+
+private struct ActionKindIcon: View {
+    let kind: ActionKind
+    let color: Color
+    let size: CGFloat
+
+    var body: some View {
+        Image(systemName: kind.systemImage)
+            .font(.system(size: symbolSize, weight: .semibold))
+            .symbolVariant(.fill)
+            .symbolRenderingMode(.monochrome)
+            .foregroundStyle(color)
+            .frame(width: size, height: size)
+            .imageScale(.medium)
+    }
+
+    private var symbolSize: CGFloat {
+        size * 0.82
     }
 }
 
@@ -160,10 +312,11 @@ private struct ActionMenuKindRow: View {
 
     private var rowLabel: some View {
         HStack(spacing: 8) {
-            Image(systemName: kind.systemImage)
-                .font(.system(size: 13, weight: .semibold))
-                .frame(width: 18)
-                .foregroundStyle(isHighlighted ? .white : kind.tint)
+            ActionKindIcon(
+                kind: kind,
+                color: isHighlighted ? .white : kind.tint,
+                size: 18
+            )
 
             Text(kind.title)
                 .font(.system(size: 12, weight: .medium))
@@ -189,6 +342,7 @@ private struct ActionMenuKindRow: View {
 
 private struct ActionKindSubmenu: View {
     let key: KeyboardKey
+    let modifiers: Set<ModifierKey>
     let kind: ActionKind
     let close: () -> Void
 
@@ -259,18 +413,24 @@ private struct ActionKindSubmenu: View {
                         save(commandItem: CommandActionHistoryItem(name: name, command: value))
                     }
                 )
+            case .mapping:
+                KeyMappingPicker(
+                    selectedKeyStroke: currentRule?.action.selectedKeyStroke,
+                    select: save(keyStroke:)
+                )
             }
         }
         .id(kind)
     }
 
     private var currentRule: KeyRule? {
-        appState.rule(for: key)
+        appState.rule(for: key, modifiers: modifiers)
     }
 
     private func save(app: InstalledApp) {
         appState.saveRule(
             for: key,
+            modifiers: modifiers,
             action: .openApp(
                 bundleIdentifier: app.bundleIdentifier,
                 displayName: app.name
@@ -280,12 +440,17 @@ private struct ActionKindSubmenu: View {
     }
 
     private func save(webItem item: WebActionHistoryItem) {
-        appState.saveRule(for: key, webHistoryItem: item)
+        appState.saveRule(for: key, modifiers: modifiers, action: .openURL(name: item.name, url: item.url))
         close()
     }
 
     private func save(commandItem item: CommandActionHistoryItem) {
-        appState.saveRule(for: key, commandHistoryItem: item)
+        appState.saveRule(for: key, modifiers: modifiers, action: .runCommand(name: item.name, command: item.command))
+        close()
+    }
+
+    private func save(keyStroke: KeyStroke) {
+        appState.saveRule(for: key, modifiers: modifiers, action: .sendKeyStroke(keyStroke))
         close()
     }
 }
@@ -366,6 +531,170 @@ private struct AppActionRow: View {
             icon = AppIconCache.shared.cachedIcon(for: app)
             AppIconCache.shared.icon(for: app) { loadedIcon in
                 icon = loadedIcon
+            }
+        }
+    }
+}
+
+private struct KeyMappingPicker: View {
+    let selectedKeyStroke: KeyStroke?
+    let select: (KeyStroke) -> Void
+
+    @State private var capturedKeyStroke: KeyStroke?
+    @State private var isCapturing = false
+    @State private var targetModifiers: Set<ModifierKey> = []
+    @State private var monitor: Any?
+
+    private var currentKeyStroke: KeyStroke? {
+        capturedKeyStroke ?? selectedKeyStroke
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                toggleCapture()
+            } label: {
+                Label(isCapturing ? "Press Target Keys" : "Record Target", systemImage: "record.circle")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(ActionMenuPlainButtonStyle(tint: .purple))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Target")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: 8) {
+                    ActionKindIcon(kind: .mapping, color: .purple, size: 18)
+
+                    Text(currentKeyStroke?.displayTitle ?? "No target key")
+                        .font(.system(size: 13, weight: .medium))
+                        .lineLimit(1)
+
+                    Spacer(minLength: 6)
+                }
+                .padding(.horizontal, 8)
+                .frame(height: 36)
+                .background(Color.purple.opacity(0.12), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+            }
+
+            Divider()
+
+            CompactTargetKeyboard(
+                modifiers: targetModifiers,
+                select: { key in
+                    capturedKeyStroke = KeyStroke(
+                        modifiers: targetModifiers,
+                        keyCode: key.keyCode,
+                        keyDisplayName: key.label
+                    )
+                }
+            )
+
+            Spacer(minLength: 0)
+
+            HStack(spacing: 8) {
+                Spacer()
+
+                Button {
+                    if let currentKeyStroke {
+                        select(currentKeyStroke)
+                    }
+                } label: {
+                    Label("Save", systemImage: "checkmark")
+                        .frame(width: 68)
+                }
+                .buttonStyle(ActionMenuFormButtonStyle(tint: .purple, role: .primary))
+                .disabled(currentKeyStroke == nil)
+            }
+        }
+        .frame(width: ActionMenuMetrics.submenuWidth, height: ActionMenuMetrics.submenuHeight - ActionMenuMetrics.padding * 2)
+        .padding(ActionMenuMetrics.padding)
+        .actionMenuSurface()
+        .onAppear {
+            capturedKeyStroke = selectedKeyStroke
+        }
+        .onDisappear {
+            stopCapture()
+        }
+        .onLocalModifierChange { modifiers in
+            targetModifiers = modifiers
+        }
+    }
+
+    private func toggleCapture() {
+        if isCapturing {
+            stopCapture()
+        } else {
+            startCapture()
+        }
+    }
+
+    private func startCapture() {
+        stopCapture()
+        isCapturing = true
+
+        monitor = NSEvent.addLocalMonitorForEvents(matching: [.keyDown]) { event in
+            guard let keyStroke = KeyStroke(event: event) else {
+                return event
+            }
+
+            capturedKeyStroke = keyStroke
+            stopCapture()
+            return nil
+        }
+    }
+
+    private func stopCapture() {
+        if let monitor {
+            NSEvent.removeMonitor(monitor)
+        }
+
+        monitor = nil
+        isCapturing = false
+    }
+}
+
+private struct CompactTargetKeyboard: View {
+    let modifiers: Set<ModifierKey>
+    let select: (KeyboardKey) -> Void
+
+    private let rows: [[KeyboardKey]] = [
+        Array(KeyCatalog.defaultRows[1][1...10]),
+        Array(KeyCatalog.defaultRows[2][1...10]),
+        Array(KeyCatalog.defaultRows[3][1...10]),
+        Array(KeyCatalog.defaultRows[4][7...10])
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(modifiers.isEmpty ? "Click a target key" : "\(modifiers.displaySymbols) + click")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+
+            ForEach(rows.indices, id: \.self) { rowIndex in
+                HStack(spacing: 4) {
+                    ForEach(rows[rowIndex]) { key in
+                        Button {
+                            select(key)
+                        } label: {
+                            Text(key.targetPickerLabel)
+                                .font(.system(size: 9, weight: .semibold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(width: key.targetPickerWidth, height: 18)
+                        .background(Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
+                                .allowsHitTesting(false)
+                        }
+                    }
+                }
             }
         }
     }
@@ -672,7 +1001,9 @@ private struct ActionMenuRow: View {
         } else if let systemImage {
             Image(systemName: systemImage)
                 .font(.system(size: 13, weight: .semibold))
+                .symbolRenderingMode(.monochrome)
                 .foregroundStyle(isHovering ? .white : tint)
+                .frame(width: 18, height: 18)
         }
     }
 }
@@ -787,6 +1118,31 @@ private extension View {
     func actionMenuSurface() -> some View {
         modifier(ActionMenuSurfaceModifier())
     }
+
+    func onLocalModifierChange(_ handler: @escaping (Set<ModifierKey>) -> Void) -> some View {
+        modifier(LocalModifierChangeModifier(handler: handler))
+    }
+}
+
+private struct LocalModifierChangeModifier: ViewModifier {
+    let handler: (Set<ModifierKey>) -> Void
+
+    @State private var monitor: Any?
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                monitor = NSEvent.addLocalMonitorForEvents(matching: [.flagsChanged, .keyDown, .keyUp]) { event in
+                    handler(Set(event.modifierFlags.modifierKeys))
+                    return event
+                }
+            }
+            .onDisappear {
+                if let monitor {
+                    NSEvent.removeMonitor(monitor)
+                }
+            }
+    }
 }
 
 enum ActionMenuMetrics {
@@ -836,6 +1192,7 @@ extension ActionKind {
         case .app: .blue
         case .url: .green
         case .command: .orange
+        case .mapping: .purple
         }
     }
 }
@@ -846,6 +1203,7 @@ private extension ActionKind {
         case .app: 0
         case .url: 1
         case .command: 2
+        case .mapping: 3
         }
     }
 }
@@ -873,5 +1231,81 @@ private extension KeyAction {
         }
 
         return CommandActionHistoryItem(name: name, command: command)
+    }
+
+    var selectedKeyStroke: KeyStroke? {
+        guard case .sendKeyStroke(let keyStroke) = self else {
+            return nil
+        }
+
+        return keyStroke
+    }
+}
+
+private extension KeyStroke {
+    init?(event: NSEvent) {
+        let keyCode = Int(event.keyCode)
+
+        guard !Self.modifierKeyCodes.contains(keyCode) else {
+            return nil
+        }
+
+        self.init(
+            modifiers: Set(event.modifierFlags.modifierKeys),
+            keyCode: keyCode,
+            keyDisplayName: KeyCatalog.displayName(forKeyCode: keyCode)
+        )
+    }
+
+    private static let modifierKeyCodes: Set<Int> = [
+        55, 54,
+        59, 62,
+        58, 61,
+        56, 60
+    ]
+}
+
+private extension NSEvent.ModifierFlags {
+    var modifierKeys: [ModifierKey] {
+        var modifiers: [ModifierKey] = []
+
+        if contains(.control) {
+            modifiers.append(.control)
+        }
+
+        if contains(.option) {
+            modifiers.append(.option)
+        }
+
+        if contains(.shift) {
+            modifiers.append(.shift)
+        }
+
+        if contains(.command) {
+            modifiers.append(.command)
+        }
+
+        return modifiers
+    }
+}
+
+private extension KeyboardKey {
+    var targetPickerLabel: String {
+        switch id {
+        case "left":
+            "←"
+        case "right":
+            "→"
+        case "up":
+            "↑"
+        case "down":
+            "↓"
+        default:
+            label
+        }
+    }
+
+    var targetPickerWidth: CGFloat {
+        id == "space" ? 46 : 22
     }
 }

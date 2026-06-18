@@ -7,12 +7,16 @@ struct KeyboardLayoutView: View {
     @State private var menuPresenter: KeyActionMenuPopoverPresenter?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Self.spacing) {
-            keyRow(KeyCatalog.defaultRows[0])
-            keyRow(KeyCatalog.defaultRows[1])
-            keyRow(KeyCatalog.defaultRows[2])
-            keyRow(KeyCatalog.defaultRows[3])
-            bottomRow
+        ZStack(alignment: .bottomLeading) {
+            VStack(alignment: .leading, spacing: Self.spacing) {
+                keyRow(KeyCatalog.defaultRows[0])
+                keyRow(KeyCatalog.defaultRows[1])
+                keyRow(KeyCatalog.defaultRows[2])
+                keyRow(KeyCatalog.defaultRows[3])
+                bottomRow
+            }
+
+            activeModifierOverlay
         }
         .frame(width: Self.contentWidth, alignment: .leading)
         .padding(14)
@@ -61,6 +65,17 @@ struct KeyboardLayoutView: View {
         }
 
         return "Grant \(missingPermissions.joined(separator: " and ")) permission"
+    }
+
+    @ViewBuilder
+    private var activeModifierOverlay: some View {
+        if !appState.activeModifiers.isEmpty {
+            ActiveModifierWatermark(modifiers: appState.activeModifiers)
+                .padding(.leading, 12)
+                .padding(.bottom, 8)
+                .transition(.opacity)
+                .allowsHitTesting(false)
+        }
     }
 
     @ViewBuilder
@@ -115,17 +130,33 @@ struct KeyboardLayoutView: View {
         width: CGFloat? = nil,
         height: CGFloat = Self.keyHeight
     ) -> some View {
-        let rule = appState.rule(for: key)
+        let visibleRules = appState.visibleRules(for: key)
+        let hasRules = appState.hasRules(for: key)
 
         return KeyButton(
             key: key,
-            rule: rule,
+            visibleRules: visibleRules,
+            hasRules: hasRules,
+            isLayerActive: !appState.activeModifiers.isEmpty,
+            isModifierActive: isModifierKeyActive(key),
             isEditing: editingKey == key,
             openEditor: { sourceView in
                 openEditor(for: key, from: sourceView)
             }
         )
         .frame(width: width ?? Self.keyWidth(for: key), height: height)
+    }
+
+    private func isModifierKeyActive(_ key: KeyboardKey) -> Bool {
+        guard let modifier = key.activeModifier else {
+            return false
+        }
+
+        if !appState.activeModifierKeyCodes.isEmpty {
+            return appState.activeModifierKeyCodes.contains(key.keyCode)
+        }
+
+        return appState.activeModifiers.contains(modifier)
     }
 
     private func openEditor(for key: KeyboardKey, from sourceView: NSView) {
@@ -238,7 +269,10 @@ struct KeyboardLayoutView: View {
 
 private struct KeyButton: View {
     let key: KeyboardKey
-    let rule: KeyRule?
+    let visibleRules: [KeyRule]
+    let hasRules: Bool
+    let isLayerActive: Bool
+    let isModifierActive: Bool
     let isEditing: Bool
     let openEditor: (NSView) -> Void
 
@@ -251,18 +285,27 @@ private struct KeyButton: View {
             KeyLegendView(key: key)
                 .allowsHitTesting(false)
 
-            if let rule {
-                ActionBadge(action: rule.action)
+            if !isLayerActive, visibleRules.count > 1 {
+                RuleBadgeStack(rules: visibleRules)
+                    .padding(.top, 3)
+                    .padding(.trailing, 4)
+                    .allowsHitTesting(false)
+            } else if let primaryRule = visibleRules.first {
+                ActionBadge(action: primaryRule.action)
                     .padding(5)
                     .allowsHitTesting(false)
             }
         }
         .foregroundStyle(.primary)
         .keyboardKeySurface(
-            tint: rule?.action.kind.tint,
+            tint: visibleRules.first?.action.kind.tint ?? (hasRules ? .secondary : nil),
             isPressed: isPressed,
             isHovered: isHovered
         )
+        .overlay {
+            activeModifierHighlight
+                .allowsHitTesting(false)
+        }
         .overlay {
             ruleBorder
                 .allowsHitTesting(false)
@@ -287,9 +330,25 @@ private struct KeyButton: View {
 
     @ViewBuilder
     private var ruleBorder: some View {
-        if let rule {
+        if let rule = visibleRules.first {
             keyShape
                 .strokeBorder(rule.action.kind.tint.opacity(0.64), lineWidth: 1.4)
+        } else if hasRules {
+            keyShape
+                .strokeBorder(Color.secondary.opacity(0.34), lineWidth: 1)
+        }
+    }
+
+    @ViewBuilder
+    private var activeModifierHighlight: some View {
+        if isModifierActive {
+            keyShape
+                .fill(Color.accentColor.opacity(0.18))
+                .overlay(
+                    keyShape
+                        .strokeBorder(Color.accentColor.opacity(0.82), lineWidth: 1.8)
+                )
+                .shadow(color: Color.accentColor.opacity(0.24), radius: 7, y: 2)
         }
     }
 
@@ -329,6 +388,7 @@ private struct KeyButton: View {
 
         openEditor(sourceView)
     }
+
 }
 
 private struct KeyMenuSourceView: NSViewRepresentable {
@@ -442,6 +502,12 @@ private struct ActionBadge: View {
                 text: name,
                 tint: .orange
             )
+        case .sendKeyStroke(let keyStroke):
+            labelBadge(
+                systemImage: ActionKind.mapping.systemImage,
+                text: keyStroke.displayTitle,
+                tint: .purple
+            )
         }
     }
 
@@ -504,6 +570,143 @@ private struct ActionBadge: View {
         AppIconCache.shared.icon(forBundleIdentifier: bundleIdentifier) { icon in
             appIcon = icon
         }
+    }
+}
+
+private struct ActiveModifierWatermark: View {
+    let modifiers: Set<ModifierKey>
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        ZStack {
+            ForEach(Self.outlineOffsets.indices, id: \.self) { index in
+                let offset = Self.outlineOffsets[index]
+
+                watermarkText
+                    .foregroundStyle(outlineColor)
+                    .offset(x: offset.x, y: offset.y)
+            }
+
+            watermarkText
+                .foregroundStyle(fillColor)
+        }
+        .shadow(color: shadowColor, radius: 5, y: 2)
+        .opacity(0.92)
+        .compositingGroup()
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(modifiers.displayTitle)
+    }
+
+    private var watermarkText: some View {
+        Text(modifiers.displaySymbols)
+            .font(.system(size: 34, weight: .bold, design: .rounded))
+            .accessibilityLabel(modifiers.displayTitle)
+    }
+
+    private var fillColor: Color {
+        if colorScheme == .dark {
+            return Color.white.opacity(0.46)
+        }
+
+        return Color.black.opacity(0.30)
+    }
+
+    private var outlineColor: Color {
+        if colorScheme == .dark {
+            return Color.black.opacity(0.34)
+        }
+
+        return Color.white.opacity(0.64)
+    }
+
+    private var shadowColor: Color {
+        colorScheme == .dark ? Color.black.opacity(0.24) : Color.black.opacity(0.08)
+    }
+
+    private static let outlineOffsets: [CGPoint] = [
+        CGPoint(x: -1, y: -1),
+        CGPoint(x: 0, y: -1),
+        CGPoint(x: 1, y: -1),
+        CGPoint(x: -1, y: 0),
+        CGPoint(x: 1, y: 0),
+        CGPoint(x: -1, y: 1),
+        CGPoint(x: 0, y: 1),
+        CGPoint(x: 1, y: 1)
+    ]
+}
+
+private struct RuleBadgeStack: View {
+    let rules: [KeyRule]
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: -3) {
+            ForEach(Array(visibleRules.enumerated()), id: \.element.id) { _, rule in
+                CompactActionBadge(action: rule.action)
+            }
+
+            if overflowCount > 0 {
+                OverflowRuleBadge(count: overflowCount)
+            }
+        }
+        .frame(width: 16, alignment: .topTrailing)
+        .accessibilityLabel(accessibilityTitle)
+    }
+
+    private var visibleRules: [KeyRule] {
+        let limit = rules.count > Self.visibleRuleLimit ? Self.overflowVisibleRuleLimit : Self.visibleRuleLimit
+        return Array(rules.prefix(limit))
+    }
+
+    private var overflowCount: Int {
+        max(rules.count - visibleRules.count, 0)
+    }
+
+    private var accessibilityTitle: String {
+        "\(rules.count) assigned actions"
+    }
+
+    private static let visibleRuleLimit = 3
+    private static let overflowVisibleRuleLimit = 2
+}
+
+private struct CompactActionBadge: View {
+    let action: KeyAction
+
+    var body: some View {
+        Image(systemName: action.kind.systemImage)
+            .font(.system(size: 8, weight: .bold))
+            .symbolVariant(.fill)
+            .symbolRenderingMode(.monochrome)
+            .foregroundStyle(.white)
+            .frame(width: 16, height: 16)
+            .background(action.kind.tint.gradient, in: Circle())
+            .overlay(
+                Circle()
+                    .strokeBorder(Color.white.opacity(0.58), lineWidth: 0.8)
+            )
+            .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
+            .help(action.displayTitle)
+    }
+}
+
+private struct OverflowRuleBadge: View {
+    let count: Int
+
+    var body: some View {
+        Text("+\(count)")
+            .font(.system(size: 6.5, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(width: 16, height: 13)
+            .background(Color.secondary.gradient, in: Capsule())
+            .overlay(
+                Capsule()
+                    .strokeBorder(Color.white.opacity(0.56), lineWidth: 0.8)
+            )
+            .shadow(color: .black.opacity(0.10), radius: 2, y: 1)
     }
 }
 
@@ -612,6 +815,21 @@ private extension KeyboardKey {
             13
         default:
             12
+        }
+    }
+
+    var activeModifier: ModifierKey? {
+        switch id {
+        case "control":
+            .control
+        case "option", "optionRight":
+            .option
+        case "commandLeft", "commandRight":
+            .command
+        case "shiftLeft", "shiftRight":
+            .shift
+        default:
+            nil
         }
     }
 
