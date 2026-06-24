@@ -176,6 +176,10 @@ enum KeyAction: Codable, Equatable {
     case openURL(name: String, url: String)
     case runCommand(name: String, command: String)
     case sendKeyStroke(KeyStroke)
+    case lockScreen
+
+    static let lockScreenDisplayTitle = "Lock Screen"
+    static let lockScreenPresetSubtitle = "System lock screen"
 
     var displayTitle: String {
         switch self {
@@ -187,6 +191,8 @@ enum KeyAction: Codable, Equatable {
             name
         case .sendKeyStroke(let keyStroke):
             keyStroke.displayTitle
+        case .lockScreen:
+            Self.lockScreenDisplayTitle
         }
     }
 
@@ -200,6 +206,8 @@ enum KeyAction: Codable, Equatable {
             .command
         case .sendKeyStroke:
             .mapping
+        case .lockScreen:
+            .command
         }
     }
 
@@ -207,7 +215,7 @@ enum KeyAction: Codable, Equatable {
         switch self {
         case .sendKeyStroke:
             true
-        case .openApp, .openURL, .runCommand:
+        case .openApp, .openURL, .runCommand, .lockScreen:
             false
         }
     }
@@ -257,7 +265,7 @@ struct KeyActionHistory: Codable, Equatable {
         let previous = self
 
         switch action {
-        case .openApp, .sendKeyStroke:
+        case .openApp, .sendKeyStroke, .lockScreen:
             break
         case .openURL(let name, let url):
             let item = WebActionHistoryItem(
@@ -282,6 +290,12 @@ struct KeyActionHistory: Codable, Equatable {
 
     mutating func delete(_ item: CommandActionHistoryItem) -> Bool {
         delete(item, from: &commandItems)
+    }
+
+    mutating func removeLegacyCommandPresets() -> Bool {
+        let previousCount = commandItems.count
+        commandItems.removeAll(where: \.isLegacyLockScreenPreset)
+        return commandItems.count != previousCount
     }
 
     private func upsert<Item: Equatable>(_ item: Item, in items: inout [Item]) {
@@ -318,6 +332,13 @@ struct CommandActionHistoryItem: Identifiable, Codable, Equatable, Hashable {
     var id: String {
         "\(name)|\(command)"
     }
+
+    var isLegacyLockScreenPreset: Bool {
+        name == Self.lockScreenName && command == Self.legacyLockScreenCommand
+    }
+
+    static let lockScreenName = "Lock Screen"
+    static let legacyLockScreenCommand = "'/System/Library/CoreServices/Menu Extras/User.menu/Contents/Resources/CGSession' -suspend"
 }
 
 extension Set where Element == ModifierKey {
