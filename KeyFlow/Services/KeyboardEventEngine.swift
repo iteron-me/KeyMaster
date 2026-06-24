@@ -167,6 +167,8 @@ final class KeyboardEventEngine {
             CommandRunner.run(command)
         case .sendKeyStroke(let keyStroke):
             KeyStrokeSender.send(keyStroke, sourceModifiers: rule.trigger.modifiers)
+        case .lockScreen:
+            KeyStrokeSender.send(.systemLockScreen, sourceModifiers: rule.trigger.modifiers)
         }
     }
 
@@ -176,6 +178,14 @@ final class KeyboardEventEngine {
 private struct ShortcutKey: Hashable {
     let modifiers: Set<ModifierKey>
     let keyCode: Int
+}
+
+private extension KeyStroke {
+    static let systemLockScreen = KeyStroke(
+        modifiers: [.control, .command],
+        keyCode: 12,
+        keyDisplayName: "Q"
+    )
 }
 
 private enum KeyStrokeSender {

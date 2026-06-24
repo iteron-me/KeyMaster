@@ -262,12 +262,21 @@ final class AppState: ObservableObject {
 
     private func loadPersistedRules() {
         do {
+            var didMigrateRules = false
             rules = try ruleStore.loadRules().map { rule in
                 var rule = rule
                 rule.name = rule.trigger.displayTitle
+                if rule.action.isLegacyLockScreenCommand {
+                    rule.action = .lockScreen
+                    rule.updatedAt = Date()
+                    didMigrateRules = true
+                }
                 return rule
             }
             rulePersistenceErrorMessage = nil
+            if didMigrateRules {
+                persistRules()
+            }
         } catch {
             rules = []
             rulePersistenceErrorMessage = error.localizedDescription
@@ -282,6 +291,7 @@ final class AppState: ObservableObject {
                 _ = loadedHistory.record(rule.action)
             }
 
+            _ = loadedHistory.removeLegacyCommandPresets()
             actionHistory = loadedHistory
             rulePersistenceErrorMessage = nil
 
@@ -367,4 +377,15 @@ final class AppState: ObservableObject {
 private struct ShortcutKey: Hashable {
     let modifiers: Set<ModifierKey>
     let keyCode: Int
+}
+
+private extension KeyAction {
+    var isLegacyLockScreenCommand: Bool {
+        guard case .runCommand(let name, let command) = self else {
+            return false
+        }
+
+        return name == CommandActionHistoryItem.lockScreenName
+            && command == CommandActionHistoryItem.legacyLockScreenCommand
+    }
 }

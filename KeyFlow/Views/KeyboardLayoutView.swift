@@ -502,6 +502,12 @@ private struct ActionBadge: View {
                 text: name,
                 tint: .orange
             )
+        case .lockScreen:
+            labelBadge(
+                systemImage: "lock.fill",
+                text: action.displayTitle,
+                tint: .orange
+            )
         case .sendKeyStroke(let keyStroke):
             labelBadge(
                 systemImage: ActionKind.mapping.systemImage,

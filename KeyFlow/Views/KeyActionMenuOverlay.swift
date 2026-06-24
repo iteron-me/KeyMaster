@@ -274,6 +274,8 @@ private struct BindingActionSummary: View {
                 titledAction(kind: .url, title: name)
             case .runCommand(let name, _):
                 titledAction(kind: .command, title: name)
+            case .lockScreen:
+                titledAction(kind: .command, title: KeyAction.lockScreenDisplayTitle)
             case .sendKeyStroke(let keyStroke):
                 Text(keyStroke.compactDisplayTitle)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
@@ -579,20 +581,7 @@ private struct ActionKindSubmenu: View {
                     valuePlaceholder: "Command",
                     iconName: ActionKind.command.systemImage,
                     tint: .orange,
-                    rows: appState.actionHistory.commandItems.map { item in
-                        HistoryActionMenuRow(
-                            id: item.id,
-                            title: item.name,
-                            subtitle: item.command,
-                            isSelected: item == currentRule?.action.selectedCommandItem,
-                            select: {
-                                save(commandItem: item)
-                            },
-                            delete: {
-                                appState.deleteCommandHistoryItem(item)
-                            }
-                        )
-                    },
+                    rows: commandRows,
                     isValid: { name, value in
                         !name.isEmpty && !value.isEmpty
                     },
@@ -614,6 +603,38 @@ private struct ActionKindSubmenu: View {
         appState.rule(for: key, modifiers: modifiers)
     }
 
+    private var commandRows: [HistoryActionMenuRow] {
+        let selectedItem = currentRule?.action.selectedCommandItem
+        let historyRows = appState.actionHistory.commandItems
+            .map { item in
+                HistoryActionMenuRow(
+                    id: "history|\(item.id)",
+                    title: item.name,
+                    subtitle: item.command,
+                    isSelected: item == selectedItem,
+                    select: {
+                        save(commandItem: item)
+                    },
+                    delete: {
+                        appState.deleteCommandHistoryItem(item)
+                    }
+                )
+            }
+
+        return [
+            HistoryActionMenuRow(
+                id: "preset|lockScreen",
+                title: KeyAction.lockScreenDisplayTitle,
+                subtitle: KeyAction.lockScreenPresetSubtitle,
+                isSelected: currentRule?.action == .lockScreen || selectedItem?.isLegacyLockScreenPreset == true,
+                select: {
+                    saveLockScreen()
+                },
+                delete: nil
+            )
+        ] + historyRows
+    }
+
     private func save(app: InstalledApp) {
         appState.saveRule(
             for: key,
@@ -633,6 +654,11 @@ private struct ActionKindSubmenu: View {
 
     private func save(commandItem item: CommandActionHistoryItem) {
         appState.saveRule(for: key, modifiers: modifiers, action: .runCommand(name: item.name, command: item.command))
+        close()
+    }
+
+    private func saveLockScreen() {
+        appState.saveRule(for: key, modifiers: modifiers, action: .lockScreen)
         close()
     }
 
@@ -897,7 +923,7 @@ private struct HistoryActionMenuRow: Identifiable {
     let subtitle: String
     let isSelected: Bool
     let select: () -> Void
-    let delete: () -> Void
+    let delete: (() -> Void)?
 }
 
 private struct HistoryActionPicker: View {
