@@ -12,15 +12,23 @@
 		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
 		4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */; };
 		4CCC750AB91A1E514B572A5A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 55B02AB408B9B1F411436E34 /* Assets.xcassets */; };
+		504356F1C4613BA2B65D227C /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D69E70E370571E8B6A770A77 /* ScreenshotOverlayController.swift */; };
+		5B2FF148358875F6EF0596B3 /* ScreenshotAreaTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E920999AF687BBA94ABDFA /* ScreenshotAreaTool.swift */; };
+		5C590A96D4D3A001889CC45A /* ToolRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26521D20DA6174BE4F56DFD /* ToolRegistry.swift */; };
 		654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */; };
 		6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6BFEF8ABEC06A5E4C04EE4 /* KeyCatalog.swift */; };
+		6ED48EE1D2759FB91486D2DC /* ToolInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846EDF1C5D9538530C4D655A /* ToolInvocation.swift */; };
 		709E8D3E2FBE19AD27F59C0D /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FB52FDB8FC368E41BFCB169 /* AppState.swift */; };
+		72B8CA4599551641C338FA5C /* ScreenshotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFE4A2F043C9B6D43047991 /* ScreenshotSelectionView.swift */; };
 		752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */; };
 		76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */; };
 		79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAC33A0163579C56BF09D5C /* PermissionService.swift */; };
 		90BDC1FE234BC57DBE319F0B /* AnchoredFloatingWindowPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */; };
 		912F931A21CA6D5669451FE2 /* KeyFlowApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC86CA915514B7B5C1F690B6 /* KeyFlowApplicationDelegate.swift */; };
 		93285782C57D18C2561C345B /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */; };
+		ACB8DA79ED7E39C2E5749F28 /* ActionDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC60E95790FC4E19D5181DE /* ActionDispatcher.swift */; };
+		B40A5E5BE95D6AF58E6C1DB7 /* KeyFlowTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F2F4DDA56B1028F580E0C5 /* KeyFlowTool.swift */; };
+		BA4BB89B25B53F59FC72342A /* ScreenshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B128D771D3A518D29B39ECE9 /* ScreenshotService.swift */; };
 		CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */; };
 		CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0336361413355CCA0228D1B /* KeyFlowApp.swift */; };
 		D9CAB41A4A013C04686B4C71 /* KeyActionMenuPopoverPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E346EC7FA39A4A3D60E1F1 /* KeyActionMenuPopoverPresenter.swift */; };
@@ -29,9 +37,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0BC60E95790FC4E19D5181DE /* ActionDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDispatcher.swift; sourceTree = "<group>"; };
 		0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
+		19F2F4DDA56B1028F580E0C5 /* KeyFlowTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowTool.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		3AFE4A2F043C9B6D43047991 /* ScreenshotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotSelectionView.swift; sourceTree = "<group>"; };
 		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
 		3DF4908AD712C4F7986EEDA4 /* AppIconCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCache.swift; sourceTree = "<group>"; };
 		436DF778DF7257471128D9C5 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
@@ -39,25 +50,49 @@
 		6DCABBD64A6C7B66AE3AEBA5 /* KeyFlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyFlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73DCAC86568F2051841410B6 /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
 		78E346EC7FA39A4A3D60E1F1 /* KeyActionMenuPopoverPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuPopoverPresenter.swift; sourceTree = "<group>"; };
+		846EDF1C5D9538530C4D655A /* ToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolInvocation.swift; sourceTree = "<group>"; };
 		AB82688BE416792911721663 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
 		AFA9580BA66653211D3DD87F /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
+		B128D771D3A518D29B39ECE9 /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
 		B1EA3984F00EFA582E9EC642 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
+		B4E920999AF687BBA94ABDFA /* ScreenshotAreaTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaTool.swift; sourceTree = "<group>"; };
 		CC0F3E4917F1CFAACA8A5588 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
 		CC86CA915514B7B5C1F690B6 /* KeyFlowApplicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApplicationDelegate.swift; sourceTree = "<group>"; };
 		CF6BFEF8ABEC06A5E4C04EE4 /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
 		CF799E94E5A1939C0DFD8D5C /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
 		D0336361413355CCA0228D1B /* KeyFlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowApp.swift; sourceTree = "<group>"; };
+		D26521D20DA6174BE4F56DFD /* ToolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRegistry.swift; sourceTree = "<group>"; };
+		D69E70E370571E8B6A770A77 /* ScreenshotOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotOverlayController.swift; sourceTree = "<group>"; };
 		D7B3894D1ABF390D92C05489 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		03B379C0BA7D6D12E52F5749 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				0BC60E95790FC4E19D5181DE /* ActionDispatcher.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
 		13D0F420E5395F97C17FBD2F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				55B02AB408B9B1F411436E34 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		179286D4B93851EF203BB3A6 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				19F2F4DDA56B1028F580E0C5 /* KeyFlowTool.swift */,
+				846EDF1C5D9538530C4D655A /* ToolInvocation.swift */,
+				D26521D20DA6174BE4F56DFD /* ToolRegistry.swift */,
+				56BC8B8E8090EA121BF0BCAE /* Screenshot */,
+			);
+			path = Tools;
 			sourceTree = "<group>";
 		};
 		1A43AE874AE0BDD981110F7B /* Services */ = {
@@ -82,6 +117,17 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		56BC8B8E8090EA121BF0BCAE /* Screenshot */ = {
+			isa = PBXGroup;
+			children = (
+				B4E920999AF687BBA94ABDFA /* ScreenshotAreaTool.swift */,
+				D69E70E370571E8B6A770A77 /* ScreenshotOverlayController.swift */,
+				3AFE4A2F043C9B6D43047991 /* ScreenshotSelectionView.swift */,
+				B128D771D3A518D29B39ECE9 /* ScreenshotService.swift */,
+			);
+			path = Screenshot;
+			sourceTree = "<group>";
+		};
 		61B3A55B5436879AB87FD9D9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -94,10 +140,12 @@
 		77F9793C1679C89B4142429E /* KeyFlow */ = {
 			isa = PBXGroup;
 			children = (
+				03B379C0BA7D6D12E52F5749 /* Actions */,
 				325E0B88DC6214DB4AC6F6D9 /* App */,
 				61B3A55B5436879AB87FD9D9 /* Models */,
 				13D0F420E5395F97C17FBD2F /* Resources */,
 				1A43AE874AE0BDD981110F7B /* Services */,
+				179286D4B93851EF203BB3A6 /* Tools */,
 				BEE5171B986F8442DB920FFB /* Views */,
 			);
 			path = KeyFlow;
@@ -204,6 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACB8DA79ED7E39C2E5749F28 /* ActionDispatcher.swift in Sources */,
 				90BDC1FE234BC57DBE319F0B /* AnchoredFloatingWindowPresenter.swift in Sources */,
 				CD58BEB603E6E9A57EB0164D /* AppDiscoveryService.swift in Sources */,
 				93285782C57D18C2561C345B /* AppIconCache.swift in Sources */,
@@ -215,12 +264,19 @@
 				6E6633CF170239465856FA8C /* KeyCatalog.swift in Sources */,
 				CD7D942A7BAAD804340BB73B /* KeyFlowApp.swift in Sources */,
 				912F931A21CA6D5669451FE2 /* KeyFlowApplicationDelegate.swift in Sources */,
+				B40A5E5BE95D6AF58E6C1DB7 /* KeyFlowTool.swift in Sources */,
 				654F03A445B6F7FE07C28B7D /* KeyRule.swift in Sources */,
 				19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */,
 				752080AC7774D8CC95F9B1B0 /* KeyboardEventEngine.swift in Sources */,
 				76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */,
 				4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */,
 				79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */,
+				5B2FF148358875F6EF0596B3 /* ScreenshotAreaTool.swift in Sources */,
+				504356F1C4613BA2B65D227C /* ScreenshotOverlayController.swift in Sources */,
+				72B8CA4599551641C338FA5C /* ScreenshotSelectionView.swift in Sources */,
+				BA4BB89B25B53F59FC72342A /* ScreenshotService.swift in Sources */,
+				6ED48EE1D2759FB91486D2DC /* ToolInvocation.swift in Sources */,
+				5C590A96D4D3A001889CC45A /* ToolRegistry.swift in Sources */,
 				DAA7A251DFACEA7C43397CEA /* WindowGlassConfigurator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
