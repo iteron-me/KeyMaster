@@ -28,4 +28,4 @@ xattr -cr "$INSTALL_APP"
 codesign --force --sign - --requirements "$CODE_REQUIREMENT" "$INSTALL_APP"
 codesign --verify --deep --strict "$INSTALL_APP"
 
-open "$INSTALL_APP"
+open -n "$INSTALL_APP"

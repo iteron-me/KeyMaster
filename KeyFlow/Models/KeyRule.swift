@@ -175,6 +175,7 @@ enum KeyAction: Codable, Equatable {
     case openApp(bundleIdentifier: String, displayName: String)
     case openURL(name: String, url: String)
     case runCommand(name: String, command: String)
+    case runTool(ToolInvocation)
     case sendKeyStroke(KeyStroke)
     case lockScreen
 
@@ -189,6 +190,8 @@ enum KeyAction: Codable, Equatable {
             name
         case .runCommand(let name, _):
             name
+        case .runTool(let invocation):
+            invocation.displayName
         case .sendKeyStroke(let keyStroke):
             keyStroke.displayTitle
         case .lockScreen:
@@ -202,7 +205,7 @@ enum KeyAction: Codable, Equatable {
             .app
         case .openURL:
             .url
-        case .runCommand:
+        case .runCommand, .runTool:
             .command
         case .sendKeyStroke:
             .mapping
@@ -215,7 +218,7 @@ enum KeyAction: Codable, Equatable {
         switch self {
         case .sendKeyStroke:
             true
-        case .openApp, .openURL, .runCommand, .lockScreen:
+        case .openApp, .openURL, .runCommand, .runTool, .lockScreen:
             false
         }
     }
@@ -265,7 +268,7 @@ struct KeyActionHistory: Codable, Equatable {
         let previous = self
 
         switch action {
-        case .openApp, .sendKeyStroke, .lockScreen:
+        case .openApp, .runTool, .sendKeyStroke, .lockScreen:
             break
         case .openURL(let name, let url):
             let item = WebActionHistoryItem(

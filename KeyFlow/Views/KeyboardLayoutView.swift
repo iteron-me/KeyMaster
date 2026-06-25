@@ -502,6 +502,12 @@ private struct ActionBadge: View {
                 text: name,
                 tint: .orange
             )
+        case .runTool(let invocation):
+            labelBadge(
+                systemImage: "camera.viewfinder",
+                text: invocation.displayName,
+                tint: .orange
+            )
         case .lockScreen:
             labelBadge(
                 systemImage: "lock.fill",

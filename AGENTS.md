@@ -46,6 +46,25 @@ Run a local development build with a stable installed app bundle and local signi
 
 Prefer `./scripts/dev-run.sh` for permission testing. Grant macOS permissions to `/Applications/KeyFlow.app`, not a temporary DerivedData bundle.
 
+## Completion Verification
+
+- After making code, project configuration, or source layout changes, run the development script before the final response:
+
+```sh
+./scripts/dev-run.sh
+```
+
+- This is the default verification path because it regenerates the project, builds the app, installs the stable bundle at `/Applications/KeyFlow.app`, applies the local signing requirement, and opens the installed app for permission-sensitive testing.
+- If `./scripts/dev-run.sh` fails, include the relevant error lines and either fix the failure or clearly explain the blocker.
+- If the user explicitly asks for build-only verification, use the CLI build command instead:
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project KeyFlow.xcodeproj -scheme KeyFlow -configuration Debug -destination 'platform=macOS' -derivedDataPath /private/tmp/KeyFlowDerived build
+```
+
+- If the task only changes docs, comments, or asks for analysis without file edits, running `./scripts/dev-run.sh` is not required unless the user asks for it.
+- Report whether the verification script or build succeeded.
+
 ## Source Layout
 
 - `KeyFlow/App/KeyFlowApp.swift`: app entry point and menu bar extra.

@@ -274,6 +274,8 @@ private struct BindingActionSummary: View {
                 titledAction(kind: .url, title: name)
             case .runCommand(let name, _):
                 titledAction(kind: .command, title: name)
+            case .runTool(let invocation):
+                titledAction(kind: .command, title: invocation.displayName)
             case .lockScreen:
                 titledAction(kind: .command, title: KeyAction.lockScreenDisplayTitle)
             case .sendKeyStroke(let keyStroke):
@@ -575,17 +577,10 @@ private struct ActionKindSubmenu: View {
                     }
                 )
             case .command:
-                HistoryActionPicker(
-                    emptyTitle: "No Command History",
-                    addTitle: "New Command",
-                    valuePlaceholder: "Command",
-                    iconName: ActionKind.command.systemImage,
-                    tint: .orange,
-                    rows: commandRows,
-                    isValid: { name, value in
-                        !name.isEmpty && !value.isEmpty
-                    },
-                    saveNewItem: { name, value in
+                CommandActionPicker(
+                    toolRows: toolRows,
+                    commandRows: commandRows,
+                    saveNewCommand: { name, value in
                         save(commandItem: CommandActionHistoryItem(name: name, command: value))
                     }
                 )
@@ -635,6 +630,21 @@ private struct ActionKindSubmenu: View {
         ] + historyRows
     }
 
+    private var toolRows: [BuiltInToolMenuRow] {
+        ToolRegistry.shared.tools.map { tool in
+            BuiltInToolMenuRow(
+                id: tool.id,
+                title: tool.title,
+                subtitle: tool.subtitle,
+                systemImage: tool.systemImage,
+                isSelected: currentRule?.action.selectedToolID == tool.id,
+                select: {
+                    save(toolInvocation: tool.defaultInvocation)
+                }
+            )
+        }
+    }
+
     private func save(app: InstalledApp) {
         appState.saveRule(
             for: key,
@@ -654,6 +664,11 @@ private struct ActionKindSubmenu: View {
 
     private func save(commandItem item: CommandActionHistoryItem) {
         appState.saveRule(for: key, modifiers: modifiers, action: .runCommand(name: item.name, command: item.command))
+        close()
+    }
+
+    private func save(toolInvocation invocation: ToolInvocation) {
+        appState.saveRule(for: key, modifiers: modifiers, action: .runTool(invocation))
         close()
     }
 
@@ -926,6 +941,70 @@ private struct HistoryActionMenuRow: Identifiable {
     let delete: (() -> Void)?
 }
 
+private struct BuiltInToolMenuRow: Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    let isSelected: Bool
+    let select: () -> Void
+}
+
+private struct CommandActionPicker: View {
+    let toolRows: [BuiltInToolMenuRow]
+    let commandRows: [HistoryActionMenuRow]
+    let saveNewCommand: (String, String) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            if !toolRows.isEmpty {
+                toolList
+            }
+
+            HistoryActionPicker(
+                emptyTitle: "No Command History",
+                addTitle: "New Command",
+                valuePlaceholder: "Command",
+                iconName: ActionKind.command.systemImage,
+                tint: .orange,
+                rows: commandRows,
+                contentPadding: 0,
+                usesSurface: false,
+                isValid: { name, value in
+                    !name.isEmpty && !value.isEmpty
+                },
+                saveNewItem: saveNewCommand
+            )
+        }
+        .frame(width: ActionMenuMetrics.submenuWidth)
+        .padding(ActionMenuMetrics.padding)
+        .actionMenuSurface()
+    }
+
+    private var toolList: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text("Built-in Tools")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 4)
+
+            ForEach(toolRows) { row in
+                ActionMenuRow(
+                    title: row.title,
+                    subtitle: row.subtitle,
+                    systemImage: row.systemImage,
+                    image: nil,
+                    tint: .orange,
+                    isSelected: row.isSelected,
+                    select: row.select,
+                    delete: nil
+                )
+                .help(row.subtitle)
+            }
+        }
+    }
+}
+
 private struct HistoryActionPicker: View {
     let emptyTitle: String
     let addTitle: String
@@ -934,6 +1013,8 @@ private struct HistoryActionPicker: View {
     let iconName: String
     let tint: Color
     let rows: [HistoryActionMenuRow]
+    let contentPadding: CGFloat
+    let usesSurface: Bool
     let isValid: (String, String) -> Bool
     let saveNewItem: (String, String) -> Void
 
@@ -955,6 +1036,8 @@ private struct HistoryActionPicker: View {
         iconName: String,
         tint: Color,
         rows: [HistoryActionMenuRow],
+        contentPadding: CGFloat = ActionMenuMetrics.padding,
+        usesSurface: Bool = true,
         isValid: @escaping (String, String) -> Bool,
         saveNewItem: @escaping (String, String) -> Void
     ) {
@@ -965,13 +1048,20 @@ private struct HistoryActionPicker: View {
         self.iconName = iconName
         self.tint = tint
         self.rows = rows
+        self.contentPadding = contentPadding
+        self.usesSurface = usesSurface
         self.isValid = isValid
         self.saveNewItem = saveNewItem
         _value = State(initialValue: initialValue)
     }
 
     var body: some View {
-        VStack(spacing: 6) {
+        content
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        let picker = VStack(spacing: 6) {
             addButton
 
             historyList
@@ -985,8 +1075,13 @@ private struct HistoryActionPicker: View {
         }
         .animation(.easeOut(duration: 0.16), value: isAdding)
         .frame(width: ActionMenuMetrics.submenuWidth)
-        .padding(ActionMenuMetrics.padding)
-        .actionMenuSurface()
+        .padding(contentPadding)
+
+        if usesSurface {
+            picker.actionMenuSurface()
+        } else {
+            picker
+        }
     }
 
     private var addButton: some View {
@@ -1451,6 +1546,14 @@ private extension KeyAction {
         }
 
         return CommandActionHistoryItem(name: name, command: command)
+    }
+
+    var selectedToolID: String? {
+        guard case .runTool(let invocation) = self else {
+            return nil
+        }
+
+        return invocation.toolID
     }
 
     var selectedKeyStroke: KeyStroke? {

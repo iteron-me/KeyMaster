@@ -82,8 +82,10 @@ targets:
     deploymentTarget: "26.0"
     sources:
       - path: KeyFlow/App
+      - path: KeyFlow/Actions
       - path: KeyFlow/Models
       - path: KeyFlow/Services
+      - path: KeyFlow/Tools
       - path: KeyFlow/Views
       - path: KeyFlow/Resources/Assets.xcassets
         buildPhase: resources
