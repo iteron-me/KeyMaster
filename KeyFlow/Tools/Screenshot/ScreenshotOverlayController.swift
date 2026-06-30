@@ -15,10 +15,10 @@ final class ScreenshotOverlayController {
         closeSelection()
 
         windows = NSScreen.screens.map { screen in
+            let displayID = screen.displayID
             let view = ScreenshotSelectionView(
-                screenFrame: screen.frame,
-                copy: { [weak self] rect in
-                    self?.copySelection(rect)
+                copy: { [weak self] rect, annotations in
+                    self?.copySelection(rect, annotations: annotations, on: displayID)
                 },
                 cancel: { [weak self] in
                     self?.closeSelection()
@@ -51,13 +51,21 @@ final class ScreenshotOverlayController {
         windows.first?.makeKeyAndOrderFront(nil)
     }
 
-    private func copySelection(_ rect: CGRect) {
+    private func copySelection(
+        _ rect: CGRect,
+        annotations: [ScreenshotAnnotation],
+        on displayID: CGDirectDisplayID
+    ) {
         closeSelection()
 
         Task { @MainActor in
             do {
                 try await Task.sleep(for: .milliseconds(80))
-                let image = try await ScreenshotService.capture(rect: rect)
+                let image = try await ScreenshotService.capture(
+                    rect: rect,
+                    annotations: annotations,
+                    on: displayID
+                )
                 ScreenshotService.copyToPasteboard(image)
             } catch {
                 assertionFailure("Failed to capture screenshot: \(error)")
@@ -68,6 +76,13 @@ final class ScreenshotOverlayController {
     private func closeSelection() {
         windows.forEach { $0.close() }
         windows = []
+    }
+}
+
+private extension NSScreen {
+    var displayID: CGDirectDisplayID {
+        let number = deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
+        return number?.uint32Value ?? CGMainDisplayID()
     }
 }
 

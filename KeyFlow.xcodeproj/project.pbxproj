@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		16A3BB6929AEFAF68503ABF5 /* ScreenshotAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F8E56159C3C5175AEDDDD94 /* ScreenshotAnnotation.swift */; };
 		19926A1F7A651824D5C7D94A /* KeyRuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436DF778DF7257471128D9C5 /* KeyRuleStore.swift */; };
 		361C3DB6DA556C6D4F67C0F3 /* KeyActionMenuOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA6F5AAA506076B977680C2 /* KeyActionMenuOverlay.swift */; };
 		3A35B111496C295B9DEBC444 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7B3894D1ABF390D92C05489 /* ContentView.swift */; };
@@ -41,6 +42,7 @@
 		0EE652CA4D2F88A81F1668AD /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
 		0F99CB4656611D479CAC06C7 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		19F2F4DDA56B1028F580E0C5 /* KeyFlowTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFlowTool.swift; sourceTree = "<group>"; };
+		1F8E56159C3C5175AEDDDD94 /* ScreenshotAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAnnotation.swift; sourceTree = "<group>"; };
 		2FB52FDB8FC368E41BFCB169 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		3AFE4A2F043C9B6D43047991 /* ScreenshotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotSelectionView.swift; sourceTree = "<group>"; };
 		3CAC33A0163579C56BF09D5C /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 		56BC8B8E8090EA121BF0BCAE /* Screenshot */ = {
 			isa = PBXGroup;
 			children = (
+				1F8E56159C3C5175AEDDDD94 /* ScreenshotAnnotation.swift */,
 				B4E920999AF687BBA94ABDFA /* ScreenshotAreaTool.swift */,
 				D69E70E370571E8B6A770A77 /* ScreenshotOverlayController.swift */,
 				3AFE4A2F043C9B6D43047991 /* ScreenshotSelectionView.swift */,
@@ -271,6 +274,7 @@
 				76F4F28FAFB40904297BD18B /* KeyboardLayoutView.swift in Sources */,
 				4C3A9E4238DCDB209643BB32 /* LiquidGlassStyle.swift in Sources */,
 				79FBCDD3748C9A6B9F7DD17E /* PermissionService.swift in Sources */,
+				16A3BB6929AEFAF68503ABF5 /* ScreenshotAnnotation.swift in Sources */,
 				5B2FF148358875F6EF0596B3 /* ScreenshotAreaTool.swift in Sources */,
 				504356F1C4613BA2B65D227C /* ScreenshotOverlayController.swift in Sources */,
 				72B8CA4599551641C338FA5C /* ScreenshotSelectionView.swift in Sources */,
