@@ -7,7 +7,7 @@ final class ToolRegistry {
     let tools: [any KeyFlowTool]
     private let toolsByID: [String: any KeyFlowTool]
 
-    init(tools: [any KeyFlowTool] = [ScreenshotAreaTool()]) {
+    init(tools: [any KeyFlowTool] = [ScreenshotAreaTool(), PomodoroTool()]) {
         self.tools = tools
         toolsByID = Dictionary(uniqueKeysWithValues: tools.map { ($0.id, $0) })
     }
@@ -35,4 +35,3 @@ enum ToolRegistryError: LocalizedError {
         }
     }
 }
-

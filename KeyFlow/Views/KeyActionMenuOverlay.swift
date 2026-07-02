@@ -275,7 +275,7 @@ private struct BindingActionSummary: View {
             case .runCommand(let name, _):
                 titledAction(kind: .command, title: name)
             case .runTool(let invocation):
-                titledAction(kind: .command, title: invocation.displayName)
+                toolAction(invocation)
             case .lockScreen:
                 titledAction(kind: .command, title: KeyAction.lockScreenDisplayTitle)
             case .sendKeyStroke(let keyStroke):
@@ -301,6 +301,21 @@ private struct BindingActionSummary: View {
             )
 
             Text(title)
+                .font(.system(size: 11, weight: .bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+                .frame(maxWidth: ActionMenuMetrics.bindingTitleMaxWidth, alignment: .leading)
+        }
+    }
+
+    private func toolAction(_ invocation: ToolInvocation) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: ToolRegistry.shared.tool(for: invocation.toolID)?.systemImage ?? "wrench.and.screwdriver.fill")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(isSelected ? .white : ActionKind.command.tint)
+                .frame(width: 13, height: 13)
+
+            Text(invocation.displayName)
                 .font(.system(size: 11, weight: .bold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.78)
