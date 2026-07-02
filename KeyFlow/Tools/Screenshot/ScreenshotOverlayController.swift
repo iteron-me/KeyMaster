@@ -42,6 +42,9 @@ final class ScreenshotOverlayController {
                 copy: { [weak self] rect, annotations in
                     self?.copySelection(rect, annotations: annotations, on: displayID)
                 },
+                pin: { [weak self] rect, annotations in
+                    self?.pinSelection(rect, annotations: annotations, on: displayID, screenFrame: target.screen.frame)
+                },
                 cancel: { [weak self] in
                     self?.closeSelection()
                 }
@@ -109,6 +112,29 @@ final class ScreenshotOverlayController {
                 ScreenshotService.copyToPasteboard(image)
             } catch {
                 assertionFailure("Failed to capture screenshot: \(error)")
+            }
+        }
+    }
+
+    private func pinSelection(
+        _ rect: CGRect,
+        annotations: [ScreenshotAnnotation],
+        on displayID: CGDirectDisplayID,
+        screenFrame: CGRect
+    ) {
+        closeSelection()
+
+        Task { @MainActor in
+            do {
+                try await Task.sleep(for: .milliseconds(80))
+                let image = try await ScreenshotService.capture(
+                    rect: rect,
+                    annotations: annotations,
+                    on: displayID
+                )
+                ScreenshotPinController.shared.pin(image, sourceRect: rect, screenFrame: screenFrame)
+            } catch {
+                assertionFailure("Failed to pin screenshot: \(error)")
             }
         }
     }

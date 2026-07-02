@@ -4,6 +4,7 @@ import SwiftUI
 struct ScreenshotSelectionView: View {
     let screenImage: CGImage?
     let copy: (CGRect, [ScreenshotAnnotation]) -> Void
+    let pin: (CGRect, [ScreenshotAnnotation]) -> Void
     let cancel: () -> Void
 
     @State private var dragStart: CGPoint?
@@ -62,6 +63,14 @@ struct ScreenshotSelectionView: View {
                         if let lockedSelectionRect {
                             ScreenshotCursorKind.arrow.apply()
                             copy(displayRect(fromLocalRect: lockedSelectionRect), annotationsIncludingPendingText())
+                            return true
+                        }
+                        return false
+                    },
+                    pin: {
+                        if let lockedSelectionRect {
+                            ScreenshotCursorKind.arrow.apply()
+                            pin(displayRect(fromLocalRect: lockedSelectionRect), annotationsIncludingPendingText())
                             return true
                         }
                         return false
@@ -228,6 +237,19 @@ struct ScreenshotSelectionView: View {
             .help(ScreenshotToolbarItem.text.tooltip)
             .onHover { isHovered in
                 updateToolbarHover(.text, isHovered: isHovered)
+            }
+
+            Button {
+                ScreenshotCursorKind.arrow.apply()
+                pin(displayRect(fromLocalRect: rect), annotationsIncludingPendingText())
+            } label: {
+                Label("贴图", systemImage: "pin")
+                    .labelStyle(.iconOnly)
+            }
+            .buttonStyle(ScreenshotToolbarIconButtonStyle())
+            .help(ScreenshotToolbarItem.pin.tooltip)
+            .onHover { isHovered in
+                updateToolbarHover(.pin, isHovered: isHovered)
             }
 
             Button {
@@ -871,7 +893,7 @@ struct ScreenshotSelectionView: View {
     }
 
     private func toolbarPosition(for rect: CGRect, in size: CGSize) -> CGPoint {
-        let toolbarWidth: CGFloat = 150
+        let toolbarWidth: CGFloat = 196
         let toolbarHeight: CGFloat = 40
         let bottomY = rect.maxY + toolbarHeight / 2 + 10
         let topY = rect.minY - toolbarHeight / 2 - 10
@@ -937,6 +959,7 @@ private enum ScreenshotToolbarItem: Equatable {
     case close
     case annotate
     case text
+    case pin
     case copy
 
     var tooltip: String {
@@ -947,6 +970,8 @@ private enum ScreenshotToolbarItem: Equatable {
             return "框选标注 (R)"
         case .text:
             return "文字标注 (T)"
+        case .pin:
+            return "贴图 (P)"
         case .copy:
             return "复制 (Cmd+C)"
         }
@@ -955,13 +980,15 @@ private enum ScreenshotToolbarItem: Equatable {
     var tooltipOffsetX: CGFloat {
         switch self {
         case .close:
-            return -54
+            return -72
         case .annotate:
-            return -18
+            return -36
         case .text:
-            return 18
+            return 0
+        case .pin:
+            return 36
         case .copy:
-            return 54
+            return 72
         }
     }
 }
@@ -1351,6 +1378,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
     var rectangle: () -> Bool
     var text: () -> Bool
     var copy: () -> Bool
+    var pin: () -> Bool
     var copyColor: () -> Bool
     var undo: () -> Bool
 
@@ -1366,6 +1394,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
         context.coordinator.rectangle = rectangle
         context.coordinator.text = text
         context.coordinator.copy = copy
+        context.coordinator.pin = pin
         context.coordinator.copyColor = copyColor
         context.coordinator.undo = undo
     }
@@ -1381,6 +1410,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
             rectangle: rectangle,
             text: text,
             copy: copy,
+            pin: pin,
             copyColor: copyColor,
             undo: undo
         )
@@ -1392,6 +1422,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
         var rectangle: () -> Bool
         var text: () -> Bool
         var copy: () -> Bool
+        var pin: () -> Bool
         var copyColor: () -> Bool
         var undo: () -> Bool
 
@@ -1401,6 +1432,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
             rectangle: @escaping () -> Bool,
             text: @escaping () -> Bool,
             copy: @escaping () -> Bool,
+            pin: @escaping () -> Bool,
             copyColor: @escaping () -> Bool,
             undo: @escaping () -> Bool
         ) {
@@ -1409,6 +1441,7 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
             self.rectangle = rectangle
             self.text = text
             self.copy = copy
+            self.pin = pin
             self.copyColor = copyColor
             self.undo = undo
         }
@@ -1442,6 +1475,8 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
             switch event.charactersIgnoringModifiers?.lowercased() {
             case "c":
                 return copyColor()
+            case "p":
+                return pin()
             case "r":
                 return rectangle()
             case "t":
