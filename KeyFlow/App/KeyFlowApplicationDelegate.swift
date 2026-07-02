@@ -10,7 +10,7 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
     private var hostingController: NSHostingController<AnyView>?
     private var outsideClickLocalMonitor: Any?
     private var outsideClickGlobalMonitor: Any?
-    private var statusItemCancellable: AnyCancellable?
+    private var statusItemCancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         configureStatusItem()
@@ -34,25 +34,60 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
     private func configureStatusItem() {
         let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         self.statusItem = statusItem
-        updateStatusItemImage()
+        updateStatusItemState()
 
         statusItem.button?.target = self
         statusItem.button?.action = #selector(togglePanel)
     }
 
-    private func updateStatusItemImage() {
+    private func updateStatusItemState() {
+        guard let button = statusItem?.button else {
+            return
+        }
+
+        if let statusTitle = PomodoroTimer.shared.statusItemTitle {
+            let image = NSImage(
+                systemSymbolName: PomodoroTimer.shared.statusItemSystemImage,
+                accessibilityDescription: PomodoroTimer.shared.statusItemAccessibilityDescription
+            )
+            image?.isTemplate = true
+            button.image = image
+            button.imagePosition = .imageLeading
+            button.title = statusTitle
+            button.font = .monospacedDigitSystemFont(ofSize: 12, weight: .semibold)
+            button.toolTip = PomodoroTimer.shared.statusItemAccessibilityDescription
+            return
+        }
+
         let imageName = appState.isEngineRunning ? "keyboard.badge.eye" : "keyboard"
-        statusItem?.button?.image = NSImage(
+        let image = NSImage(
             systemSymbolName: imageName,
             accessibilityDescription: "KeyFlow"
         )
+        image?.isTemplate = true
+        button.image = image
+        button.imagePosition = .imageOnly
+        button.title = ""
+        button.font = .systemFont(ofSize: NSFont.systemFontSize)
+        button.toolTip = "KeyFlow"
     }
 
     private func observeStatusItemState() {
-        statusItemCancellable = appState.$isEngineRunning
+        appState.$isEngineRunning
             .sink { [weak self] _ in
-                self?.updateStatusItemImage()
+                self?.updateStatusItemState()
             }
+            .store(in: &statusItemCancellables)
+
+        Publishers.CombineLatest3(
+            PomodoroTimer.shared.$mode,
+            PomodoroTimer.shared.$phase,
+            PomodoroTimer.shared.$remainingSeconds
+        )
+        .sink { [weak self] _, _, _ in
+            self?.updateStatusItemState()
+        }
+        .store(in: &statusItemCancellables)
     }
 
     @objc

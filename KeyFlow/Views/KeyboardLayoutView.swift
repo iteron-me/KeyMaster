@@ -504,7 +504,7 @@ private struct ActionBadge: View {
             )
         case .runTool(let invocation):
             labelBadge(
-                systemImage: "camera.viewfinder",
+                systemImage: ToolRegistry.shared.tool(for: invocation.toolID)?.systemImage ?? "wrench.and.screwdriver.fill",
                 text: invocation.displayName,
                 tint: .orange
             )
