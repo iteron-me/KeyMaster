@@ -67,6 +67,41 @@ enum ScreenshotService {
         )
     }
 
+    static func previewImage(size: CGSize, on displayID: CGDirectDisplayID) async throws -> CGImage {
+        let content = try await SCShareableContent.current
+        guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
+            throw ScreenshotError.displayNotFound
+        }
+
+        let filter = SCContentFilter(display: display, excludingWindows: [])
+        let scale = max(CGFloat(filter.pointPixelScale), 1)
+        let captureRect = pixelAligned(
+            clamped(CGRect(origin: .zero, size: size), to: size),
+            scale: scale
+        )
+        let configuration = SCStreamConfiguration()
+        configuration.sourceRect = captureRect
+        configuration.width = max(Int((captureRect.width * scale).rounded(.toNearestOrAwayFromZero)), 1)
+        configuration.height = max(Int((captureRect.height * scale).rounded(.toNearestOrAwayFromZero)), 1)
+        configuration.showsCursor = false
+
+        return try await withCheckedThrowingContinuation { continuation in
+            SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration) { image, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                guard let image else {
+                    continuation.resume(throwing: ScreenshotError.emptyCapture)
+                    return
+                }
+
+                continuation.resume(returning: image)
+            }
+        }
+    }
+
     static func copyToPasteboard(_ image: NSImage) {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()

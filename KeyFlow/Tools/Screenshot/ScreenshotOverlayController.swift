@@ -6,6 +6,7 @@ final class ScreenshotOverlayController {
     static let shared = ScreenshotOverlayController()
 
     private var windows: [ScreenshotOverlayWindow] = []
+    private var captureSessionID: UUID?
 
     func beginCapture() {
         guard ScreenshotService.requestScreenCaptureAccessIfNeeded() else {
@@ -14,9 +15,30 @@ final class ScreenshotOverlayController {
 
         closeSelection()
 
-        windows = NSScreen.screens.map { screen in
-            let displayID = screen.displayID
+        let sessionID = UUID()
+        captureSessionID = sessionID
+        let targets = NSScreen.screens.map {
+            ScreenshotOverlayTarget(screen: $0, displayID: $0.displayID, size: $0.frame.size)
+        }
+
+        Task { @MainActor [weak self] in
+            let previews = await Self.previewImages(for: targets)
+            guard self?.captureSessionID == sessionID else {
+                return
+            }
+
+            self?.showSelectionWindows(for: targets, previews: previews)
+        }
+    }
+
+    private func showSelectionWindows(
+        for targets: [ScreenshotOverlayTarget],
+        previews: [CGDirectDisplayID: CGImage]
+    ) {
+        windows = targets.map { target in
+            let displayID = target.displayID
             let view = ScreenshotSelectionView(
+                screenImage: previews[displayID],
                 copy: { [weak self] rect, annotations in
                     self?.copySelection(rect, annotations: annotations, on: displayID)
                 },
@@ -26,14 +48,14 @@ final class ScreenshotOverlayController {
             )
 
             let controller = NSHostingController(rootView: view)
-            controller.view.frame = NSRect(origin: .zero, size: screen.frame.size)
+            controller.view.frame = NSRect(origin: .zero, size: target.screen.frame.size)
 
             let window = ScreenshotOverlayWindow(
-                contentRect: screen.frame,
+                contentRect: target.screen.frame,
                 styleMask: .borderless,
                 backing: .buffered,
                 defer: false,
-                screen: screen
+                screen: target.screen
             )
             window.contentViewController = controller
             window.isReleasedWhenClosed = false
@@ -49,6 +71,24 @@ final class ScreenshotOverlayController {
 
         NSApp.activate(ignoringOtherApps: true)
         windows.first?.makeKeyAndOrderFront(nil)
+    }
+
+    private static func previewImages(for targets: [ScreenshotOverlayTarget]) async -> [CGDirectDisplayID: CGImage] {
+        var previews: [CGDirectDisplayID: CGImage] = [:]
+
+        for target in targets {
+            do {
+                let preview = try await ScreenshotService.previewImage(
+                    size: target.size,
+                    on: target.displayID
+                )
+                previews[target.displayID] = preview
+            } catch {
+                assertionFailure("Failed to capture screenshot preview: \(error)")
+            }
+        }
+
+        return previews
     }
 
     private func copySelection(
@@ -74,9 +114,16 @@ final class ScreenshotOverlayController {
     }
 
     private func closeSelection() {
+        captureSessionID = nil
         windows.forEach { $0.close() }
         windows = []
     }
+}
+
+private struct ScreenshotOverlayTarget {
+    var screen: NSScreen
+    var displayID: CGDirectDisplayID
+    var size: CGSize
 }
 
 private extension NSScreen {

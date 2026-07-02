@@ -2,12 +2,15 @@ import AppKit
 import SwiftUI
 
 struct ScreenshotSelectionView: View {
+    let screenImage: CGImage?
     let copy: (CGRect, [ScreenshotAnnotation]) -> Void
     let cancel: () -> Void
 
     @State private var dragStart: CGPoint?
     @State private var dragCurrent: CGPoint?
     @State private var lockedSelectionRect: CGRect?
+    @State private var resizingSelection: SelectionResizeHandle?
+    @State private var resizingSelectionStartRect: CGRect?
     @State private var movingSelectionStartRect: CGRect?
     @State private var annotationDragStart: CGPoint?
     @State private var annotationDragCurrent: CGPoint?
@@ -17,6 +20,7 @@ struct ScreenshotSelectionView: View {
     @State private var annotationMode: ScreenshotAnnotationMode = .selection
     @State private var annotations: [ScreenshotAnnotation] = []
     @State private var mouseLocation: CGPoint?
+    @State private var copiedColorHex: String?
     @State private var isHoveringToolbar = false
     @State private var hoveredToolbarItem: ScreenshotToolbarItem?
     @FocusState private var isTextFieldFocused: Bool
@@ -24,14 +28,30 @@ struct ScreenshotSelectionView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                Color.black.opacity(0.28)
-
                 if let activeRect {
                     selectionOverlay(activeRect, in: proxy.size)
+                } else {
+                    Color.black.opacity(0.28)
+                }
+
+                if showsCustomCrosshair, let mouseLocation {
+                    CrosshairCursor(location: mouseLocation)
+                        .allowsHitTesting(false)
+
+                    CursorInspector(
+                        screenImage: screenImage,
+                        location: mouseLocation,
+                        canvasSize: proxy.size,
+                        copiedColorHex: copiedColorHex
+                    )
+                    .allowsHitTesting(false)
                 }
 
                 ScreenshotShortcutHandlingView(
                     isTextFieldFocused: isTextFieldFocused,
+                    cancel: {
+                        cancelInteraction()
+                    },
                     rectangle: {
                         toggleRectangleAnnotationMode()
                     },
@@ -46,11 +66,17 @@ struct ScreenshotSelectionView: View {
                         }
                         return false
                     },
+                    copyColor: {
+                        copyCurrentColor(in: proxy.size)
+                    },
                     undo: {
                         undoLastAnnotation()
                     }
                 )
                 .frame(width: 0, height: 0)
+
+                CursorVisibilityView(isHidden: shouldHideSystemCursor)
+                    .frame(width: 0, height: 0)
             }
             .ignoresSafeArea()
             .contentShape(Rectangle())
@@ -117,6 +143,10 @@ struct ScreenshotSelectionView: View {
 
         if pendingTextOrigin != nil {
             pendingTextOverlay(in: rect)
+        }
+
+        if lockedSelectionRect != nil {
+            selectionResizeHandles(for: rect)
         }
 
         Text("\(Int(rect.width)) x \(Int(rect.height))")
@@ -325,6 +355,9 @@ struct ScreenshotSelectionView: View {
         switch phase {
         case .active(let location):
             mouseLocation = location
+            if copiedColorHex != nil {
+                copiedColorHex = nil
+            }
             currentCursorKind.apply()
         case .ended:
             mouseLocation = nil
@@ -359,12 +392,22 @@ struct ScreenshotSelectionView: View {
         if dragStart == nil {
             dragStart = start
             dragCurrent = nil
+            resizingSelection = nil
+            resizingSelectionStartRect = nil
             isIgnoringCurrentDrag = false
             mouseLocation = start
 
             commitPendingText()
 
-            if let lockedSelectionRect, annotationMode == .rectangle, lockedSelectionRect.contains(start) {
+            if let lockedSelectionRect, let resizeHandle = resizeHandle(at: start, in: lockedSelectionRect) {
+                resizingSelection = resizeHandle
+                resizingSelectionStartRect = lockedSelectionRect
+                movingSelectionStartRect = nil
+                annotationDragStart = nil
+                annotationDragCurrent = nil
+                hoveredToolbarItem = nil
+                isHoveringToolbar = false
+            } else if let lockedSelectionRect, annotationMode == .rectangle, lockedSelectionRect.contains(start) {
                 annotationDragStart = clampedPoint(start, in: lockedSelectionRect)
                 annotationDragCurrent = clampedPoint(location, in: lockedSelectionRect)
                 movingSelectionStartRect = nil
@@ -404,6 +447,14 @@ struct ScreenshotSelectionView: View {
             self.annotationDragStart = clampedPoint(annotationDragStart, in: lockedSelectionRect)
             annotationDragCurrent = clampedPoint(location, in: lockedSelectionRect)
             ScreenshotCursorKind.crosshair.apply()
+        } else if let resizingSelection, let resizingSelectionStartRect {
+            lockedSelectionRect = resizedRect(
+                resizingSelectionStartRect,
+                handle: resizingSelection,
+                to: location,
+                in: size
+            )
+            resizingSelection.cursorKind.apply()
         } else if let movingSelectionStartRect {
             let proposedRect = movingSelectionStartRect.offsetBy(
                 dx: location.x - start.x,
@@ -423,6 +474,8 @@ struct ScreenshotSelectionView: View {
         defer {
             dragStart = nil
             dragCurrent = nil
+            resizingSelection = nil
+            resizingSelectionStartRect = nil
             movingSelectionStartRect = nil
             annotationDragStart = nil
             annotationDragCurrent = nil
@@ -453,6 +506,17 @@ struct ScreenshotSelectionView: View {
             }
 
             ScreenshotCursorKind.crosshair.apply()
+            return
+        }
+
+        if let resizingSelection, let resizingSelectionStartRect {
+            lockedSelectionRect = resizedRect(
+                resizingSelectionStartRect,
+                handle: resizingSelection,
+                to: location,
+                in: size
+            )
+            resizingSelection.cursorKind.apply()
             return
         }
 
@@ -494,8 +558,16 @@ struct ScreenshotSelectionView: View {
             return .moveActive
         }
 
+        if let resizingSelection {
+            return resizingSelection.cursorKind
+        }
+
         if dragStart != nil {
             return .drawing
+        }
+
+        if let lockedSelectionRect, let mouseLocation, let resizeHandle = resizeHandle(at: mouseLocation, in: lockedSelectionRect) {
+            return resizeHandle.cursorKind
         }
 
         if annotationMode == .rectangle, lockedSelectionRect != nil {
@@ -511,6 +583,14 @@ struct ScreenshotSelectionView: View {
         }
 
         return .crosshair
+    }
+
+    private var shouldHideSystemCursor: Bool {
+        showsCustomCrosshair && mouseLocation != nil
+    }
+
+    private var showsCustomCrosshair: Bool {
+        currentCursorKind == .crosshair || currentCursorKind == .drawing
     }
 
     private var activeRect: CGRect? {
@@ -560,6 +640,37 @@ struct ScreenshotSelectionView: View {
         pendingTextOrigin = nil
         pendingText = ""
         isTextFieldFocused = false
+    }
+
+    @discardableResult
+    private func copyCurrentColor(in size: CGSize) -> Bool {
+        guard lockedSelectionRect == nil, let mouseLocation, let screenImage else {
+            return false
+        }
+
+        guard let color = screenImage.pixelColor(at: imagePoint(from: mouseLocation, canvasSize: size, in: screenImage)) else {
+            return false
+        }
+
+        let hex = color.hexString
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(hex, forType: .string)
+        copiedColorHex = hex
+        return true
+    }
+
+    @discardableResult
+    private func cancelInteraction() -> Bool {
+        if pendingTextOrigin != nil {
+            cancelPendingText()
+            currentCursorKind.apply()
+            return true
+        }
+
+        ScreenshotCursorKind.arrow.apply()
+        cancel()
+        return true
     }
 
     @discardableResult
@@ -617,6 +728,13 @@ struct ScreenshotSelectionView: View {
         )
     }
 
+    private func imagePoint(from point: CGPoint, canvasSize: CGSize, in image: CGImage) -> CGPoint {
+        CGPoint(
+            x: min(max(point.x / max(canvasSize.width, 1) * CGFloat(image.width), 0), CGFloat(image.width - 1)),
+            y: min(max(point.y / max(canvasSize.height, 1) * CGFloat(image.height), 0), CGFloat(image.height - 1))
+        )
+    }
+
     private func clampedPoint(_ point: CGPoint, in rect: CGRect) -> CGPoint {
         CGPoint(
             x: min(max(point.x, rect.minX), rect.maxX),
@@ -648,6 +766,110 @@ struct ScreenshotSelectionView: View {
         )
     }
 
+    private func resizedRect(
+        _ rect: CGRect,
+        handle: SelectionResizeHandle,
+        to point: CGPoint,
+        in size: CGSize
+    ) -> CGRect {
+        var minX = rect.minX
+        var minY = rect.minY
+        var maxX = rect.maxX
+        var maxY = rect.maxY
+
+        switch handle {
+        case .topLeft:
+            minX = point.x
+            minY = point.y
+        case .topRight:
+            maxX = point.x
+            minY = point.y
+        case .bottomLeft:
+            minX = point.x
+            maxY = point.y
+        case .bottomRight:
+            maxX = point.x
+            maxY = point.y
+        }
+
+        minX = min(max(minX, 0), size.width)
+        maxX = min(max(maxX, 0), size.width)
+        minY = min(max(minY, 0), size.height)
+        maxY = min(max(maxY, 0), size.height)
+
+        if maxX - minX < Self.minimumSelectionLength {
+            switch handle {
+            case .topLeft, .bottomLeft:
+                minX = maxX - Self.minimumSelectionLength
+            case .topRight, .bottomRight:
+                maxX = minX + Self.minimumSelectionLength
+            }
+        }
+
+        if maxY - minY < Self.minimumSelectionLength {
+            switch handle {
+            case .topLeft, .topRight:
+                minY = maxY - Self.minimumSelectionLength
+            case .bottomLeft, .bottomRight:
+                maxY = minY + Self.minimumSelectionLength
+            }
+        }
+
+        if minX < 0 {
+            maxX -= minX
+            minX = 0
+        } else if maxX > size.width {
+            minX -= maxX - size.width
+            maxX = size.width
+        }
+
+        if minY < 0 {
+            maxY -= minY
+            minY = 0
+        } else if maxY > size.height {
+            minY -= maxY - size.height
+            maxY = size.height
+        }
+
+        return CGRect(
+            x: minX,
+            y: minY,
+            width: max(maxX - minX, Self.minimumSelectionLength),
+            height: max(maxY - minY, Self.minimumSelectionLength)
+        )
+    }
+
+    @ViewBuilder
+    private func selectionResizeHandles(for rect: CGRect) -> some View {
+        ForEach(SelectionResizeHandle.allCases) { handle in
+            let position = handle.position(in: rect)
+            Circle()
+                .fill(Color.white)
+                .frame(width: Self.resizeHandleVisibleSize, height: Self.resizeHandleVisibleSize)
+                .overlay(
+                    Circle()
+                        .stroke(Color(nsColor: .systemBlue), lineWidth: 2)
+                )
+                .shadow(color: .black.opacity(0.32), radius: 3, y: 1)
+                .frame(width: Self.resizeHandleHitSize, height: Self.resizeHandleHitSize)
+                .contentShape(Circle())
+                .position(position)
+        }
+    }
+
+    private func resizeHandle(at point: CGPoint, in rect: CGRect) -> SelectionResizeHandle? {
+        SelectionResizeHandle.allCases.first { handle in
+            let position = handle.position(in: rect)
+            let hitRect = CGRect(
+                x: position.x - Self.resizeHandleHitSize / 2,
+                y: position.y - Self.resizeHandleHitSize / 2,
+                width: Self.resizeHandleHitSize,
+                height: Self.resizeHandleHitSize
+            )
+            return hitRect.contains(point)
+        }
+    }
+
     private func toolbarPosition(for rect: CGRect, in size: CGSize) -> CGPoint {
         let toolbarWidth: CGFloat = 150
         let toolbarHeight: CGFloat = 40
@@ -669,6 +891,9 @@ struct ScreenshotSelectionView: View {
 
     private static let annotationTextSize: CGFloat = 18
     private static let textFieldSize = CGSize(width: 180, height: 34)
+    private static let minimumSelectionLength: CGFloat = 4
+    private static let resizeHandleVisibleSize: CGFloat = 10
+    private static let resizeHandleHitSize: CGFloat = 26
 }
 
 private struct ScreenshotToolbarIconButtonStyle: ButtonStyle {
@@ -756,6 +981,37 @@ private enum ScreenshotAnnotationMode {
     }
 }
 
+private enum SelectionResizeHandle: CaseIterable, Identifiable {
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
+
+    var id: Self { self }
+
+    var cursorKind: ScreenshotCursorKind {
+        switch self {
+        case .topLeft, .bottomRight:
+            return .resizeDiagonalDown
+        case .topRight, .bottomLeft:
+            return .resizeDiagonalUp
+        }
+    }
+
+    func position(in rect: CGRect) -> CGPoint {
+        switch self {
+        case .topLeft:
+            return CGPoint(x: rect.minX, y: rect.minY)
+        case .topRight:
+            return CGPoint(x: rect.maxX, y: rect.minY)
+        case .bottomLeft:
+            return CGPoint(x: rect.minX, y: rect.maxY)
+        case .bottomRight:
+            return CGPoint(x: rect.maxX, y: rect.maxY)
+        }
+    }
+}
+
 private enum ScreenshotCursorKind: Equatable {
     case arrow
     case crosshair
@@ -763,6 +1019,8 @@ private enum ScreenshotCursorKind: Equatable {
     case drawing
     case moveHover
     case moveActive
+    case resizeDiagonalDown
+    case resizeDiagonalUp
 
     @MainActor
     func apply() {
@@ -779,15 +1037,321 @@ private enum ScreenshotCursorKind: Equatable {
             NSCursor.openHand.set()
         case .moveActive:
             NSCursor.closedHand.set()
+        case .resizeDiagonalDown:
+            NSCursor.frameResize(position: .topLeft, directions: .all).set()
+        case .resizeDiagonalUp:
+            NSCursor.frameResize(position: .topRight, directions: .all).set()
+        }
+    }
+}
+
+private struct CrosshairCursor: View {
+    let location: CGPoint
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(.black.opacity(0.72))
+                .frame(width: 3, height: 31)
+            Rectangle()
+                .fill(.black.opacity(0.72))
+                .frame(width: 31, height: 3)
+            Rectangle()
+                .fill(.white)
+                .frame(width: 1.5, height: 29)
+            Rectangle()
+                .fill(.white)
+                .frame(width: 29, height: 1.5)
+            Circle()
+                .stroke(.white, lineWidth: 1.5)
+                .frame(width: 7, height: 7)
+        }
+        .shadow(color: .black.opacity(0.42), radius: 2, y: 1)
+        .position(location)
+    }
+}
+
+private struct CursorInspector: View {
+    let screenImage: CGImage?
+    let location: CGPoint
+    let canvasSize: CGSize
+    let copiedColorHex: String?
+
+    var body: some View {
+        VStack(spacing: 6) {
+            magnifiedPreview
+                .frame(width: Self.previewSize, height: Self.previewSize)
+                .clipShape(RoundedRectangle(cornerRadius: 5))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(.white.opacity(0.72), lineWidth: 1)
+                )
+                .overlay(
+                    CrosshairCursor(location: CGPoint(x: Self.previewSize / 2, y: Self.previewSize / 2))
+                        .scaleEffect(0.52)
+                )
+
+            Text(pixelColor?.hexString ?? "#------")
+                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                .foregroundStyle(.white)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+
+            Text(statusText)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(statusColor)
+                .lineLimit(1)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(6)
+        .frame(width: Self.containerSize.width, height: Self.containerSize.height)
+        .background(.black.opacity(0.74), in: RoundedRectangle(cornerRadius: 7))
+        .overlay(
+            RoundedRectangle(cornerRadius: 7)
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.36), radius: 10, y: 4)
+        .position(position)
+    }
+
+    @ViewBuilder
+    private var magnifiedPreview: some View {
+        if let screenImage, let croppedImage = screenImage.cropping(to: previewSourceRect(in: screenImage)) {
+            Image(decorative: croppedImage, scale: 1)
+                .resizable()
+                .interpolation(.none)
+                .antialiased(false)
+                .aspectRatio(contentMode: .fill)
+                .frame(width: Self.previewSize, height: Self.previewSize)
+                .clipped()
+        } else {
+            Color.black.opacity(0.68)
+                .overlay(
+                    Image(systemName: "eye.slash")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.7))
+                )
+        }
+    }
+
+    private var pixelColor: ScreenshotPixelColor? {
+        guard let screenImage else {
+            return nil
+        }
+
+        return screenImage.pixelColor(at: imagePoint(in: screenImage))
+    }
+
+    private var statusText: String {
+        if copiedColorHex == pixelColor?.hexString {
+            return "已复制"
+        }
+
+        return "按 C 复制"
+    }
+
+    private var statusColor: Color {
+        copiedColorHex == pixelColor?.hexString ? Color(nsColor: .systemGreen) : .white.opacity(0.68)
+    }
+
+    private var position: CGPoint {
+        let preferred = CGPoint(
+            x: location.x + Self.cursorOffset.width + Self.containerSize.width / 2,
+            y: location.y + Self.cursorOffset.height + Self.containerSize.height / 2
+        )
+        var x = preferred.x
+        var y = preferred.y
+
+        if x + Self.containerSize.width / 2 > canvasSize.width - Self.edgePadding {
+            x = location.x - Self.cursorOffset.width - Self.containerSize.width / 2
+        }
+        if y + Self.containerSize.height / 2 > canvasSize.height - Self.edgePadding {
+            y = location.y - Self.cursorOffset.height - Self.containerSize.height / 2
+        }
+
+        return CGPoint(
+            x: min(max(x, Self.containerSize.width / 2 + Self.edgePadding), canvasSize.width - Self.containerSize.width / 2 - Self.edgePadding),
+            y: min(max(y, Self.containerSize.height / 2 + Self.edgePadding), canvasSize.height - Self.containerSize.height / 2 - Self.edgePadding)
+        )
+    }
+
+    private func previewSourceRect(in image: CGImage) -> CGRect {
+        let center = imagePoint(in: image)
+        let sourceSize = Self.previewSize / Self.previewScale
+        let maxX = max(CGFloat(image.width) - sourceSize, 0)
+        let maxY = max(CGFloat(image.height) - sourceSize, 0)
+
+        return CGRect(
+            x: min(max(center.x - sourceSize / 2, 0), maxX),
+            y: min(max(center.y - sourceSize / 2, 0), maxY),
+            width: sourceSize,
+            height: sourceSize
+        ).integral
+    }
+
+    private func imagePoint(in image: CGImage) -> CGPoint {
+        CGPoint(
+            x: min(max(location.x / max(canvasSize.width, 1) * CGFloat(image.width), 0), CGFloat(image.width - 1)),
+            y: min(max(location.y / max(canvasSize.height, 1) * CGFloat(image.height), 0), CGFloat(image.height - 1))
+        )
+    }
+
+    private static let previewSize: CGFloat = 78
+    private static let previewScale: CGFloat = 6
+    private static let containerSize = CGSize(width: 92, height: 128)
+    private static let cursorOffset = CGSize(width: 18, height: 20)
+    private static let edgePadding: CGFloat = 10
+}
+
+private struct ScreenshotPixelColor {
+    var red: UInt8
+    var green: UInt8
+    var blue: UInt8
+
+    var hexString: String {
+        String(format: "#%02X%02X%02X", red, green, blue)
+    }
+}
+
+private extension CGImage {
+    func pixelColor(at point: CGPoint) -> ScreenshotPixelColor? {
+        let x = min(max(Int(point.x.rounded(.down)), 0), width - 1)
+        let y = min(max(Int(point.y.rounded(.down)), 0), height - 1)
+
+        guard
+            let dataProvider,
+            let data = dataProvider.data,
+            let pointer = CFDataGetBytePtr(data)
+        else {
+            return sampledPixelColor(atX: x, y: y)
+        }
+
+        let bytesPerPixel = max(bitsPerPixel / 8, 1)
+        let offset = y * bytesPerRow + x * bytesPerPixel
+        guard offset + min(bytesPerPixel, 4) <= CFDataGetLength(data) else {
+            return sampledPixelColor(atX: x, y: y)
+        }
+
+        switch (bitmapInfo.pixelFormat, bytesPerPixel) {
+        case (.rgba, 4...):
+            return ScreenshotPixelColor(red: pointer[offset], green: pointer[offset + 1], blue: pointer[offset + 2])
+        case (.bgra, 4...):
+            return ScreenshotPixelColor(red: pointer[offset + 2], green: pointer[offset + 1], blue: pointer[offset])
+        case (.argb, 4...):
+            return ScreenshotPixelColor(red: pointer[offset + 1], green: pointer[offset + 2], blue: pointer[offset + 3])
+        case (.abgr, 4...):
+            return ScreenshotPixelColor(red: pointer[offset + 3], green: pointer[offset + 2], blue: pointer[offset + 1])
+        case (_, 3):
+            return ScreenshotPixelColor(red: pointer[offset], green: pointer[offset + 1], blue: pointer[offset + 2])
+        default:
+            return sampledPixelColor(atX: x, y: y)
+        }
+    }
+
+    private func sampledPixelColor(atX x: Int, y: Int) -> ScreenshotPixelColor? {
+        var pixel = [UInt8](repeating: 0, count: 4)
+        guard
+            let colorSpace = CGColorSpace(name: CGColorSpace.sRGB),
+            let context = CGContext(
+                data: &pixel,
+                width: 1,
+                height: 1,
+                bitsPerComponent: 8,
+                bytesPerRow: 4,
+                space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            )
+        else {
+            return nil
+        }
+
+        context.translateBy(x: CGFloat(-x), y: CGFloat(y - height + 1))
+        context.draw(self, in: CGRect(x: 0, y: 0, width: width, height: height))
+        return ScreenshotPixelColor(red: pixel[0], green: pixel[1], blue: pixel[2])
+    }
+}
+
+private enum ScreenshotPixelFormat {
+    case rgba
+    case bgra
+    case argb
+    case abgr
+    case unknown
+}
+
+private extension CGBitmapInfo {
+    var pixelFormat: ScreenshotPixelFormat {
+        let alphaInfo = CGImageAlphaInfo(rawValue: rawValue & CGBitmapInfo.alphaInfoMask.rawValue)
+        let byteOrder = intersection(.byteOrderMask)
+
+        switch (byteOrder, alphaInfo) {
+        case (.byteOrder32Little, .premultipliedFirst), (.byteOrder32Little, .first), (.byteOrder32Little, .noneSkipFirst):
+            return .bgra
+        case (.byteOrder32Little, .premultipliedLast), (.byteOrder32Little, .last), (.byteOrder32Little, .noneSkipLast):
+            return .abgr
+        case (.byteOrder32Big, .premultipliedFirst), (.byteOrder32Big, .first), (.byteOrder32Big, .noneSkipFirst):
+            return .argb
+        case (.byteOrder32Big, .premultipliedLast), (.byteOrder32Big, .last), (.byteOrder32Big, .noneSkipLast):
+            return .rgba
+        default:
+            return .unknown
+        }
+    }
+}
+
+private struct CursorVisibilityView: NSViewRepresentable {
+    var isHidden: Bool
+
+    func makeNSView(context: Context) -> CursorVisibilityNSView {
+        let view = CursorVisibilityNSView()
+        view.setHidden(isHidden)
+        return view
+    }
+
+    func updateNSView(_ nsView: CursorVisibilityNSView, context: Context) {
+        nsView.setHidden(isHidden)
+    }
+
+    static func dismantleNSView(_ nsView: CursorVisibilityNSView, coordinator: ()) {
+        nsView.restoreCursorIfNeeded()
+    }
+}
+
+private final class CursorVisibilityNSView: NSView {
+    private var isCursorHidden = false
+
+    fileprivate func setHidden(_ shouldHide: Bool) {
+        guard shouldHide != isCursorHidden else {
+            return
+        }
+
+        if shouldHide {
+            NSCursor.hide()
+            isCursorHidden = true
+        } else {
+            NSCursor.unhide()
+            isCursorHidden = false
+        }
+    }
+
+    fileprivate func restoreCursorIfNeeded() {
+        setHidden(false)
+    }
+
+    deinit {
+        if isCursorHidden {
+            NSCursor.unhide()
         }
     }
 }
 
 private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
     var isTextFieldFocused: Bool
+    var cancel: () -> Bool
     var rectangle: () -> Bool
     var text: () -> Bool
     var copy: () -> Bool
+    var copyColor: () -> Bool
     var undo: () -> Bool
 
     func makeNSView(context: Context) -> ShortcutHandlingNSView {
@@ -798,9 +1362,11 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
 
     func updateNSView(_ nsView: ShortcutHandlingNSView, context: Context) {
         context.coordinator.isTextFieldFocused = isTextFieldFocused
+        context.coordinator.cancel = cancel
         context.coordinator.rectangle = rectangle
         context.coordinator.text = text
         context.coordinator.copy = copy
+        context.coordinator.copyColor = copyColor
         context.coordinator.undo = undo
     }
 
@@ -811,31 +1377,39 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
     func makeCoordinator() -> Coordinator {
         Coordinator(
             isTextFieldFocused: isTextFieldFocused,
+            cancel: cancel,
             rectangle: rectangle,
             text: text,
             copy: copy,
+            copyColor: copyColor,
             undo: undo
         )
     }
 
     final class Coordinator {
         var isTextFieldFocused: Bool
+        var cancel: () -> Bool
         var rectangle: () -> Bool
         var text: () -> Bool
         var copy: () -> Bool
+        var copyColor: () -> Bool
         var undo: () -> Bool
 
         init(
             isTextFieldFocused: Bool,
+            cancel: @escaping () -> Bool,
             rectangle: @escaping () -> Bool,
             text: @escaping () -> Bool,
             copy: @escaping () -> Bool,
+            copyColor: @escaping () -> Bool,
             undo: @escaping () -> Bool
         ) {
             self.isTextFieldFocused = isTextFieldFocused
+            self.cancel = cancel
             self.rectangle = rectangle
             self.text = text
             self.copy = copy
+            self.copyColor = copyColor
             self.undo = undo
         }
 
@@ -843,6 +1417,10 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
         func handle(_ event: NSEvent) -> Bool {
             guard event.type == .keyDown else {
                 return false
+            }
+
+            if event.keyCode == Self.escapeKeyCode {
+                return cancel()
             }
 
             let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
@@ -862,6 +1440,8 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
             }
 
             switch event.charactersIgnoringModifiers?.lowercased() {
+            case "c":
+                return copyColor()
             case "r":
                 return rectangle()
             case "t":
@@ -870,6 +1450,8 @@ private struct ScreenshotShortcutHandlingView: NSViewRepresentable {
                 return false
             }
         }
+
+        private static let escapeKeyCode: UInt16 = 53
     }
 }
 
