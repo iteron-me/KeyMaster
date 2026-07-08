@@ -21,7 +21,7 @@ This repository contains the first buildable Xcode project:
 
 - Xcode 26.5 or newer.
 - XcodeGen for regenerating `KeyMaster.xcodeproj` from `project.yml`.
-- macOS 26.0 deployment target for SwiftUI Liquid Glass.
+- macOS 15.0 deployment target with custom SwiftUI glass styling.
 - Accessibility / input permissions for real keyboard interception.
 
 Install XcodeGen with:

@@ -84,7 +84,7 @@ xcodebuild -project KeyMaster.xcodeproj \
 
 ## Open Decisions
 
-- Minimum macOS version: currently set to macOS 26.0 so the UI can use SwiftUI Liquid Glass APIs directly.
+- Minimum macOS version: currently set to macOS 15.0. The UI uses custom SwiftUI glass styling rather than requiring macOS 26-only Liquid Glass APIs.
 - Persistence timing: prototype currently keeps rules in memory; SwiftData should be introduced after action schemas settle.
 - Caps Lock support: intentionally deferred because it may require a lower-level approach to be reliable.
 - Key remapping support: intentionally deferred until the remapping model supports arbitrary source and destination combinations.
