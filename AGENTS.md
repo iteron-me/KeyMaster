@@ -19,7 +19,7 @@ The runtime shortcut engine uses a CoreGraphics event tap, so real shortcut inte
 - MenuBarExtra window-style UI
 - CoreGraphics event taps for global keyboard monitoring
 - XcodeGen project definition in `project.yml`
-- Deployment target: macOS 26.0
+- Deployment target: macOS 15.0
 - Bundle identifier: `app.keymaster.mac`
 
 `project.yml` is the source of truth for the Xcode project. Regenerate `KeyMaster.xcodeproj` after changing targets, file groups, build settings, schemes, or resources.
