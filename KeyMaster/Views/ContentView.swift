@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct KeyFlowPanelView: View {
+struct KeyMasterPanelView: View {
     @EnvironmentObject private var appState: AppState
     @Environment(\.scenePhase) private var scenePhase
 

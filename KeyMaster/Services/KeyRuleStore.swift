@@ -16,6 +16,11 @@ extension KeyRuleStore {
 }
 
 struct FileKeyRuleStore: KeyRuleStore {
+    private static let applicationSupportName = "KeyMaster"
+    private static let legacyApplicationSupportName = "Key" + "Flow"
+    private static let rulesFileName = "rules.json"
+    private static let actionHistoryFileName = "action-history.json"
+
     private let fileURL: URL
     private let historyFileURL: URL
     private let fileManager: FileManager
@@ -26,10 +31,18 @@ struct FileKeyRuleStore: KeyRuleStore {
         fileURL: URL = FileKeyRuleStore.defaultFileURL(),
         fileManager: FileManager = .default
     ) {
-        self.fileURL = fileURL
-        self.historyFileURL = fileURL
+        let historyFileURL = fileURL
             .deletingLastPathComponent()
-            .appendingPathComponent("action-history.json")
+            .appendingPathComponent(Self.actionHistoryFileName)
+
+        Self.migrateLegacyFilesIfNeeded(
+            rulesFileURL: fileURL,
+            historyFileURL: historyFileURL,
+            fileManager: fileManager
+        )
+
+        self.fileURL = fileURL
+        self.historyFileURL = historyFileURL
         self.fileManager = fileManager
 
         let encoder = JSONEncoder()
@@ -83,13 +96,61 @@ struct FileKeyRuleStore: KeyRuleStore {
     }
 
     private static func defaultFileURL() -> URL {
-        let applicationSupportDirectory = FileManager.default
+        applicationSupportDirectory()
+            .appendingPathComponent(applicationSupportName, isDirectory: true)
+            .appendingPathComponent(rulesFileName)
+    }
+
+    private static func applicationSupportDirectory() -> URL {
+        FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first ?? FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/Application Support", isDirectory: true)
+    }
 
-        return applicationSupportDirectory
-            .appendingPathComponent("KeyFlow", isDirectory: true)
-            .appendingPathComponent("rules.json")
+    private static func migrateLegacyFilesIfNeeded(
+        rulesFileURL: URL,
+        historyFileURL: URL,
+        fileManager: FileManager
+    ) {
+        let legacyDirectoryURL = applicationSupportDirectory()
+            .appendingPathComponent(legacyApplicationSupportName, isDirectory: true)
+        let legacyRulesFileURL = legacyDirectoryURL
+            .appendingPathComponent(rulesFileName)
+        let legacyHistoryFileURL = legacyDirectoryURL
+            .appendingPathComponent(actionHistoryFileName)
+
+        copyLegacyFileIfNeeded(
+            from: legacyRulesFileURL,
+            to: rulesFileURL,
+            fileManager: fileManager
+        )
+        copyLegacyFileIfNeeded(
+            from: legacyHistoryFileURL,
+            to: historyFileURL,
+            fileManager: fileManager
+        )
+    }
+
+    private static func copyLegacyFileIfNeeded(
+        from legacyFileURL: URL,
+        to destinationFileURL: URL,
+        fileManager: FileManager
+    ) {
+        guard fileManager.fileExists(atPath: legacyFileURL.path),
+              !fileManager.fileExists(atPath: destinationFileURL.path)
+        else {
+            return
+        }
+
+        do {
+            try fileManager.createDirectory(
+                at: destinationFileURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try fileManager.copyItem(at: legacyFileURL, to: destinationFileURL)
+        } catch {
+            assertionFailure("Failed to migrate legacy configuration: \(error.localizedDescription)")
+        }
     }
 }

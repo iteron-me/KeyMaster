@@ -1,4 +1,4 @@
-# KeyFlow Implementation Plan
+# KeyMaster Implementation Plan
 
 ## Technology Stack
 
@@ -30,10 +30,10 @@ Verified command:
 
 ```sh
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-xcodebuild -project KeyFlow.xcodeproj \
-  -scheme KeyFlow \
+xcodebuild -project KeyMaster.xcodeproj \
+  -scheme KeyMaster \
   -configuration Debug \
-  -derivedDataPath /private/tmp/KeyFlowDerived \
+  -derivedDataPath /private/tmp/KeyMasterDerived \
   build
 ```
 

@@ -1,6 +1,6 @@
 import Foundation
 
-struct PomodoroTool: KeyFlowTool {
+struct PomodoroTool: KeyMasterTool {
     let id = "pomodoro.timer"
     let title = "Pomodoro Timer"
     let subtitle = "Start or pause a focus timer"

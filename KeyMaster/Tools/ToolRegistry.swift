@@ -4,15 +4,15 @@ import Foundation
 final class ToolRegistry {
     static let shared = ToolRegistry()
 
-    let tools: [any KeyFlowTool]
-    private let toolsByID: [String: any KeyFlowTool]
+    let tools: [any KeyMasterTool]
+    private let toolsByID: [String: any KeyMasterTool]
 
-    init(tools: [any KeyFlowTool] = [ScreenshotAreaTool(), PomodoroTool()]) {
+    init(tools: [any KeyMasterTool] = [ScreenshotAreaTool(), PomodoroTool()]) {
         self.tools = tools
         toolsByID = Dictionary(uniqueKeysWithValues: tools.map { ($0.id, $0) })
     }
 
-    func tool(for id: String) -> (any KeyFlowTool)? {
+    func tool(for id: String) -> (any KeyMasterTool)? {
         toolsByID[id]
     }
 

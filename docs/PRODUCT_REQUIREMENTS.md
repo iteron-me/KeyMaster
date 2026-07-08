@@ -1,8 +1,8 @@
-# KeyFlow Product Requirements
+# KeyMaster Product Requirements
 
 ## Goal
 
-KeyFlow is a native macOS utility for visual keyboard shortcuts and automation. It targets users who currently rely on Hammerspoon, shell scripts, or app launchers, but want a focused UI instead of handwritten configuration.
+KeyMaster is a native macOS utility for visual keyboard shortcuts and automation. It targets users who currently rely on Hammerspoon, shell scripts, or app launchers, but want a focused UI instead of handwritten configuration.
 
 ## Target Users
 
@@ -66,7 +66,7 @@ The MVP must support:
 
 ## System Permissions
 
-KeyFlow depends on macOS privacy permissions:
+KeyMaster depends on macOS privacy permissions:
 
 - Accessibility: required for low-level keyboard control.
 - Listen Event Access: required for global event listening on modern macOS.
@@ -76,4 +76,4 @@ The app should detect permission status, explain missing permissions, and open t
 
 ## Distribution Assumption
 
-KeyFlow should be distributed with Developer ID signing and notarization. The sandbox is disabled because global keyboard event taps, command execution, and deep automation are not a good fit for the Mac App Store sandbox model.
+KeyMaster should be distributed with Developer ID signing and notarization. The sandbox is disabled because global keyboard event taps, command execution, and deep automation are not a good fit for the Mac App Store sandbox model.

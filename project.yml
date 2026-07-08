@@ -1,7 +1,7 @@
-name: KeyFlow
+name: KeyMaster
 
 options:
-  bundleIdPrefix: app.keyflow
+  bundleIdPrefix: app.keymaster
   createIntermediateGroups: true
   defaultConfig: Release
   deploymentTarget:
@@ -76,18 +76,18 @@ settings:
       SWIFT_COMPILATION_MODE: wholemodule
 
 targets:
-  KeyFlow:
+  KeyMaster:
     type: application
     platform: macOS
     deploymentTarget: "26.0"
     sources:
-      - path: KeyFlow/App
-      - path: KeyFlow/Actions
-      - path: KeyFlow/Models
-      - path: KeyFlow/Services
-      - path: KeyFlow/Tools
-      - path: KeyFlow/Views
-      - path: KeyFlow/Resources/Assets.xcassets
+      - path: KeyMaster/App
+      - path: KeyMaster/Actions
+      - path: KeyMaster/Models
+      - path: KeyMaster/Services
+      - path: KeyMaster/Tools
+      - path: KeyMaster/Views
+      - path: KeyMaster/Resources/Assets.xcassets
         buildPhase: resources
     settings:
       base:
@@ -98,21 +98,21 @@ targets:
         DEVELOPMENT_ASSET_PATHS: ""
         ENABLE_APP_SANDBOX: NO
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: KeyFlow/Info.plist
+        INFOPLIST_FILE: KeyMaster/Info.plist
         LD_RUNPATH_SEARCH_PATHS:
           - $(inherited)
           - "@executable_path/../Frameworks"
         MARKETING_VERSION: 0.1.0
-        PRODUCT_BUNDLE_IDENTIFIER: app.keyflow.mac
+        PRODUCT_BUNDLE_IDENTIFIER: app.keymaster.mac
         PRODUCT_NAME: $(TARGET_NAME)
         SWIFT_EMIT_LOC_STRINGS: YES
         SWIFT_VERSION: "6.0"
 schemes:
-  KeyFlow:
+  KeyMaster:
     shared: true
     build:
       targets:
-        KeyFlow: all
+        KeyMaster: all
     run:
       config: Debug
     profile:
