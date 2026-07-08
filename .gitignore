@@ -4,6 +4,8 @@ DerivedData/
 build/
 dist/
 
+/package-lock.json
+
 *.xcuserstate
 xcuserdata/
 

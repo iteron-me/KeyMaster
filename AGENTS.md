@@ -1,8 +1,8 @@
-# KeyFlow Agent Notes
+# KeyMaster Agent Notes
 
 ## Project Summary
 
-KeyFlow is a native macOS menu bar app for configuring launcher-key keyboard shortcuts visually. It is intended as a focused alternative to maintaining Hammerspoon scripts.
+KeyMaster is a native macOS menu bar app for configuring launcher-key keyboard shortcuts visually. It is intended as a focused alternative to maintaining Hammerspoon scripts.
 
 The current app lets users click keys in a visual keyboard layout and bind `Control` plus that key to one of three actions:
 
@@ -20,9 +20,9 @@ The runtime shortcut engine uses a CoreGraphics event tap, so real shortcut inte
 - CoreGraphics event taps for global keyboard monitoring
 - XcodeGen project definition in `project.yml`
 - Deployment target: macOS 26.0
-- Bundle identifier: `app.keyflow.mac`
+- Bundle identifier: `app.keymaster.mac`
 
-`project.yml` is the source of truth for the Xcode project. Regenerate `KeyFlow.xcodeproj` after changing targets, file groups, build settings, schemes, or resources.
+`project.yml` is the source of truth for the Xcode project. Regenerate `KeyMaster.xcodeproj` after changing targets, file groups, build settings, schemes, or resources.
 
 ## Important Commands
 
@@ -35,7 +35,7 @@ Regenerate the Xcode project:
 Build from CLI:
 
 ```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project KeyFlow.xcodeproj -scheme KeyFlow -configuration Debug -destination 'platform=macOS' -derivedDataPath /private/tmp/KeyFlowDerived build
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project KeyMaster.xcodeproj -scheme KeyMaster -configuration Debug -destination 'platform=macOS' -derivedDataPath /private/tmp/KeyMasterDerived build
 ```
 
 Run a local development build with a stable installed app bundle and local signing requirement:
@@ -44,7 +44,7 @@ Run a local development build with a stable installed app bundle and local signi
 ./scripts/dev-run.sh
 ```
 
-Prefer `./scripts/dev-run.sh` for permission testing. Grant macOS permissions to `/Applications/KeyFlow.app`, not a temporary DerivedData bundle.
+Prefer `./scripts/dev-run.sh` for permission testing. Grant macOS permissions to `/Applications/KeyMaster.app`, not a temporary DerivedData bundle.
 
 ## Completion Verification
 
@@ -54,12 +54,12 @@ Prefer `./scripts/dev-run.sh` for permission testing. Grant macOS permissions to
 ./scripts/dev-run.sh
 ```
 
-- This is the default verification path because it regenerates the project, builds the app, installs the stable bundle at `/Applications/KeyFlow.app`, applies the local signing requirement, and opens the installed app for permission-sensitive testing.
+- This is the default verification path because it regenerates the project, builds the app, installs the stable bundle at `/Applications/KeyMaster.app`, applies the local signing requirement, and opens the installed app for permission-sensitive testing.
 - If `./scripts/dev-run.sh` fails, include the relevant error lines and either fix the failure or clearly explain the blocker.
 - If the user explicitly asks for build-only verification, use the CLI build command instead:
 
 ```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project KeyFlow.xcodeproj -scheme KeyFlow -configuration Debug -destination 'platform=macOS' -derivedDataPath /private/tmp/KeyFlowDerived build
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project KeyMaster.xcodeproj -scheme KeyMaster -configuration Debug -destination 'platform=macOS' -derivedDataPath /private/tmp/KeyMasterDerived build
 ```
 
 - If the task only changes docs, comments, or asks for analysis without file edits, running `./scripts/dev-run.sh` is not required unless the user asks for it.
@@ -67,24 +67,24 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Key
 
 ## Source Layout
 
-- `KeyFlow/App/KeyFlowApp.swift`: app entry point and menu bar extra.
-- `KeyFlow/App/AppState.swift`: central `ObservableObject`; owns UI state, loaded rules, installed apps, permission status, action history, and keyboard engine sync.
-- `KeyFlow/Models/KeyRule.swift`: shortcut rules, triggers, actions, launcher key, and action history models.
-- `KeyFlow/Models/KeyCatalog.swift`: visual keyboard key catalog and macOS virtual key codes.
-- `KeyFlow/Services/KeyboardEventEngine.swift`: CoreGraphics event tap, active launcher-key detection, rule matching, event suppression, and action dispatch.
-- `KeyFlow/Services/PermissionService.swift`: Accessibility and Input Monitoring checks/requests plus System Settings deep links.
-- `KeyFlow/Services/KeyRuleStore.swift`: JSON persistence for rules and action history.
-- `KeyFlow/Services/AppDiscoveryService.swift`: scans `/Applications`, `~/Applications`, and `/System/Applications` for app bundles.
-- `KeyFlow/Views/ContentView.swift`: menu bar panel root.
-- `KeyFlow/Views/KeyboardLayoutView.swift`: visual keyboard layout, key buttons, permission overlay, and action editor presentation.
-- `KeyFlow/Views/LiquidGlassStyle.swift`: shared macOS 26 visual styling helpers.
-- `KeyFlow/Views/WindowGlassConfigurator.swift`: native window glass configuration.
+- `KeyMaster/App/KeyMasterApp.swift`: app entry point and menu bar extra.
+- `KeyMaster/App/AppState.swift`: central `ObservableObject`; owns UI state, loaded rules, installed apps, permission status, action history, and keyboard engine sync.
+- `KeyMaster/Models/KeyRule.swift`: shortcut rules, triggers, actions, launcher key, and action history models.
+- `KeyMaster/Models/KeyCatalog.swift`: visual keyboard key catalog and macOS virtual key codes.
+- `KeyMaster/Services/KeyboardEventEngine.swift`: CoreGraphics event tap, active launcher-key detection, rule matching, event suppression, and action dispatch.
+- `KeyMaster/Services/PermissionService.swift`: Accessibility and Input Monitoring checks/requests plus System Settings deep links.
+- `KeyMaster/Services/KeyRuleStore.swift`: JSON persistence for rules and action history.
+- `KeyMaster/Services/AppDiscoveryService.swift`: scans `/Applications`, `~/Applications`, and `/System/Applications` for app bundles.
+- `KeyMaster/Views/ContentView.swift`: menu bar panel root.
+- `KeyMaster/Views/KeyboardLayoutView.swift`: visual keyboard layout, key buttons, permission overlay, and action editor presentation.
+- `KeyMaster/Views/LiquidGlassStyle.swift`: shared macOS 26 visual styling helpers.
+- `KeyMaster/Views/WindowGlassConfigurator.swift`: native window glass configuration.
 - `docs/`: product, implementation, and architecture notes.
 - `scripts/`: project generation and development run helpers.
 
 ## Runtime Flow
 
-1. `KeyFlowApp` creates `AppState` and shows `KeyFlowPanelView` inside a menu bar extra.
+1. `KeyMasterApp` creates `AppState` and shows `KeyMasterPanelView` inside a menu bar extra.
 2. `AppState` loads persisted rules and action history from Application Support.
 3. `AppState` refreshes permissions and starts or stops `KeyboardEventEngine`.
 4. `KeyboardEventEngine` compiles enabled rules into lookup dictionaries keyed by launcher key code and target key code.
@@ -95,8 +95,8 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Key
 
 Rules are stored as JSON under the user Application Support directory:
 
-- `~/Library/Application Support/KeyFlow/rules.json`
-- `~/Library/Application Support/KeyFlow/action-history.json`
+- `~/Library/Application Support/KeyMaster/rules.json`
+- `~/Library/Application Support/KeyMaster/action-history.json`
 
 JSON uses pretty printed, sorted keys and ISO-8601 dates.
 
@@ -119,7 +119,7 @@ JSON uses pretty printed, sorted keys and ISO-8601 dates.
 - Treat Accessibility and Input Monitoring state as dynamic; refresh permission status when the app becomes active or when the panel appears.
 - Preserve user rules and history formats unless a migration is added.
 - Be careful with user-facing command execution features. Do not silently add implicit shell behavior.
-- Do not rely on ad-hoc DerivedData app bundles when debugging macOS privacy permissions; use the stable `/Applications/KeyFlow.app` path from `dev-run.sh`.
+- Do not rely on ad-hoc DerivedData app bundles when debugging macOS privacy permissions; use the stable `/Applications/KeyMaster.app` path from `dev-run.sh`.
 
 ## Related Docs
 

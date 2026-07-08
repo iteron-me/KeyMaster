@@ -1,6 +1,6 @@
 import Foundation
 
-struct ScreenshotAreaTool: KeyFlowTool {
+struct ScreenshotAreaTool: KeyMasterTool {
     let id = "screenshot.area"
     let title = "Screenshot Area"
     let subtitle = "Drag to capture a rectangle"

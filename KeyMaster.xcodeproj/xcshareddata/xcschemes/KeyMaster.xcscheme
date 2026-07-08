@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2079CEA377E9D14DAFAAF20E"
-               BuildableName = "KeyFlow.app"
-               BlueprintName = "KeyFlow"
-               ReferencedContainer = "container:KeyFlow.xcodeproj">
+               BlueprintIdentifier = "B912A4CDF7AD29E183345A47"
+               BuildableName = "KeyMaster.app"
+               BlueprintName = "KeyMaster"
+               ReferencedContainer = "container:KeyMaster.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2079CEA377E9D14DAFAAF20E"
-            BuildableName = "KeyFlow.app"
-            BlueprintName = "KeyFlow"
-            ReferencedContainer = "container:KeyFlow.xcodeproj">
+            BlueprintIdentifier = "B912A4CDF7AD29E183345A47"
+            BuildableName = "KeyMaster.app"
+            BlueprintName = "KeyMaster"
+            ReferencedContainer = "container:KeyMaster.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2079CEA377E9D14DAFAAF20E"
-            BuildableName = "KeyFlow.app"
-            BlueprintName = "KeyFlow"
-            ReferencedContainer = "container:KeyFlow.xcodeproj">
+            BlueprintIdentifier = "B912A4CDF7AD29E183345A47"
+            BuildableName = "KeyMaster.app"
+            BlueprintName = "KeyMaster"
+            ReferencedContainer = "container:KeyMaster.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -74,10 +74,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2079CEA377E9D14DAFAAF20E"
-            BuildableName = "KeyFlow.app"
-            BlueprintName = "KeyFlow"
-            ReferencedContainer = "container:KeyFlow.xcodeproj">
+            BlueprintIdentifier = "B912A4CDF7AD29E183345A47"
+            BuildableName = "KeyMaster.app"
+            BlueprintName = "KeyMaster"
+            ReferencedContainer = "container:KeyMaster.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>

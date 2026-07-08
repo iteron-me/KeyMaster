@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03033F7F2F98C1407F3C8F1B /* PomodoroPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */; };
+		0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */; };
+		235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA090695FE18585EC9213272 /* AppIconCache.swift */; };
+		269BF01E09B2B7B39BE1C7AE /* KeyActionMenuOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */; };
+		3074A41D2B0060ECE770336A /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1004CF0DBEACDF634EDA36 /* PermissionService.swift */; };
+		32B8BEDA51F75B2B71915D00 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */; };
+		45507EFD8571217D3C2ED3B0 /* ToolRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */; };
+		4E14B391A322F6997A6FFFE0 /* ToolInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */; };
+		512D783FD19996050D41EF7F /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */; };
+		7659D4BA2B55D959C6BBD825 /* ScreenshotAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */; };
+		7E5B6C9E1882DFF0DBE7D840 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */; };
+		7EC3A62CAD0F6C996F132D7E /* PomodoroControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */; };
+		8AB4B18856591F6FEE25B57B /* PomodoroTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B332C98AD2165DA525008 /* PomodoroTimer.swift */; };
+		91B337850FDC6E48CDCD1859 /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */; };
+		928B5E50D77B602E4ABB672D /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB6A961A633A1369F9096BF /* KeyboardLayoutView.swift */; };
+		9BF1A5928A74B6D9BFEEE0AC /* KeyActionMenuPopoverPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */; };
+		9C80F4699757D5D30DF8DE96 /* KeyMasterTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */; };
+		9CE3B72A938219DC74E5968A /* KeyCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60B88B5AD58FDB1AD92BE7DB /* KeyCatalog.swift */; };
+		9F8F5DD829AFA8AC7B49CD34 /* KeyRuleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */; };
+		A24A8B9D1D7F34640EF2C348 /* ScreenshotSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3D945FDA2E098CC8C957BE /* ScreenshotSelectionView.swift */; };
+		A3AFFD042A9CEE6EBE8A2A9B /* AnchoredFloatingWindowPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED710B70AE977E1EEDF5AAC0 /* AnchoredFloatingWindowPresenter.swift */; };
+		A93B76984B03C2F93FAE33ED /* KeyMasterApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A16685DD138BA1D57125D8 /* KeyMasterApplicationDelegate.swift */; };
+		AE35D8DDFBA0EE818990D27D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF73DBAAE83BC97B532C0DC /* ContentView.swift */; };
+		B371C47CD363D35AB29CC857 /* ScreenshotPinController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */; };
+		CA13724193A8FA8D1559732F /* ScreenshotAreaTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */; };
+		D158972090D943DA7DA9B28A /* PomodoroTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */; };
+		D1A44AAA3FB9684DAD1E6501 /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC89F1E60A7C117C835DF14B /* KeyRule.swift */; };
+		D69589B3B7EFAB0BB1712234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0B86899C080457524A9DC /* Assets.xcassets */; };
+		DA63B211ACC3E504E1FA2B46 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */; };
+		DC17841117CEC18A922D436D /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */; };
+		E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */; };
+		EE6B738F02DB9708490F9D80 /* ScreenshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */; };
+		F0BECF3AA5CF6DB0974177C7 /* KeyMasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRegistry.swift; sourceTree = "<group>"; };
+		0CC0B86899C080457524A9DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0DF73DBAAE83BC97B532C0DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApp.swift; sourceTree = "<group>"; };
+		3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolInvocation.swift; sourceTree = "<group>"; };
+		3EB6A961A633A1369F9096BF /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
+		403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
+		40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
+		417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
+		49A16685DD138BA1D57125D8 /* KeyMasterApplicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApplicationDelegate.swift; sourceTree = "<group>"; };
+		586B332C98AD2165DA525008 /* PomodoroTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTimer.swift; sourceTree = "<group>"; };
+		60B88B5AD58FDB1AD92BE7DB /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
+		6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroPanelController.swift; sourceTree = "<group>"; };
+		64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotOverlayController.swift; sourceTree = "<group>"; };
+		654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPinController.swift; sourceTree = "<group>"; };
+		70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterTool.swift; sourceTree = "<group>"; };
+		725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
+		9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaTool.swift; sourceTree = "<group>"; };
+		A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroControlPanelView.swift; sourceTree = "<group>"; };
+		AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
+		AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTool.swift; sourceTree = "<group>"; };
+		B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionDispatcher.swift; sourceTree = "<group>"; };
+		B811CE371532D444375094B1 /* KeyMaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeyMaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC3D945FDA2E098CC8C957BE /* ScreenshotSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotSelectionView.swift; sourceTree = "<group>"; };
+		BC89F1E60A7C117C835DF14B /* KeyRule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRule.swift; sourceTree = "<group>"; };
+		BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAnnotation.swift; sourceTree = "<group>"; };
+		C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
+		CA090695FE18585EC9213272 /* AppIconCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCache.swift; sourceTree = "<group>"; };
+		E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuOverlay.swift; sourceTree = "<group>"; };
+		E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		ED710B70AE977E1EEDF5AAC0 /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
+		EE1004CF0DBEACDF634EDA36 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
+		F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuPopoverPresenter.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		237D6C5A9D47D007192E8769 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */,
+				F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */,
+				40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */,
+				AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */,
+				EE1004CF0DBEACDF634EDA36 /* PermissionService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		3BCB6BEE309F4BDB4156029D /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		540005A1B517D6E776355E66 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B811CE371532D444375094B1 /* KeyMaster.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6F5D2734C298C3D05CF79922 /* KeyMaster */ = {
+			isa = PBXGroup;
+			children = (
+				3BCB6BEE309F4BDB4156029D /* Actions */,
+				71747089297AA4ECF7CF6BDA /* App */,
+				A3667394A00036429411A770 /* Models */,
+				AC584023EB557E63FAF84CBB /* Resources */,
+				237D6C5A9D47D007192E8769 /* Services */,
+				96CDF84E3AB0FFA16C4BE995 /* Tools */,
+				DB4CC9CC0726BF2DAFDB13FF /* Views */,
+			);
+			path = KeyMaster;
+			sourceTree = "<group>";
+		};
+		71747089297AA4ECF7CF6BDA /* App */ = {
+			isa = PBXGroup;
+			children = (
+				E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */,
+				3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */,
+				49A16685DD138BA1D57125D8 /* KeyMasterApplicationDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		96CDF84E3AB0FFA16C4BE995 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */,
+				3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */,
+				057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */,
+				B851A2D2B7C79FECEAFF2602 /* Pomodoro */,
+				D474E23340F0ED8A39458F77 /* Screenshot */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+		A3667394A00036429411A770 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				60B88B5AD58FDB1AD92BE7DB /* KeyCatalog.swift */,
+				BC89F1E60A7C117C835DF14B /* KeyRule.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AC584023EB557E63FAF84CBB /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0CC0B86899C080457524A9DC /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		ADCB237677B7A3534FBF9660 = {
+			isa = PBXGroup;
+			children = (
+				6F5D2734C298C3D05CF79922 /* KeyMaster */,
+				540005A1B517D6E776355E66 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B851A2D2B7C79FECEAFF2602 /* Pomodoro */ = {
+			isa = PBXGroup;
+			children = (
+				A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */,
+				6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */,
+				586B332C98AD2165DA525008 /* PomodoroTimer.swift */,
+				AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */,
+			);
+			path = Pomodoro;
+			sourceTree = "<group>";
+		};
+		D474E23340F0ED8A39458F77 /* Screenshot */ = {
+			isa = PBXGroup;
+			children = (
+				BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */,
+				9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */,
+				64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */,
+				654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */,
+				BC3D945FDA2E098CC8C957BE /* ScreenshotSelectionView.swift */,
+				417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */,
+			);
+			path = Screenshot;
+			sourceTree = "<group>";
+		};
+		DB4CC9CC0726BF2DAFDB13FF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				ED710B70AE977E1EEDF5AAC0 /* AnchoredFloatingWindowPresenter.swift */,
+				CA090695FE18585EC9213272 /* AppIconCache.swift */,
+				0DF73DBAAE83BC97B532C0DC /* ContentView.swift */,
+				E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */,
+				F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */,
+				3EB6A961A633A1369F9096BF /* KeyboardLayoutView.swift */,
+				C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */,
+				725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B912A4CDF7AD29E183345A47 /* KeyMaster */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DFD1E495EEEF39C5797F9BD3 /* Build configuration list for PBXNativeTarget "KeyMaster" */;
+			buildPhases = (
+				1B8B4CD2E8892108081AFBFA /* Sources */,
+				B0575937D6A58590D3DD1EF0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KeyMaster;
+			packageProductDependencies = (
+			);
+			productName = KeyMaster;
+			productReference = B811CE371532D444375094B1 /* KeyMaster.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D7657BA04BE65AFA57F54DCD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					B912A4CDF7AD29E183345A47 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = E880596644FB01B186C74C10 /* Build configuration list for PBXProject "KeyMaster" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = ADCB237677B7A3534FBF9660;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 540005A1B517D6E776355E66 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B912A4CDF7AD29E183345A47 /* KeyMaster */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B0575937D6A58590D3DD1EF0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D69589B3B7EFAB0BB1712234 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1B8B4CD2E8892108081AFBFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */,
+				A3AFFD042A9CEE6EBE8A2A9B /* AnchoredFloatingWindowPresenter.swift in Sources */,
+				91B337850FDC6E48CDCD1859 /* AppDiscoveryService.swift in Sources */,
+				235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */,
+				7E5B6C9E1882DFF0DBE7D840 /* AppState.swift in Sources */,
+				AE35D8DDFBA0EE818990D27D /* ContentView.swift in Sources */,
+				269BF01E09B2B7B39BE1C7AE /* KeyActionMenuOverlay.swift in Sources */,
+				9BF1A5928A74B6D9BFEEE0AC /* KeyActionMenuPopoverPresenter.swift in Sources */,
+				32B8BEDA51F75B2B71915D00 /* KeyCaptureMonitor.swift in Sources */,
+				9CE3B72A938219DC74E5968A /* KeyCatalog.swift in Sources */,
+				F0BECF3AA5CF6DB0974177C7 /* KeyMasterApp.swift in Sources */,
+				A93B76984B03C2F93FAE33ED /* KeyMasterApplicationDelegate.swift in Sources */,
+				9C80F4699757D5D30DF8DE96 /* KeyMasterTool.swift in Sources */,
+				D1A44AAA3FB9684DAD1E6501 /* KeyRule.swift in Sources */,
+				9F8F5DD829AFA8AC7B49CD34 /* KeyRuleStore.swift in Sources */,
+				DC17841117CEC18A922D436D /* KeyboardEventEngine.swift in Sources */,
+				928B5E50D77B602E4ABB672D /* KeyboardLayoutView.swift in Sources */,
+				DA63B211ACC3E504E1FA2B46 /* LiquidGlassStyle.swift in Sources */,
+				3074A41D2B0060ECE770336A /* PermissionService.swift in Sources */,
+				7EC3A62CAD0F6C996F132D7E /* PomodoroControlPanelView.swift in Sources */,
+				03033F7F2F98C1407F3C8F1B /* PomodoroPanelController.swift in Sources */,
+				8AB4B18856591F6FEE25B57B /* PomodoroTimer.swift in Sources */,
+				D158972090D943DA7DA9B28A /* PomodoroTool.swift in Sources */,
+				7659D4BA2B55D959C6BBD825 /* ScreenshotAnnotation.swift in Sources */,
+				CA13724193A8FA8D1559732F /* ScreenshotAreaTool.swift in Sources */,
+				0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */,
+				B371C47CD363D35AB29CC857 /* ScreenshotPinController.swift in Sources */,
+				A24A8B9D1D7F34640EF2C348 /* ScreenshotSelectionView.swift in Sources */,
+				EE6B738F02DB9708490F9D80 /* ScreenshotService.swift in Sources */,
+				4E14B391A322F6997A6FFFE0 /* ToolInvocation.swift in Sources */,
+				45507EFD8571217D3C2ED3B0 /* ToolRegistry.swift in Sources */,
+				512D783FD19996050D41EF7F /* WindowGlassConfigurator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1409F6A5538852C8DABA705E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyMaster/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keymaster.mac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		3B3C00C9E90D4CC425269E1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = KeyMaster/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keymaster.mac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		64385F59978163D12ED7CD7F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					DEBUG,
+					"$(inherited)",
+				);
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		683DCD204EE1D6FFED4DCE2D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DFD1E495EEEF39C5797F9BD3 /* Build configuration list for PBXNativeTarget "KeyMaster" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1409F6A5538852C8DABA705E /* Debug */,
+				3B3C00C9E90D4CC425269E1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E880596644FB01B186C74C10 /* Build configuration list for PBXProject "KeyMaster" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				64385F59978163D12ED7CD7F /* Debug */,
+				683DCD204EE1D6FFED4DCE2D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D7657BA04BE65AFA57F54DCD /* Project object */;
+}

@@ -3,10 +3,10 @@ import Combine
 import SwiftUI
 
 @MainActor
-final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let appState = AppState()
     private var statusItem: NSStatusItem?
-    private var panelWindow: KeyFlowPanelWindow?
+    private var panelWindow: KeyMasterPanelWindow?
     private var hostingController: NSHostingController<AnyView>?
     private var outsideClickLocalMonitor: Any?
     private var outsideClickGlobalMonitor: Any?
@@ -62,14 +62,14 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
         let imageName = appState.isEngineRunning ? "keyboard.badge.eye" : "keyboard"
         let image = NSImage(
             systemSymbolName: imageName,
-            accessibilityDescription: "KeyFlow"
+            accessibilityDescription: "KeyMaster"
         )
         image?.isTemplate = true
         button.image = image
         button.imagePosition = .imageOnly
         button.title = ""
         button.font = .systemFont(ofSize: NSFont.systemFontSize)
-        button.toolTip = "KeyFlow"
+        button.toolTip = "KeyMaster"
     }
 
     private func observeStatusItemState() {
@@ -114,8 +114,8 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
         installOutsideClickMonitor()
     }
 
-    private func makePanelWindow() -> KeyFlowPanelWindow {
-        let content = KeyFlowPanelView()
+    private func makePanelWindow() -> KeyMasterPanelWindow {
+        let content = KeyMasterPanelView()
             .environmentObject(appState)
 
         let controller = NSHostingController(rootView: AnyView(content))
@@ -124,7 +124,7 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
         controller.view.wantsLayer = true
         controller.view.layer?.backgroundColor = NSColor.clear.cgColor
 
-        let window = KeyFlowPanelWindow(
+        let window = KeyMasterPanelWindow(
             contentRect: NSRect(origin: .zero, size: Self.panelSize),
             styleMask: .borderless,
             backing: .buffered,
@@ -277,7 +277,7 @@ final class KeyFlowApplicationDelegate: NSObject, NSApplicationDelegate, NSWindo
     private static let screenPadding: CGFloat = 8
 }
 
-private final class KeyFlowPanelWindow: NSWindow {
+private final class KeyMasterPanelWindow: NSWindow {
     override var canBecomeKey: Bool {
         true
     }

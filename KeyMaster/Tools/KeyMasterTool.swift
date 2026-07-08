@@ -1,6 +1,6 @@
 import Foundation
 
-protocol KeyFlowTool {
+protocol KeyMasterTool {
     var id: String { get }
     var title: String { get }
     var subtitle: String { get }

@@ -1,4 +1,4 @@
-# KeyFlow Architecture
+# KeyMaster Architecture
 
 ## Layers
 
@@ -41,7 +41,7 @@ The rule trigger is intentionally small: normalized modifiers plus a virtual key
 3. The callback extracts key code and modifier flags.
 4. The engine builds a `KeyTrigger`.
 5. If no rule matches, the original event is returned.
-6. If a rule matches, KeyFlow performs the action and suppresses the original event.
+6. If a rule matches, KeyMaster performs the action and suppresses the original event.
 
 ## Important Risks
 

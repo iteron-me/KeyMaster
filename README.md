@@ -1,6 +1,6 @@
-# KeyFlow
+# KeyMaster
 
-KeyFlow is a native macOS keyboard shortcut automation app. It is intended as a visual, focused alternative to maintaining Hammerspoon automation scripts.
+KeyMaster is a native macOS keyboard shortcut automation app. It is intended as a visual, focused alternative to maintaining Hammerspoon automation scripts.
 
 ## Current Status
 
@@ -20,7 +20,7 @@ This repository contains the first buildable Xcode project:
 ## Requirements
 
 - Xcode 26.5 or newer.
-- XcodeGen for regenerating `KeyFlow.xcodeproj` from `project.yml`.
+- XcodeGen for regenerating `KeyMaster.xcodeproj` from `project.yml`.
 - macOS 26.0 deployment target for SwiftUI Liquid Glass.
 - Accessibility / input permissions for real keyboard interception.
 
@@ -43,7 +43,7 @@ brew install xcodegen
 Open:
 
 ```sh
-open KeyFlow.xcodeproj
+open KeyMaster.xcodeproj
 ```
 
 If `xcode-select` still points at Command Line Tools, either switch it manually:
@@ -66,11 +66,11 @@ Regenerate the project first, then use a DerivedData path outside the Desktop fo
 ./scripts/generate-xcodeproj.sh
 
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-xcodebuild -project KeyFlow.xcodeproj \
-  -scheme KeyFlow \
+xcodebuild -project KeyMaster.xcodeproj \
+  -scheme KeyMaster \
   -configuration Debug \
   -destination 'platform=macOS' \
-  -derivedDataPath /private/tmp/KeyFlowDerived \
+  -derivedDataPath /private/tmp/KeyMasterDerived \
   build
 ```
 
@@ -80,11 +80,11 @@ For permission testing, prefer a stable app path:
 ./scripts/dev-run.sh
 ```
 
-This regenerates `KeyFlow.xcodeproj`, builds the app, copies it to `/Applications/KeyFlow.app`, clears extended attributes, applies a stable local code requirement for `app.keyflow.mac`, and opens that stable app bundle. Grant macOS permissions to `/Applications/KeyFlow.app`, not to the temporary DerivedData app.
+This regenerates `KeyMaster.xcodeproj`, builds the app, copies it to `/Applications/KeyMaster.app`, clears extended attributes, applies a stable local code requirement for `app.keymaster.mac`, and opens that stable app bundle. Grant macOS permissions to `/Applications/KeyMaster.app`, not to the temporary DerivedData app.
 
 ## Permissions
 
-Global keyboard shortcuts need macOS privacy permissions. In the app, use the permission banner buttons to request permission, open the matching System Settings page, then click Refresh after enabling KeyFlow.
+Global keyboard shortcuts need macOS privacy permissions. In the app, use the permission banner buttons to request permission, open the matching System Settings page, then click Refresh after enabling KeyMaster.
 
 Required for the current shortcut engine:
 
@@ -93,7 +93,7 @@ Required for the current shortcut engine:
 
 Post Events is shown because future key remapping will need it, but the current App/Web/Command actions do not depend on it.
 
-If Accessibility is checked but KeyFlow still shows it as missing, you are probably running a different app bundle than the one you authorized. Use the in-app `Running:` path and Finder button to confirm the exact bundle.
+If Accessibility is checked but KeyMaster still shows it as missing, you are probably running a different app bundle than the one you authorized. Use the in-app `Running:` path and Finder button to confirm the exact bundle.
 
 For local development, always launch through `./scripts/dev-run.sh`. Plain ad-hoc Debug builds are identified by a changing code hash, which can make macOS privacy permissions look like they disappeared after every rebuild. The dev-run script re-signs the installed app with a stable requirement so one authorization can survive rebuilds.
 
