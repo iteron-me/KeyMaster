@@ -176,8 +176,8 @@ JSON uses pretty printed, sorted keys and ISO-8601 dates.
 
 ## Related Docs
 
-- `README.md`: English GitHub-facing setup, usage, and build guide.
-- `README.zh-CN.md`: Chinese GitHub-facing setup, usage, and build guide.
+- `README.md`: Chinese GitHub-facing setup, usage, and build guide.
+- `README.en.md`: English GitHub-facing setup, usage, and build guide.
 - `docs/PRODUCT_REQUIREMENTS.md`: product direction.
 - `docs/ARCHITECTURE.md`: architecture, module map, and runtime flows.
 - `docs/ROADMAP.md`: active roadmap.

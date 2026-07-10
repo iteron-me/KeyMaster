@@ -18,9 +18,9 @@ Short description:
 
 ## Icon Direction
 
-The app icon uses a custom keycap with the Control caret as the central mark. The keycap references the launcher key directly, while its chamfered silhouette and cyan rim give the icon a distinct KeyMaster identity without adding extra symbols.
+The app icon uses two offset keycaps to represent a keyboard shortcut directly. A white Command key sits in front of a green `K` key, combining the macOS shortcut language with the KeyMaster initial in a compact composition.
 
-The icon intentionally avoids words, faces, weapons, trails, and a full keyboard so it remains readable in the Dock, Finder, and small menu contexts.
+The dark rounded-square base, restrained depth, and limited charcoal, white, and green palette keep the icon readable in the Dock, Finder, and small menu contexts without depicting a full keyboard.
 
 ## Generated Icon Source
 
@@ -29,4 +29,4 @@ The icon intentionally avoids words, faces, weapons, trails, and a full keyboard
 
 Generation prompt summary:
 
-> macOS app icon for KeyMaster / 键盘侠, centered custom keycap with a Control caret, dark graphite base, electric cyan edge accent, no text.
+> macOS app icon for KeyMaster / 键盘侠, two compact offset keycaps for Command and K, dark charcoal rounded-square base, white primary key, green accent key.
