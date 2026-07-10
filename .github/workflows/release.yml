@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to rebuild, such as v0.1.0
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: macos-15
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Validate release tag
+        id: release
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Invalid release tag: $RELEASE_TAG" >&2
+            exit 1
+          fi
+
+          git show-ref --verify --quiet "refs/tags/$RELEASE_TAG"
+          echo "version=${RELEASE_TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Install XcodeGen
+        run: command -v xcodegen >/dev/null 2>&1 || brew install xcodegen
+
+      - name: Package unsigned DMG
+        run: |
+          ./scripts/package-release.sh \
+            --expected-version "${{ steps.release.outputs.version }}" \
+            --build-number "$GITHUB_RUN_NUMBER"
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyMaster-${{ steps.release.outputs.version }}-macos-universal
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Create or update draft release
+        shell: bash
+        run: |
+          notice="$(cat .github/UNSIGNED_RELEASE_NOTICE.md)"
+          notice+=$'\n\nInstallation guides: '
+          notice+="https://github.com/$GITHUB_REPOSITORY#install-a-release"
+          notice+=$' | '
+          notice+="https://github.com/$GITHUB_REPOSITORY/blob/main/README.zh-CN.md"
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            is_draft="$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)"
+            [[ "$is_draft" == "true" ]] || {
+              echo "Refusing to replace assets on a published release." >&2
+              exit 1
+            }
+            gh release upload "$RELEASE_TAG" dist/* --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              dist/* \
+              --draft \
+              --verify-tag \
+              --title "KeyMaster ${{ steps.release.outputs.version }}" \
+              --generate-notes \
+              --notes "$notice"
+          fi

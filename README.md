@@ -69,6 +69,25 @@ action history.
 - macOS 15.0 or newer.
 - Accessibility and Input Monitoring permissions for global shortcuts.
 
+## Install A Release
+
+Download the DMG and matching `.sha256` file from
+[GitHub Releases](https://github.com/liumengjie1218/KeyMaster/releases). Verify
+the download if desired:
+
+```sh
+shasum -a 256 -c KeyMaster-0.1.0-macos-universal.dmg.sha256
+```
+
+Open the DMG and drag KeyMaster to Applications. Current releases are ad-hoc
+signed and are not notarized by Apple. On first launch, Control-click KeyMaster
+and choose **Open**. If macOS still blocks it, use **System Settings > Privacy &
+Security > Open Anyway**.
+
+Gatekeeper approval does not grant runtime permissions. Enable Accessibility and
+Input Monitoring for global shortcuts. Screen Recording is required only for
+screenshot tools. Only install release artifacts downloaded from this repository.
+
 ## Build From Source
 
 Install [XcodeGen](https://github.com/yonaskolb/XcodeGen), then run:
@@ -80,5 +99,8 @@ brew install xcodegen
 
 `dev-run.sh` generates the Xcode project, builds KeyMaster, and installs the
 development app at `/Applications/KeyMaster.app`.
+
+Maintainers can use the automated tag and draft-release flow described in
+[Releasing](docs/RELEASING.md).
 
 More details: [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
