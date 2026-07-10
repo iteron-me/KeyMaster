@@ -35,15 +35,30 @@ final class ScreenshotOverlayController {
         for targets: [ScreenshotOverlayTarget],
         previews: [CGDirectDisplayID: CGImage]
     ) {
-        windows = targets.map { target in
+        let preparedWindows: [ScreenshotOverlayWindow] = targets.compactMap { target in
             let displayID = target.displayID
+            guard let screenImage = previews[displayID] else {
+                return nil
+            }
+
             let view = ScreenshotSelectionView(
-                screenImage: previews[displayID],
+                screenImage: screenImage,
                 copy: { [weak self] rect, annotations in
-                    self?.copySelection(rect, annotations: annotations, on: displayID)
+                    self?.copySelection(
+                        rect,
+                        annotations: annotations,
+                        from: screenImage,
+                        displaySize: target.size
+                    )
                 },
                 pin: { [weak self] rect, annotations in
-                    self?.pinSelection(rect, annotations: annotations, on: displayID, screenFrame: target.screen.frame)
+                    self?.pinSelection(
+                        rect,
+                        annotations: annotations,
+                        from: screenImage,
+                        displaySize: target.size,
+                        screenFrame: target.screen.frame
+                    )
                 },
                 cancel: { [weak self] in
                     self?.closeSelection()
@@ -52,6 +67,7 @@ final class ScreenshotOverlayController {
 
             let controller = NSHostingController(rootView: view)
             controller.view.frame = NSRect(origin: .zero, size: target.screen.frame.size)
+            controller.view.wantsLayer = true
 
             let window = ScreenshotOverlayWindow(
                 contentRect: target.screen.frame,
@@ -64,16 +80,44 @@ final class ScreenshotOverlayController {
             window.isReleasedWhenClosed = false
             window.isOpaque = false
             window.backgroundColor = .clear
+            window.alphaValue = 0
+            window.animationBehavior = .none
             window.hasShadow = false
             window.level = .screenSaver
             window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
             window.ignoresMouseEvents = false
-            window.orderFrontRegardless()
             return window
         }
 
-        NSApp.activate(ignoringOtherApps: true)
-        windows.first?.makeKeyAndOrderFront(nil)
+        guard !preparedWindows.isEmpty else {
+            closeSelection()
+            return
+        }
+
+        windows = preparedWindows
+        windows.forEach { window in
+            window.contentView?.layoutSubtreeIfNeeded()
+            window.contentView?.displayIfNeeded()
+        }
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0
+            context.allowsImplicitAnimation = false
+            windows.forEach { window in
+                window.alphaValue = 1
+                window.orderFrontRegardless()
+            }
+        }
+
+        let keyWindow = windows[0]
+        DispatchQueue.main.async { [weak keyWindow] in
+            guard keyWindow?.isVisible == true else {
+                return
+            }
+
+            NSApp.activate(ignoringOtherApps: true)
+            keyWindow?.makeKey()
+        }
     }
 
     private static func previewImages(for targets: [ScreenshotOverlayTarget]) async -> [CGDirectDisplayID: CGImage] {
@@ -97,45 +141,43 @@ final class ScreenshotOverlayController {
     private func copySelection(
         _ rect: CGRect,
         annotations: [ScreenshotAnnotation],
-        on displayID: CGDirectDisplayID
+        from screenImage: CGImage,
+        displaySize: CGSize
     ) {
         closeSelection()
 
-        Task { @MainActor in
-            do {
-                try await Task.sleep(for: .milliseconds(80))
-                let image = try await ScreenshotService.capture(
-                    rect: rect,
-                    annotations: annotations,
-                    on: displayID
-                )
-                ScreenshotService.copyToPasteboard(image)
-            } catch {
-                assertionFailure("Failed to capture screenshot: \(error)")
-            }
+        do {
+            let image = try ScreenshotService.capture(
+                rect: rect,
+                annotations: annotations,
+                from: screenImage,
+                displaySize: displaySize
+            )
+            ScreenshotService.copyToPasteboard(image)
+        } catch {
+            assertionFailure("Failed to capture screenshot: \(error)")
         }
     }
 
     private func pinSelection(
         _ rect: CGRect,
         annotations: [ScreenshotAnnotation],
-        on displayID: CGDirectDisplayID,
+        from screenImage: CGImage,
+        displaySize: CGSize,
         screenFrame: CGRect
     ) {
         closeSelection()
 
-        Task { @MainActor in
-            do {
-                try await Task.sleep(for: .milliseconds(80))
-                let image = try await ScreenshotService.capture(
-                    rect: rect,
-                    annotations: annotations,
-                    on: displayID
-                )
-                ScreenshotPinController.shared.pin(image, sourceRect: rect, screenFrame: screenFrame)
-            } catch {
-                assertionFailure("Failed to pin screenshot: \(error)")
-            }
+        do {
+            let image = try ScreenshotService.capture(
+                rect: rect,
+                annotations: annotations,
+                from: screenImage,
+                displaySize: displaySize
+            )
+            ScreenshotPinController.shared.pin(image, sourceRect: rect, screenFrame: screenFrame)
+        } catch {
+            assertionFailure("Failed to pin screenshot: \(error)")
         }
     }
 

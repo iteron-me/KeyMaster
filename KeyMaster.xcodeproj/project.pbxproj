@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		03033F7F2F98C1407F3C8F1B /* PomodoroPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */; };
 		0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */; };
+		1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */; };
 		235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA090695FE18585EC9213272 /* AppIconCache.swift */; };
 		25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */; };
 		269BF01E09B2B7B39BE1C7AE /* KeyActionMenuOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */; };
@@ -74,6 +75,7 @@
 		654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPinController.swift; sourceTree = "<group>"; };
 		70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterTool.swift; sourceTree = "<group>"; };
 		725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
+		8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotServiceTests.swift; sourceTree = "<group>"; };
 		9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaTool.swift; sourceTree = "<group>"; };
 		A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroControlPanelView.swift; sourceTree = "<group>"; };
 		AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			children = (
 				F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */,
 				F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */,
+				8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */,
 			);
 			path = KeyMasterTests;
 			sourceTree = "<group>";
@@ -368,6 +371,7 @@
 			files = (
 				25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */,
 				CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */,
+				1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

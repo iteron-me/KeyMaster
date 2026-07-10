@@ -29,6 +29,14 @@ struct ScreenshotSelectionView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
+                if let screenImage {
+                    Image(decorative: screenImage, scale: 1)
+                        .resizable()
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                } else {
+                    Color.black
+                }
+
                 if let activeRect {
                     selectionOverlay(activeRect, in: proxy.size)
                 } else {
