@@ -28,7 +28,7 @@ regenerate the Xcode project.
 | App state | `AppState.swift` | Main coordination boundary between SwiftUI and services. Loads rules/history, tracks active modifiers, indexes rules for UI lookup, refreshes permissions, starts/stops the event engine, and triggers app discovery. |
 | Domain models | `KeyRule.swift`, `KeyCatalog.swift` | Defines shortcut rules, triggers, key strokes, modifier keys, action types, action history, action kinds, keyboard layout, and macOS virtual key codes. |
 | Permission and event services | `PermissionService.swift`, `KeyboardEventEngine.swift`, `KeyCaptureMonitor.swift` | Wraps Accessibility/Input Monitoring permission APIs, owns the CoreGraphics event tap, normalizes modifier flags, suppresses matched events, and tracks active modifier layers. |
-| Persistence and discovery | `KeyRuleStore.swift`, `AppDiscoveryService.swift` | Persists rules and action history under Application Support, migrates legacy KeyFlow files, scans application folders, and resolves localized app display names. |
+| Persistence, transfer, and discovery | `KeyRuleStore.swift`, `ConfigurationArchiveService.swift`, `AppDiscoveryService.swift` | Persists rules and action history under Application Support, validates versioned portable configuration archives, migrates legacy KeyFlow files, scans application folders, and resolves localized app display names. |
 | Action dispatch | `ActionDispatcher.swift` | Executes matched rule actions: open apps, open URLs, run shell commands, invoke built-in tools, synthesize key strokes, and lock the screen. |
 | Built-in tools | `Tools/` | Provides shortcut-invoked tools through `KeyMasterTool`, `ToolInvocation`, and `ToolRegistry`. Current tools are area screenshot capture and Pomodoro timer. |
 | Panel and keyboard UI | `ContentView.swift`, `KeyboardLayoutView.swift` | Renders the menu bar panel, visual keyboard layout, active modifier overlay, permission overlay, rule badges, and key interaction surface. |
@@ -55,6 +55,20 @@ regenerate the Xcode project.
    or lock-screen action through `AppState.saveRule`.
 4. `AppState` records action history when relevant, persists rules/history via
    `FileKeyRuleStore`, rebuilds its rule indexes, and syncs the event engine.
+
+### Configuration Import And Export
+
+1. Left-clicking the status item keeps opening the keyboard panel; right-clicking
+   opens native import and export commands.
+2. Export snapshots rules and action history from `AppState`, then
+   `ConfigurationArchiveService` writes versioned `.config` JSON to a
+   user-selected location. The archive uses dedicated portable DTOs and omits
+   internal rule identifiers, derived names, and timestamps.
+3. Import decodes and validates the complete archive before showing replacement
+   confirmation. Unsupported versions, malformed data, and duplicate shortcut
+   triggers are rejected without changing current state.
+4. After confirmation, `AppState` persists both imported datasets, publishes
+   them, rebuilds rule indexes, and resynchronizes the keyboard engine.
 
 ### Shortcut Execution
 

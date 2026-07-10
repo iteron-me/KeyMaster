@@ -10,6 +10,7 @@
 		03033F7F2F98C1407F3C8F1B /* PomodoroPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */; };
 		0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */; };
 		235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA090695FE18585EC9213272 /* AppIconCache.swift */; };
+		25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */; };
 		269BF01E09B2B7B39BE1C7AE /* KeyActionMenuOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */; };
 		3074A41D2B0060ECE770336A /* PermissionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1004CF0DBEACDF634EDA36 /* PermissionService.swift */; };
 		32B8BEDA51F75B2B71915D00 /* KeyCaptureMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */; };
@@ -32,6 +33,7 @@
 		AE35D8DDFBA0EE818990D27D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DF73DBAAE83BC97B532C0DC /* ContentView.swift */; };
 		B371C47CD363D35AB29CC857 /* ScreenshotPinController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */; };
 		CA13724193A8FA8D1559732F /* ScreenshotAreaTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */; };
+		CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */; };
 		D158972090D943DA7DA9B28A /* PomodoroTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */; };
 		D1A44AAA3FB9684DAD1E6501 /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC89F1E60A7C117C835DF14B /* KeyRule.swift */; };
 		D69589B3B7EFAB0BB1712234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0B86899C080457524A9DC /* Assets.xcassets */; };
@@ -39,8 +41,19 @@
 		DC17841117CEC18A922D436D /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */; };
 		E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */; };
 		EE6B738F02DB9708490F9D80 /* ScreenshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */; };
+		EEAA891D47CEEB4CBAA1EE14 /* ConfigurationArchiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8A717A21437D4055BECB8 /* ConfigurationArchiveService.swift */; };
 		F0BECF3AA5CF6DB0974177C7 /* KeyMasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		263A90004FBD333A3D3289AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D7657BA04BE65AFA57F54DCD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B912A4CDF7AD29E183345A47;
+			remoteInfo = KeyMaster;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRegistry.swift; sourceTree = "<group>"; };
@@ -53,6 +66,7 @@
 		40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
 		417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
 		49A16685DD138BA1D57125D8 /* KeyMasterApplicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApplicationDelegate.swift; sourceTree = "<group>"; };
+		4CDC26EE89D5A289DA0CAA93 /* KeyMasterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyMasterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		586B332C98AD2165DA525008 /* PomodoroTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTimer.swift; sourceTree = "<group>"; };
 		60B88B5AD58FDB1AD92BE7DB /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
 		6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroPanelController.swift; sourceTree = "<group>"; };
@@ -71,12 +85,15 @@
 		BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAnnotation.swift; sourceTree = "<group>"; };
 		C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassStyle.swift; sourceTree = "<group>"; };
 		CA090695FE18585EC9213272 /* AppIconCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconCache.swift; sourceTree = "<group>"; };
+		D1D8A717A21437D4055BECB8 /* ConfigurationArchiveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationArchiveService.swift; sourceTree = "<group>"; };
 		E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuOverlay.swift; sourceTree = "<group>"; };
 		E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		ED710B70AE977E1EEDF5AAC0 /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
 		EE1004CF0DBEACDF634EDA36 /* PermissionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionService.swift; sourceTree = "<group>"; };
+		F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationArchiveServiceTests.swift; sourceTree = "<group>"; };
 		F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
 		F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuPopoverPresenter.swift; sourceTree = "<group>"; };
+		F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateConfigurationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -84,6 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */,
+				D1D8A717A21437D4055BECB8 /* ConfigurationArchiveService.swift */,
 				F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */,
 				40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */,
 				AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */,
@@ -104,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				B811CE371532D444375094B1 /* KeyMaster.app */,
+				4CDC26EE89D5A289DA0CAA93 /* KeyMasterTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,6 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				6F5D2734C298C3D05CF79922 /* KeyMaster */,
+				C472E5382651BB0D77D67DE9 /* KeyMasterTests */,
 				540005A1B517D6E776355E66 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -178,6 +198,15 @@
 				AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */,
 			);
 			path = Pomodoro;
+			sourceTree = "<group>";
+		};
+		C472E5382651BB0D77D67DE9 /* KeyMasterTests */ = {
+			isa = PBXGroup;
+			children = (
+				F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */,
+				F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */,
+			);
+			path = KeyMasterTests;
 			sourceTree = "<group>";
 		};
 		D474E23340F0ED8A39458F77 /* Screenshot */ = {
@@ -211,6 +240,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A2CF2FA0090845FD7C25D600 /* KeyMasterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ED9F4C56C3EBA4F5263B29CF /* Build configuration list for PBXNativeTarget "KeyMasterTests" */;
+			buildPhases = (
+				BDAC50D40DC051FCA1F53900 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4E89ACDFAF481AF74DF3785C /* PBXTargetDependency */,
+			);
+			name = KeyMasterTests;
+			packageProductDependencies = (
+			);
+			productName = KeyMasterTests;
+			productReference = 4CDC26EE89D5A289DA0CAA93 /* KeyMasterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B912A4CDF7AD29E183345A47 /* KeyMaster */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DFD1E495EEEF39C5797F9BD3 /* Build configuration list for PBXNativeTarget "KeyMaster" */;
@@ -258,6 +305,7 @@
 			projectRoot = "";
 			targets = (
 				B912A4CDF7AD29E183345A47 /* KeyMaster */,
+				A2CF2FA0090845FD7C25D600 /* KeyMasterTests */,
 			);
 		};
 /* End PBXProject section */
@@ -283,6 +331,7 @@
 				91B337850FDC6E48CDCD1859 /* AppDiscoveryService.swift in Sources */,
 				235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */,
 				7E5B6C9E1882DFF0DBE7D840 /* AppState.swift in Sources */,
+				EEAA891D47CEEB4CBAA1EE14 /* ConfigurationArchiveService.swift in Sources */,
 				AE35D8DDFBA0EE818990D27D /* ContentView.swift in Sources */,
 				269BF01E09B2B7B39BE1C7AE /* KeyActionMenuOverlay.swift in Sources */,
 				9BF1A5928A74B6D9BFEEE0AC /* KeyActionMenuPopoverPresenter.swift in Sources */,
@@ -313,7 +362,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BDAC50D40DC051FCA1F53900 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */,
+				CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4E89ACDFAF481AF74DF3785C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B912A4CDF7AD29E183345A47 /* KeyMaster */;
+			targetProxy = 263A90004FBD333A3D3289AC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1409F6A5538852C8DABA705E /* Debug */ = {
@@ -341,6 +407,25 @@
 			};
 			name = Debug;
 		};
+		306AEB8E2794CE762E39DCE3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keymaster.KeyMasterTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyMaster.app/Contents/MacOS/KeyMaster";
+			};
+			name = Release;
+		};
 		3B3C00C9E90D4CC425269E1C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -365,6 +450,25 @@
 				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
+		};
+		568C84CB14B4FC8895678B91 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.keymaster.KeyMasterTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeyMaster.app/Contents/MacOS/KeyMaster";
+			};
+			name = Debug;
 		};
 		64385F59978163D12ED7CD7F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -507,6 +611,15 @@
 			buildConfigurations = (
 				64385F59978163D12ED7CD7F /* Debug */,
 				683DCD204EE1D6FFED4DCE2D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ED9F4C56C3EBA4F5263B29CF /* Build configuration list for PBXNativeTarget "KeyMasterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				568C84CB14B4FC8895678B91 /* Debug */,
+				306AEB8E2794CE762E39DCE3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

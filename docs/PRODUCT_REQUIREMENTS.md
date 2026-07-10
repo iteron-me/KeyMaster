@@ -30,6 +30,7 @@ KeyMaster should support:
 - Lock the screen.
 - Detect required Accessibility and Input Monitoring permissions.
 - Persist rules and action history locally.
+- Import and export complete portable configuration through a local file.
 
 ## Out of Scope For Now
 
