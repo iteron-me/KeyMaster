@@ -2,150 +2,83 @@
 
 [Chinese](README.zh-CN.md) | English
 
-KeyMaster is a native macOS menu bar app for visually configuring global
-keyboard shortcuts. It turns your keyboard into a launcher: click a key in the
-visual layout, choose an action, then trigger it anywhere with a modifier-key
-shortcut.
+KeyMaster is a native macOS menu bar app for creating global keyboard shortcuts
+from a visual keyboard. Click a key, choose an action, and use the shortcut
+anywhere on your Mac.
 
-It is built for people who like the power of Hammerspoon, launchers, and shell
-scripts, but want a focused UI instead of maintaining handwritten config.
+![KeyMaster keyboard overview](docs/screenshots/keyboard-overview.png)
 
-## Screenshots
+## Modifier Layers
 
-Screenshot placeholders for the public README:
+- **Click a key:** Edit the `Control` layer by default.
+- **Hold modifiers:** Show shortcuts for the matching `Control`, `Option`,
+  `Shift`, or `Command` layer. Multiple modifiers can be held together.
+- **Hold and click:** Add or edit the action for that exact modifier layer.
 
-| Keyboard Panel | Action Menu | Permission State |
-| --- | --- | --- |
-| `docs/screenshots/keyboard-panel.png` | `docs/screenshots/action-menu.png` | `docs/screenshots/permissions.png` |
+## Actions
 
-## What It Does
+Each shortcut can use one of four action types:
 
-- Configure shortcuts from a visual ANSI keyboard layout.
-- Bind modifier-key combinations such as `Control + K` or `Command + Shift + P`.
-- Open installed macOS apps discovered from local Applications folders.
-- Open named URLs.
-- Run explicit shell commands through `/bin/zsh -lc`.
-- Send another key stroke as a simple key mapping.
-- Trigger built-in tools such as area screenshot capture and Pomodoro timer.
-- Export all shortcut rules and action history to a portable configuration file.
-- Store rules locally as JSON in your user Application Support directory.
+![Choose an action for a key](docs/screenshots/action-picker.png)
 
-## How To Use
+### App
 
-1. Launch KeyMaster from the menu bar.
-2. Grant the required macOS permissions when prompted.
-3. Click a key in the visual keyboard.
-4. Choose the modifier layer and action type.
-5. Pick an app, URL, command, key mapping, or built-in tool.
-6. Press the saved shortcut anywhere on macOS.
+Search the apps installed on your Mac and assign one to a shortcut for quick
+launching.
 
-If you open the action menu without holding a modifier key, KeyMaster defaults
-to the `Control` layer. Hold `Control`, `Option`, `Shift`, or `Command` while
-editing to work on that layer directly.
+### Web
 
-## Configuration Backup
+Save a named website and open it from anywhere with a shortcut.
 
-Right-click the KeyMaster menu bar icon to import or export configuration. A
-`.config` file contains all shortcut rules plus URL and command action
-history, so it can restore the same setup on another Mac. Export names use the
-sortable pattern `KM-yyyyMMdd.config`.
+### Command
 
-The JSON contains only portable behavior fields. Internal rule identifiers,
-derived display names, and timestamps are regenerated when imported.
+Run shell commands.
 
-Import validates the complete file and asks for confirmation before replacing
-the current configuration. App shortcuts remain in the file by bundle
-identifier even when an app is not installed on the destination Mac.
+**KeyMaster built-in tools:**
 
-## Permissions
+**Screenshot Area**
 
-Global keyboard interception depends on macOS privacy permissions:
+Select part of the screen, add rectangle or text annotations, then copy the
+result or keep it floating as a pinned image.
 
-- Accessibility: required for low-level shortcut handling.
-- Input Monitoring: required to listen for global keyboard events.
-- Screen Recording: required only when using the screenshot tool.
-- Notifications: optional for Pomodoro timer alerts.
+<img src="docs/screenshots/screenshot-area.png" alt="KeyMaster Screenshot Area tool" width="600">
 
-For local development and permission testing, always launch the stable app
-bundle installed by:
+**Pomodoro Timer**
 
-```sh
-./scripts/dev-run.sh
-```
+Run focus and break cycles with pause, skip, stop, notifications, and a live
+countdown in the menu bar.
 
-Grant permissions to `/Applications/KeyMaster.app`, not to a temporary
-DerivedData build.
+<img src="docs/screenshots/pomodoro-timer.png" alt="KeyMaster Pomodoro timer" width="360">
 
-## Safety Notes
+### Key Mapping
 
-Shell commands are powerful. KeyMaster keeps command actions explicit and
-visible, and runs them only after you bind them yourself. Do not bind commands
-you do not understand.
+Map a shortcut to another key stroke or key combination. Example:
 
-Exported configuration files are readable JSON and may contain URLs and shell
-commands. Store and share them as sensitive files.
+- `Control + I/J/K/L` → Up, Left, Down, and Right.
+- `Control + Shift + I/J/K/L` → Directional text selection.
 
-KeyMaster is local-first. Shortcut rules and action history are stored locally:
+This layout reduces movement between the main keyboard area and the arrow keys.
 
-```text
-~/Library/Application Support/KeyMaster/rules.json
-~/Library/Application Support/KeyMaster/action-history.json
-```
+## Configuration
+
+Right-click the KeyMaster menu bar icon to import or export all shortcuts and
+action history.
 
 ## Requirements
 
 - macOS 15.0 or newer.
-- Xcode 26.5 or newer for building from source.
-- XcodeGen for regenerating the Xcode project.
-- Accessibility and Input Monitoring permissions for real shortcut interception.
-
-Install XcodeGen with Homebrew:
-
-```sh
-brew install xcodegen
-```
+- Accessibility and Input Monitoring permissions for global shortcuts.
 
 ## Build From Source
 
-`project.yml` is the source of truth for the Xcode project. Regenerate the
-project after changing targets, source groups, build settings, schemes, or
-resources.
+Install [XcodeGen](https://github.com/yonaskolb/XcodeGen), then run:
 
 ```sh
-./scripts/generate-xcodeproj.sh
-```
-
-Build from the command line:
-
-```sh
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer \
-xcodebuild -project KeyMaster.xcodeproj \
-  -scheme KeyMaster \
-  -configuration Debug \
-  -destination 'platform=macOS' \
-  -derivedDataPath /private/tmp/KeyMasterDerived \
-  build
-```
-
-For day-to-day development, use:
-
-```sh
+brew install xcodegen
 ./scripts/dev-run.sh
 ```
 
-This regenerates the project, builds the app, installs it to
-`/Applications/KeyMaster.app`, applies a stable local signing requirement, and
-opens the installed app.
+`dev-run.sh` generates the Xcode project, builds KeyMaster, and installs the
+development app at `/Applications/KeyMaster.app`.
 
-## Documentation
-
-- [Product Requirements](docs/PRODUCT_REQUIREMENTS.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Brand Notes](docs/brand/BRAND.md)
-- [Archived Implementation Plan](docs/archive/IMPLEMENTATION_PLAN.md)
-
-## License
-
-License is not specified yet. Add a `LICENSE` file before publishing the
-repository broadly.
+More details: [Architecture](docs/ARCHITECTURE.md) · [Roadmap](docs/ROADMAP.md)
