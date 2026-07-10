@@ -67,9 +67,9 @@ jobs:
         run: |
           notice="$(cat .github/UNSIGNED_RELEASE_NOTICE.md)"
           notice+=$'\n\nInstallation guides: '
-          notice+="https://github.com/$GITHUB_REPOSITORY#install-a-release"
+          notice+="https://github.com/$GITHUB_REPOSITORY#readme"
           notice+=$' | '
-          notice+="https://github.com/$GITHUB_REPOSITORY/blob/main/README.zh-CN.md"
+          notice+="https://github.com/$GITHUB_REPOSITORY/blob/main/README.en.md#install-a-release"
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             is_draft="$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)"
