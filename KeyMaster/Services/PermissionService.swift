@@ -8,20 +8,6 @@ struct PermissionStatus: Equatable {
     var canRunShortcutEngine: Bool {
         isAccessibilityTrusted && canListenToEvents
     }
-
-    var missingRequiredPermissionNames: [String] {
-        var names: [String] = []
-
-        if !isAccessibilityTrusted {
-            names.append("Accessibility")
-        }
-
-        if !canListenToEvents {
-            names.append("Input Monitoring")
-        }
-
-        return names
-    }
 }
 
 struct PermissionService {

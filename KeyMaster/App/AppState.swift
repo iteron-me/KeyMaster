@@ -223,25 +223,6 @@ final class AppState: ObservableObject {
         PermissionService.openInputMonitoringSettings()
     }
 
-    func requestMissingPermissions() {
-        let needsAccessibility = !permissionStatus.isAccessibilityTrusted
-        let needsInputMonitoring = !permissionStatus.canListenToEvents
-
-        if needsAccessibility {
-            permissionService.requestAccessibilityPermission()
-        }
-
-        if needsInputMonitoring {
-            permissionService.requestListenEventPermission()
-        }
-
-        if needsAccessibility {
-            PermissionService.openAccessibilitySettings()
-        } else if needsInputMonitoring {
-            PermissionService.openInputMonitoringSettings()
-        }
-    }
-
     private func syncKeyboardEngine() {
         guard permissionStatus.canRunShortcutEngine else {
             keyboardEngine.stop()
