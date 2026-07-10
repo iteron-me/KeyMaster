@@ -223,6 +223,53 @@ final class AppState: ObservableObject {
         PermissionService.openInputMonitoringSettings()
     }
 
+    func configurationSnapshot() -> KeyMasterConfiguration {
+        KeyMasterConfiguration(
+            rules: rules,
+            actionHistory: actionHistory
+        )
+    }
+
+    func replaceConfiguration(with configuration: KeyMasterConfiguration) throws {
+        let previousRules = rules
+        let previousActionHistory = actionHistory
+        let importedRules = configuration.makeRules()
+
+        do {
+            try ruleStore.saveRules(importedRules)
+        } catch {
+            let replacementError = ConfigurationReplacementError.persistenceFailed(
+                reason: error.localizedDescription
+            )
+            rulePersistenceErrorMessage = replacementError.localizedDescription
+            throw replacementError
+        }
+
+        do {
+            try ruleStore.saveActionHistory(configuration.actionHistory)
+        } catch {
+            do {
+                try ruleStore.saveRules(previousRules)
+                try ruleStore.saveActionHistory(previousActionHistory)
+            } catch {
+                let replacementError = ConfigurationReplacementError.rollbackFailed
+                rulePersistenceErrorMessage = replacementError.localizedDescription
+                throw replacementError
+            }
+
+            let replacementError = ConfigurationReplacementError.persistenceFailed(
+                reason: error.localizedDescription
+            )
+            rulePersistenceErrorMessage = replacementError.localizedDescription
+            throw replacementError
+        }
+
+        rules = importedRules
+        actionHistory = configuration.actionHistory
+        rulePersistenceErrorMessage = nil
+        syncKeyboardEngine()
+    }
+
     private func syncKeyboardEngine() {
         guard permissionStatus.canRunShortcutEngine else {
             keyboardEngine.stop()
@@ -358,6 +405,20 @@ final class AppState: ObservableObject {
 private struct ShortcutKey: Hashable {
     let modifiers: Set<ModifierKey>
     let keyCode: Int
+}
+
+private enum ConfigurationReplacementError: LocalizedError {
+    case persistenceFailed(reason: String)
+    case rollbackFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .persistenceFailed(let reason):
+            "The imported configuration could not be saved. Your current configuration was kept. \(reason)"
+        case .rollbackFailed:
+            "The import failed and KeyMaster could not restore the previous configuration on disk. Reopen KeyMaster and review your saved rules."
+        }
+    }
 }
 
 private extension KeyAction {

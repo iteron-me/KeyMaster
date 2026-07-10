@@ -1,10 +1,12 @@
 import AppKit
 import Combine
 import SwiftUI
+import UniformTypeIdentifiers
 
 @MainActor
 final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let appState = AppState()
+    private let configurationArchiveService = ConfigurationArchiveService()
     private var statusItem: NSStatusItem?
     private var panelWindow: KeyMasterPanelWindow?
     private var hostingController: NSHostingController<AnyView>?
@@ -37,7 +39,8 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         updateStatusItemState()
 
         statusItem.button?.target = self
-        statusItem.button?.action = #selector(togglePanel)
+        statusItem.button?.action = #selector(handleStatusItemClick)
+        statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
     }
 
     private func updateStatusItemState() {
@@ -91,12 +94,154 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
     }
 
     @objc
-    private func togglePanel() {
+    private func handleStatusItemClick() {
+        if NSApp.currentEvent?.type == .rightMouseUp {
+            showConfigurationMenu()
+            return
+        }
+
         if panelWindow?.isVisible == true {
             closePanel()
         } else {
             showPanel()
         }
+    }
+
+    private func showConfigurationMenu() {
+        guard let event = NSApp.currentEvent,
+              let button = statusItem?.button
+        else {
+            return
+        }
+
+        closePanel()
+
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+
+        let importItem = NSMenuItem(
+            title: "Import Configuration...",
+            action: #selector(importConfiguration),
+            keyEquivalent: ""
+        )
+        importItem.image = NSImage(
+            systemSymbolName: "square.and.arrow.down",
+            accessibilityDescription: "Import Configuration"
+        )
+        importItem.target = self
+        importItem.isEnabled = true
+        menu.addItem(importItem)
+
+        let exportItem = NSMenuItem(
+            title: "Export Configuration...",
+            action: #selector(exportConfiguration),
+            keyEquivalent: ""
+        )
+        exportItem.image = NSImage(
+            systemSymbolName: "square.and.arrow.up",
+            accessibilityDescription: "Export Configuration"
+        )
+        exportItem.target = self
+        exportItem.isEnabled = true
+        menu.addItem(exportItem)
+
+        NSMenu.popUpContextMenu(menu, with: event, for: button)
+    }
+
+    @objc
+    private func exportConfiguration() {
+        NSApp.activate(ignoringOtherApps: true)
+
+        let panel = NSSavePanel()
+        panel.title = "Export KeyMaster Configuration"
+        panel.message = "The exported file contains all shortcuts, URLs, commands, and action history."
+        panel.nameFieldStringValue = ConfigurationArchiveService.defaultBaseFileName()
+        panel.allowedContentTypes = [Self.configurationContentType]
+        panel.canCreateDirectories = true
+        panel.isExtensionHidden = false
+
+        guard panel.runModal() == .OK, let url = panel.url else {
+            return
+        }
+
+        do {
+            try configurationArchiveService.write(
+                appState.configurationSnapshot(),
+                to: url
+            )
+            showInformationAlert(
+                title: "Configuration Exported",
+                message: "Your complete KeyMaster configuration was saved to \(url.lastPathComponent)."
+            )
+        } catch {
+            showErrorAlert(title: "Export Failed", error: error)
+        }
+    }
+
+    @objc
+    private func importConfiguration() {
+        NSApp.activate(ignoringOtherApps: true)
+
+        let panel = NSOpenPanel()
+        panel.title = "Import KeyMaster Configuration"
+        panel.message = "Choose a KeyMaster configuration file to replace the current configuration."
+        panel.allowedContentTypes = [Self.configurationContentType]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+
+        guard panel.runModal() == .OK, let url = panel.url else {
+            return
+        }
+
+        do {
+            let configuration = try configurationArchiveService.configuration(from: url)
+
+            guard confirmConfigurationReplacement(configuration) else {
+                return
+            }
+
+            try appState.replaceConfiguration(with: configuration)
+            showInformationAlert(
+                title: "Configuration Imported",
+                message: "Imported \(configuration.rules.count) shortcut rules and \(historyItemCount(in: configuration)) history items."
+            )
+        } catch {
+            showErrorAlert(title: "Import Failed", error: error)
+        }
+    }
+
+    private func confirmConfigurationReplacement(_ configuration: KeyMasterConfiguration) -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Replace Current Configuration?"
+        alert.informativeText = "This will replace all current shortcut rules and action history with \(configuration.rules.count) rules and \(historyItemCount(in: configuration)) history items from the selected file."
+        alert.addButton(withTitle: "Replace Configuration")
+        alert.addButton(withTitle: "Cancel")
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
+    private func historyItemCount(in configuration: KeyMasterConfiguration) -> Int {
+        configuration.actionHistory.webItems.count
+            + configuration.actionHistory.commandItems.count
+    }
+
+    private func showInformationAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = title
+        alert.informativeText = message
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
+    }
+
+    private func showErrorAlert(title: String, error: Error) {
+        let alert = NSAlert()
+        alert.alertStyle = .critical
+        alert.messageText = title
+        alert.informativeText = error.localizedDescription
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 
     private func showPanel() {
@@ -275,6 +420,10 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
     )
     private static let panelSpacing: CGFloat = 8
     private static let screenPadding: CGFloat = 8
+    private static let configurationContentType = UTType(
+        filenameExtension: ConfigurationArchiveService.fileExtension,
+        conformingTo: .json
+    ) ?? .json
 }
 
 private final class KeyMasterPanelWindow: NSWindow {

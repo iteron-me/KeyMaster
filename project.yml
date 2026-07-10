@@ -107,6 +107,18 @@ targets:
         PRODUCT_NAME: $(TARGET_NAME)
         SWIFT_EMIT_LOC_STRINGS: YES
         SWIFT_VERSION: "6.0"
+  KeyMasterTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: KeyMasterTests
+    dependencies:
+      - target: KeyMaster
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
 schemes:
   KeyMaster:
     shared: true
@@ -121,3 +133,7 @@ schemes:
       config: Debug
     archive:
       config: Release
+    test:
+      config: Debug
+      targets:
+        - KeyMasterTests

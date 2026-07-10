@@ -27,6 +27,7 @@ Screenshot placeholders for the public README:
 - Run explicit shell commands through `/bin/zsh -lc`.
 - Send another key stroke as a simple key mapping.
 - Trigger built-in tools such as area screenshot capture and Pomodoro timer.
+- Export all shortcut rules and action history to a portable configuration file.
 - Store rules locally as JSON in your user Application Support directory.
 
 ## How To Use
@@ -41,6 +42,20 @@ Screenshot placeholders for the public README:
 If you open the action menu without holding a modifier key, KeyMaster defaults
 to the `Control` layer. Hold `Control`, `Option`, `Shift`, or `Command` while
 editing to work on that layer directly.
+
+## Configuration Backup
+
+Right-click the KeyMaster menu bar icon to import or export configuration. A
+`.config` file contains all shortcut rules plus URL and command action
+history, so it can restore the same setup on another Mac. Export names use the
+sortable pattern `KM-yyyyMMdd.config`.
+
+The JSON contains only portable behavior fields. Internal rule identifiers,
+derived display names, and timestamps are regenerated when imported.
+
+Import validates the complete file and asks for confirmation before replacing
+the current configuration. App shortcuts remain in the file by bundle
+identifier even when an app is not installed on the destination Mac.
 
 ## Permissions
 
@@ -66,6 +81,9 @@ DerivedData build.
 Shell commands are powerful. KeyMaster keeps command actions explicit and
 visible, and runs them only after you bind them yourself. Do not bind commands
 you do not understand.
+
+Exported configuration files are readable JSON and may contain URLs and shell
+commands. Store and share them as sensitive files.
 
 KeyMaster is local-first. Shortcut rules and action history are stored locally:
 
