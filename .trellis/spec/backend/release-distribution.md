@@ -36,6 +36,8 @@ GitHub Actions entry points:
 - A direct user instruction to "release version X" authorizes `--push`; "prepare
   version X" does not authorize remote mutation.
 - CI uses `github.run_number` as `CURRENT_PROJECT_VERSION`.
+- The release job uses GitHub's `macos-26` image because the project compiles
+  against Xcode 26 SDK APIs while retaining a macOS 15 deployment target.
 - The packaged app identifier is `app.keymaster.mac` and its designated
   requirement comes from `scripts/keymaster-env.sh`.
 - Release executables must contain both `arm64` and `x86_64`.
@@ -59,6 +61,7 @@ GitHub Actions entry points:
 | DMG creation, verification, mount, or content check fails | Delete incomplete output artifacts |
 | Existing GitHub Release is already public | Refuse asset replacement |
 | Existing GitHub Release is a draft | Allow intentional asset clobber on retry |
+| Runner Xcode SDK is older than the APIs referenced by the source | Use the pinned `macos-26` release image; do not raise the deployment target |
 
 ### 5. Good / Base / Bad Cases
 
