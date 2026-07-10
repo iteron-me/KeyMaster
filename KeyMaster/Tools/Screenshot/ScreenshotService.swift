@@ -15,45 +15,35 @@ enum ScreenshotService {
     static func capture(
         rect requestedRect: CGRect,
         annotations: [ScreenshotAnnotation] = [],
-        on displayID: CGDirectDisplayID
-    ) async throws -> NSImage {
-        let content = try await SCShareableContent.current
-        guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
-            throw ScreenshotError.displayNotFound
+        from screenImage: CGImage,
+        displaySize: CGSize
+    ) throws -> NSImage {
+        guard displaySize.width > 0, displaySize.height > 0 else {
+            throw ScreenshotError.emptyCapture
         }
 
-        let filter = SCContentFilter(display: display, excludingWindows: [])
-        let scale = max(CGFloat(filter.pointPixelScale), 1)
-        let captureRect = pixelAligned(
-            clamped(requestedRect, to: CGSize(width: display.width, height: display.height)),
-            scale: scale
+        let scaleX = CGFloat(screenImage.width) / displaySize.width
+        let scaleY = CGFloat(screenImage.height) / displaySize.height
+        let clampedRect = clamped(requestedRect, to: displaySize)
+        let pixelRect = CGRect(
+            x: floor(clampedRect.minX * scaleX),
+            y: floor(clampedRect.minY * scaleY),
+            width: ceil(clampedRect.maxX * scaleX) - floor(clampedRect.minX * scaleX),
+            height: ceil(clampedRect.maxY * scaleY) - floor(clampedRect.minY * scaleY)
         )
-        guard captureRect.width > 0, captureRect.height > 0 else {
+        guard pixelRect.width > 0, pixelRect.height > 0 else {
             throw ScreenshotError.emptySelection
         }
-
-        let configuration = SCStreamConfiguration()
-        configuration.sourceRect = captureRect
-        configuration.width = max(Int((captureRect.width * scale).rounded(.toNearestOrAwayFromZero)), 1)
-        configuration.height = max(Int((captureRect.height * scale).rounded(.toNearestOrAwayFromZero)), 1)
-        configuration.showsCursor = false
-
-        let cgImage: CGImage = try await withCheckedThrowingContinuation { continuation in
-            SCScreenshotManager.captureImage(contentFilter: filter, configuration: configuration) { image, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                guard let image else {
-                    continuation.resume(throwing: ScreenshotError.emptyCapture)
-                    return
-                }
-
-                continuation.resume(returning: image)
-            }
+        guard let cgImage = screenImage.cropping(to: pixelRect) else {
+            throw ScreenshotError.emptyCapture
         }
 
+        let captureRect = CGRect(
+            x: pixelRect.minX / scaleX,
+            y: pixelRect.minY / scaleY,
+            width: pixelRect.width / scaleX,
+            height: pixelRect.height / scaleY
+        )
         let image = NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
         guard !annotations.isEmpty else {
             return image
