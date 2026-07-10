@@ -65,6 +65,22 @@ KeyMaster 是一个原生 macOS 菜单栏应用，通过可视化键盘配置全
 - macOS 15.0 或更新版本。
 - 使用全局快捷键需要辅助功能和输入监控权限。
 
+## 安装发布版本
+
+从 [GitHub Releases](https://github.com/liumengjie1218/KeyMaster/releases)
+下载 DMG 和对应的 `.sha256` 文件。可以使用下面的命令验证下载内容：
+
+```sh
+shasum -a 256 -c KeyMaster-0.1.0-macos-universal.dmg.sha256
+```
+
+打开 DMG，把 KeyMaster 拖到“应用程序”。当前发布版本使用 ad-hoc 签名，未经 Apple
+公证。第一次启动时，Control 点击 KeyMaster 并选择“打开”。如果仍被 macOS 阻止，
+前往“系统设置 > 隐私与安全性”，点击“仍要打开”。
+
+绕过 Gatekeeper 不会自动授予运行权限。全局快捷键需要辅助功能和输入监控权限；
+只有截图工具需要屏幕录制权限。请只安装从本仓库下载的发布产物。
+
 ## 从源码构建
 
 安装 [XcodeGen](https://github.com/yonaskolb/XcodeGen)，然后运行：
@@ -76,5 +92,8 @@ brew install xcodegen
 
 `dev-run.sh` 会生成 Xcode 工程、构建 KeyMaster，并将开发版本安装到
 `/Applications/KeyMaster.app`。
+
+维护者可以参考[发布说明](docs/RELEASING.zh-CN.md)，使用自动 tag 和草稿 Release
+流程。
 
 更多信息：[架构说明](docs/ARCHITECTURE.md) · [路线图](docs/ROADMAP.md)

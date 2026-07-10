@@ -37,8 +37,8 @@ KeyMaster is an early native macOS build with these core pieces in place:
 
 4. Onboarding and distribution
    - Add a first-run permission guide.
-   - Add release signing and notarization scripts.
-   - Prepare GitHub release packaging.
+   - GitHub draft-release packaging is available for ad-hoc signed early builds.
+   - Add Developer ID signing, Hardened Runtime, notarization, and stapling.
 
 5. Larger features
    - Profiles and app-specific mappings.

@@ -20,6 +20,7 @@ This directory contains guidelines for backend development. Fill in each file wi
 | [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
 | [Logging Guidelines](./logging-guidelines.md) | Structured logging, log levels | To fill |
 | [Configuration Archives](./configuration-archives.md) | Portable configuration format, validation, and replacement contract | Active |
+| [Release Distribution](./release-distribution.md) | Version tags, unsigned DMG packaging, and draft GitHub releases | Active |
 
 ---
 
