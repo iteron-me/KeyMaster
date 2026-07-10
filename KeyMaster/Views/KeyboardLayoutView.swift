@@ -40,31 +40,42 @@ struct KeyboardLayoutView: View {
                             .fill(Color.black.opacity(0.18))
                     )
 
-                Button {
-                    appState.requestMissingPermissions()
-                } label: {
-                    Label("Grant Permissions", systemImage: "lock.open")
-                        .font(.system(size: 14, weight: .semibold))
-                        .padding(.horizontal, 8)
-                        .frame(height: 38)
+                VStack(spacing: 18) {
+                    VStack(spacing: 6) {
+                        Image(systemName: "lock.shield")
+                            .font(.system(size: 28, weight: .medium))
+                            .symbolRenderingMode(.hierarchical)
+
+                        Text("Permissions Required")
+                            .font(.system(size: 17, weight: .semibold))
+
+                        Text("KeyMaster needs both permissions to handle global shortcuts.")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    VStack(spacing: 10) {
+                        PermissionRequirementRow(
+                            title: "Accessibility",
+                            detail: "Allows KeyMaster to intercept configured shortcuts.",
+                            systemImage: "accessibility",
+                            isGranted: appState.permissionStatus.isAccessibilityTrusted,
+                            grantAction: appState.requestAccessibilityPermission
+                        )
+
+                        PermissionRequirementRow(
+                            title: "Input Monitoring",
+                            detail: "Allows KeyMaster to detect global keyboard input.",
+                            systemImage: "keyboard.badge.eye",
+                            isGranted: appState.permissionStatus.canListenToEvents,
+                            grantAction: appState.requestInputMonitoringPermission
+                        )
+                    }
                 }
-                .buttonBorderShape(.capsule)
-                .liquidGlassButtonStyle(isProminent: true)
-                .help(permissionHelpText)
-                .accessibilityLabel(permissionHelpText)
+                .frame(width: 520)
             }
             .contentShape(Rectangle())
         }
-    }
-
-    private var permissionHelpText: String {
-        let missingPermissions = appState.permissionStatus.missingRequiredPermissionNames
-
-        if missingPermissions.isEmpty {
-            return "Permissions Granted"
-        }
-
-        return "Grant \(missingPermissions.joined(separator: " and ")) permission"
     }
 
     @ViewBuilder
@@ -264,6 +275,62 @@ struct KeyboardLayoutView: View {
         }
 
         return keysWidth + CGFloat(keys.count - 1) * spacing
+    }
+}
+
+private struct PermissionRequirementRow: View {
+    let title: String
+    let detail: String
+    let systemImage: String
+    let isGranted: Bool
+    let grantAction: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: 19, weight: .medium))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(isGranted ? Color.green : Color.accentColor)
+                .frame(width: 28, height: 28)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.system(size: 13, weight: .semibold))
+
+                Text(detail)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 12)
+
+            if isGranted {
+                Label("Granted", systemImage: "checkmark.circle.fill")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.green)
+                    .frame(width: 104, alignment: .center)
+                    .accessibilityLabel("\(title) permission granted")
+            } else {
+                Button("Grant", action: grantAction)
+                    .font(.system(size: 12, weight: .semibold))
+                    .frame(width: 104, height: 32)
+                    .liquidGlassButtonStyle(isProminent: true)
+                    .help("Grant \(title) permission")
+                    .accessibilityLabel("Grant \(title) permission")
+            }
+        }
+        .padding(.horizontal, 14)
+        .frame(height: 64)
+        .background {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color(nsColor: .controlBackgroundColor).opacity(0.82))
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                .allowsHitTesting(false)
+        }
     }
 }
 
