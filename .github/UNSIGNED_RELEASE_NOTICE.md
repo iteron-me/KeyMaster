@@ -1,9 +1,4 @@
-> [!WARNING]
-> This KeyMaster build uses an ad-hoc signature and has not been notarized by
-> Apple. macOS will require you to approve the app manually before the first
-> launch. Only install artifacts downloaded from this repository.
+将 KeyMaster 拖到“应用程序”后，按住 Control 点击应用并选择“打开”。如果 macOS 仍然
+阻止，请前往“系统设置 > 隐私与安全性”，点击“仍要打开”。
 
-After copying KeyMaster to Applications, Control-click the app and choose Open.
-If macOS still blocks it, use System Settings > Privacy & Security > Open Anyway.
-Accessibility and Input Monitoring permissions are separate and are required for
-global shortcuts. Screen Recording is required only for screenshot tools.
+全局快捷键需要“辅助功能”和“输入监控”权限；只有截图工具需要“屏幕录制”权限。

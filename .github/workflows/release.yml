@@ -66,10 +66,8 @@ jobs:
         shell: bash
         run: |
           notice="$(cat .github/UNSIGNED_RELEASE_NOTICE.md)"
-          notice+=$'\n\nInstallation guides: '
-          notice+="https://github.com/$GITHUB_REPOSITORY#readme"
-          notice+=$' | '
-          notice+="https://github.com/$GITHUB_REPOSITORY/blob/main/README.en.md#install-a-release"
+          notice+=$'\n\n安装说明：'
+          notice+="https://github.com/$GITHUB_REPOSITORY/blob/main/README.md#安装发布版本"
 
           if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             is_draft="$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)"
