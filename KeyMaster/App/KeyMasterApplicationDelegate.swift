@@ -1,5 +1,6 @@
 import AppKit
 import Combine
+import ServiceManagement
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -119,6 +120,17 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         let menu = NSMenu()
         menu.autoenablesItems = false
 
+        let launchAtLoginItem = NSMenuItem(
+            title: "Launch at Login",
+            action: #selector(toggleLaunchAtLogin),
+            keyEquivalent: ""
+        )
+        launchAtLoginItem.target = self
+        launchAtLoginItem.isEnabled = true
+        launchAtLoginItem.state = launchAtLoginMenuItemState
+        menu.addItem(launchAtLoginItem)
+        menu.addItem(.separator())
+
         let importItem = NSMenuItem(
             title: "Import Configuration...",
             action: #selector(importConfiguration),
@@ -146,6 +158,39 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         menu.addItem(exportItem)
 
         NSMenu.popUpContextMenu(menu, with: event, for: button)
+    }
+
+    private var launchAtLoginMenuItemState: NSControl.StateValue {
+        switch SMAppService.mainApp.status {
+        case .enabled:
+            return .on
+        case .requiresApproval:
+            return .mixed
+        case .notFound, .notRegistered:
+            return .off
+        @unknown default:
+            return .off
+        }
+    }
+
+    @objc
+    private func toggleLaunchAtLogin() {
+        let service = SMAppService.mainApp
+
+        do {
+            switch service.status {
+            case .enabled:
+                try service.unregister()
+            case .requiresApproval:
+                SMAppService.openSystemSettingsLoginItems()
+            case .notFound, .notRegistered:
+                try service.register()
+            @unknown default:
+                try service.register()
+            }
+        } catch {
+            showErrorAlert(title: "Unable to Update Launch at Login", error: error)
+        }
     }
 
     @objc
