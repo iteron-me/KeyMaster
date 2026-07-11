@@ -102,7 +102,7 @@ targets:
         LD_RUNPATH_SEARCH_PATHS:
           - $(inherited)
           - "@executable_path/../Frameworks"
-        MARKETING_VERSION: 0.1.1
+        MARKETING_VERSION: 0.1.2
         PRODUCT_BUNDLE_IDENTIFIER: app.keymaster.mac
         PRODUCT_NAME: $(TARGET_NAME)
         SWIFT_EMIT_LOC_STRINGS: YES
