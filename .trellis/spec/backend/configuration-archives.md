@@ -29,6 +29,12 @@ func replaceConfiguration(with configuration: KeyMasterConfiguration) throws
 ## 3. Contracts
 
 - Extension: `.config`.
+- Uniform type identifier: `app.keymaster.mac.configuration`, exported by the
+  app in `Info.plist`, conforming to `public.json`, and tagged with the
+  `.config` filename extension. Export uses this declared type. Import also
+  accepts the system type resolved directly from the `.config` extension,
+  because existing files can retain a dynamic type until LaunchServices has
+  associated the declared type.
 - Default name: `KM-yyyyMMdd.config` using local time. Pass the
   base name without an extension to `NSSavePanel`; the content type adds it.
 - Encoding: JSON, pretty printed, sorted keys, and no date values.

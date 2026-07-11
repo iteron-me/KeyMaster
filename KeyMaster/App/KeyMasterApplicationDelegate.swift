@@ -185,7 +185,7 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         let panel = NSOpenPanel()
         panel.title = "Import KeyMaster Configuration"
         panel.message = "Choose a KeyMaster configuration file to replace the current configuration."
-        panel.allowedContentTypes = [Self.configurationContentType]
+        panel.allowedContentTypes = Self.configurationImportContentTypes
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false
         panel.canChooseFiles = true
@@ -421,9 +421,18 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
     private static let panelSpacing: CGFloat = 8
     private static let screenPadding: CGFloat = 8
     private static let configurationContentType = UTType(
-        filenameExtension: ConfigurationArchiveService.fileExtension,
+        exportedAs: "app.keymaster.mac.configuration",
         conformingTo: .json
-    ) ?? .json
+    )
+    private static let configurationImportContentTypes: [UTType] = {
+        guard let filenameContentType = UTType(
+            filenameExtension: ConfigurationArchiveService.fileExtension
+        ) else {
+            return [configurationContentType]
+        }
+
+        return [configurationContentType, filenameContentType]
+    }()
 }
 
 private final class KeyMasterPanelWindow: NSWindow {
