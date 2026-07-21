@@ -50,6 +50,13 @@ countdown in the menu bar.
 
 <img src="docs/screenshots/pomodoro-timer.png" alt="KeyMaster Pomodoro timer" width="360">
 
+**Screen Navigation**
+
+Show letter hints next to actionable UI elements in the current app window.
+Type a hint to press a button, open a link, or focus a text field. While the
+navigation overlay is active, press `↑` / `↓` to scroll the current window and
+`Esc` to exit.
+
 ### Key Mapping
 
 Map a shortcut to another key stroke or key combination. Example:
@@ -85,8 +92,10 @@ and choose **Open**. If macOS still blocks it, use **System Settings > Privacy &
 Security > Open Anyway**.
 
 Gatekeeper approval does not grant runtime permissions. Enable Accessibility and
-Input Monitoring for global shortcuts. Screen Recording is required only for
-screenshot tools. Only install release artifacts downloaded from this repository.
+Input Monitoring for global shortcuts. Screen Navigation also needs
+Accessibility permission to inspect and operate UI elements. Screen Recording is
+required only for screenshot tools. Only install release artifacts downloaded
+from this repository.
 
 ## Build From Source
 

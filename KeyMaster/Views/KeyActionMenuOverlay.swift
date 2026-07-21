@@ -12,7 +12,7 @@ struct KeyActionMenuContent: View {
     @State private var editingModifiers: Set<ModifierKey> = [.control]
 
     var body: some View {
-        HStack(alignment: .center, spacing: ActionMenuMetrics.menuGap) {
+        HStack(alignment: .top, spacing: ActionMenuMetrics.menuGap) {
             if isLeadingSubmenu {
                 submenuSlot
             }
@@ -985,13 +985,18 @@ private struct CommandActionPicker: View {
                 rows: commandRows,
                 contentPadding: 0,
                 usesSurface: false,
+                historyListHeight: ActionMenuMetrics.commandHistoryListHeight,
                 isValid: { name, value in
                     !name.isEmpty && !value.isEmpty
                 },
                 saveNewItem: saveNewCommand
             )
         }
-        .frame(width: ActionMenuMetrics.submenuWidth)
+        .frame(
+            width: ActionMenuMetrics.submenuWidth,
+            height: ActionMenuMetrics.submenuHeight - ActionMenuMetrics.padding * 2,
+            alignment: .top
+        )
         .padding(ActionMenuMetrics.padding)
         .actionMenuSurface()
     }
@@ -1003,19 +1008,29 @@ private struct CommandActionPicker: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 4)
 
-            ForEach(toolRows) { row in
-                ActionMenuRow(
-                    title: row.title,
-                    subtitle: row.subtitle,
-                    systemImage: row.systemImage,
-                    image: nil,
-                    tint: .orange,
-                    isSelected: row.isSelected,
-                    select: row.select,
-                    delete: nil
-                )
-                .help(row.subtitle)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(toolRows) { row in
+                        ActionMenuRow(
+                            title: row.title,
+                            subtitle: row.subtitle,
+                            systemImage: row.systemImage,
+                            image: nil,
+                            tint: .orange,
+                            isSelected: row.isSelected,
+                            select: row.select,
+                            delete: nil
+                        )
+                        .help(row.subtitle)
+                    }
+                }
+                .padding(.vertical, 2)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
+            .contentShape(Rectangle())
+            .background(Color.primary.opacity(0.001))
+            .defaultScrollAnchor(.top)
+            .frame(height: ActionMenuMetrics.toolListHeight)
         }
     }
 }
@@ -1030,6 +1045,7 @@ private struct HistoryActionPicker: View {
     let rows: [HistoryActionMenuRow]
     let contentPadding: CGFloat
     let usesSurface: Bool
+    let historyListHeight: CGFloat
     let isValid: (String, String) -> Bool
     let saveNewItem: (String, String) -> Void
 
@@ -1053,6 +1069,7 @@ private struct HistoryActionPicker: View {
         rows: [HistoryActionMenuRow],
         contentPadding: CGFloat = ActionMenuMetrics.padding,
         usesSurface: Bool = true,
+        historyListHeight: CGFloat = ActionMenuMetrics.historyListHeight,
         isValid: @escaping (String, String) -> Bool,
         saveNewItem: @escaping (String, String) -> Void
     ) {
@@ -1065,6 +1082,7 @@ private struct HistoryActionPicker: View {
         self.rows = rows
         self.contentPadding = contentPadding
         self.usesSurface = usesSurface
+        self.historyListHeight = historyListHeight
         self.isValid = isValid
         self.saveNewItem = saveNewItem
         _value = State(initialValue: initialValue)
@@ -1135,7 +1153,8 @@ private struct HistoryActionPicker: View {
         }
         .contentShape(Rectangle())
         .background(Color.primary.opacity(0.001))
-        .frame(height: rows.isEmpty ? 76 : ActionMenuMetrics.historyListHeight)
+        .defaultScrollAnchor(.top)
+        .frame(height: rows.isEmpty ? min(76, historyListHeight) : historyListHeight)
     }
 
     private var addItemPanel: some View {
@@ -1485,6 +1504,8 @@ enum ActionMenuMetrics {
     static let menuGap: CGFloat = 8
     static let totalWidth: CGFloat = primaryMenuOuterWidth + submenuOuterWidth + menuGap
     static let appListHeight: CGFloat = 176
+    static let toolListHeight: CGFloat = 130
+    static let commandHistoryListHeight: CGFloat = 76
     static let historyListHeight: CGFloat = 172
     static let primaryHeight: CGFloat = 184
     static let submenuHeight: CGFloat = 286
