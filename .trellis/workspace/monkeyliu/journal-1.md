@@ -140,3 +140,36 @@ Added repeatable unsigned universal DMG packaging, guarded semantic-version rele
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: Screen navigation tool
+
+**Date**: 2026-07-21
+**Task**: Screen navigation tool
+**Branch**: `main`
+
+### Summary
+
+Added the Screen Navigation built-in tool, hint overlay, AX element scanning/execution, keyboard monitor input handling, README docs, tests, and overlay guidance for pass-through arrow scrolling.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5a72490` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
