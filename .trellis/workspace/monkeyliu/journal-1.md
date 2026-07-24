@@ -173,3 +173,36 @@ Added the Screen Navigation built-in tool, hint overlay, AX element scanning/exe
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: Add universal app command palette
+
+**Date**: 2026-07-24
+**Task**: Add universal app command palette
+**Branch**: `main`
+
+### Summary
+
+Added a keyboard-only Spotlight-style palette for searching and invoking the frontmost application's nested menu commands, documented the tool in README, and covered search, menu filtering, execution actions, layout, and shortcut glyph normalization with tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `db60594` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
