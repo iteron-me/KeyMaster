@@ -197,7 +197,7 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         case .minX:
             NSPoint(
                 x: sourceRect.minX - contentSize.width - spacing,
-                y: sourceRect.midY - contentSize.height / 2
+                y: sourceRect.maxY - contentSize.height
             )
         case .minY:
             NSPoint(
@@ -212,7 +212,7 @@ final class AnchoredFloatingWindowPresenter: NSObject, NSWindowDelegate {
         default:
             NSPoint(
                 x: sourceRect.maxX + spacing,
-                y: sourceRect.midY - contentSize.height / 2
+                y: sourceRect.maxY - contentSize.height
             )
         }
     }

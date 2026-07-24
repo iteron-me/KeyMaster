@@ -32,7 +32,7 @@ struct KeyActionMenuContent: View {
         .frame(
             width: ActionMenuMetrics.contentWidth(hasSubmenu: true),
             height: ActionMenuMetrics.maxHeight(toolCount: ToolRegistry.shared.tools.count),
-            alignment: .leading
+            alignment: .topLeading
         )
         .padding(ActionMenuMetrics.contentPadding)
         .contentShape(Rectangle())

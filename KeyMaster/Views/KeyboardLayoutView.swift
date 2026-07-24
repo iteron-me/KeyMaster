@@ -5,6 +5,8 @@ struct KeyboardLayoutView: View {
     @EnvironmentObject private var appState: AppState
     @State private var editingKey: KeyboardKey?
     @State private var menuPresenter: KeyActionMenuPopoverPresenter?
+    @State private var keySourceViews: [Int: NSView] = [:]
+    @State private var keyDownMonitor: Any?
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -27,6 +29,8 @@ struct KeyboardLayoutView: View {
             transaction.animation = nil
             transaction.disablesAnimations = true
         }
+        .onAppear(perform: installKeyDownMonitor)
+        .onDisappear(perform: removeKeyDownMonitor)
     }
 
     @ViewBuilder
@@ -151,6 +155,10 @@ struct KeyboardLayoutView: View {
             isLayerActive: !appState.activeModifiers.isEmpty,
             isModifierActive: isModifierKeyActive(key),
             isEditing: editingKey == key,
+            sourceView: Binding(
+                get: { keySourceViews[key.keyCode] },
+                set: { keySourceViews[key.keyCode] = $0 }
+            ),
             openEditor: { sourceView in
                 openEditor(for: key, from: sourceView)
             }
@@ -190,6 +198,41 @@ struct KeyboardLayoutView: View {
             from: sourceView,
             close: closeEditor
         )
+    }
+
+    private func installKeyDownMonitor() {
+        removeKeyDownMonitor()
+
+        keyDownMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            if event.keyCode == 53, menuPresenter != nil {
+                closeEditor()
+                return nil
+            }
+
+            let modifiers = ModifierLayerMonitor.modifiers(from: event.modifierFlags)
+
+            guard menuPresenter == nil,
+                  !event.isARepeat,
+                  !modifiers.isEmpty,
+                  let key = KeyCatalog.defaultKeys.first(where: { $0.keyCode == Int(event.keyCode) }),
+                  appState.rule(for: key, modifiers: modifiers) == nil,
+                  let sourceView = keySourceViews[key.keyCode],
+                  sourceView.window?.isVisible == true
+            else {
+                return event
+            }
+
+            appState.setActiveModifiers(modifiers)
+            openEditor(for: key, from: sourceView)
+            return nil
+        }
+    }
+
+    private func removeKeyDownMonitor() {
+        if let keyDownMonitor {
+            NSEvent.removeMonitor(keyDownMonitor)
+            self.keyDownMonitor = nil
+        }
     }
 
     private func closeEditor() {
@@ -341,11 +384,11 @@ private struct KeyButton: View {
     let isLayerActive: Bool
     let isModifierActive: Bool
     let isEditing: Bool
+    @Binding var sourceView: NSView?
     let openEditor: (NSView) -> Void
 
     @GestureState private var isPressed = false
     @State private var isHovered = false
-    @State private var sourceView: NSView?
 
     var body: some View {
         ZStack(alignment: .topTrailing) {

@@ -59,6 +59,8 @@ Prefer `./scripts/dev-run.sh` for permission testing. Grant macOS permissions to
 
 ## Completion Verification
 
+- Do not use GUI automation to verify runtime or visual behavior; leave that
+  verification to the user.
 - After making code, project configuration, or source layout changes, run the
   development script before the final response:
 

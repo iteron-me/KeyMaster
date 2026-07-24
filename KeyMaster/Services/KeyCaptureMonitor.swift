@@ -104,7 +104,7 @@ final class ModifierLayerMonitor {
         )
     }
 
-    private static func modifiers(from flags: NSEvent.ModifierFlags) -> Set<ModifierKey> {
+    static func modifiers(from flags: NSEvent.ModifierFlags) -> Set<ModifierKey> {
         var modifiers: Set<ModifierKey> = []
 
         if flags.contains(.control) {
