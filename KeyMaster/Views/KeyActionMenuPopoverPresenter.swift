@@ -89,7 +89,8 @@ final class KeyActionMenuPopoverPresenter {
     private static func contentSize() -> NSSize {
         NSSize(
             width: ActionMenuMetrics.contentWidth(hasSubmenu: true) + ActionMenuMetrics.contentPadding * 2,
-            height: ActionMenuMetrics.maxHeight + ActionMenuMetrics.contentPadding * 2
+            height: ActionMenuMetrics.maxHeight(toolCount: ToolRegistry.shared.tools.count)
+                + ActionMenuMetrics.contentPadding * 2
         )
     }
 }

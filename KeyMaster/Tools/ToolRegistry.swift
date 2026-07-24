@@ -7,7 +7,14 @@ final class ToolRegistry {
     let tools: [any KeyMasterTool]
     private let toolsByID: [String: any KeyMasterTool]
 
-    init(tools: [any KeyMasterTool] = [ScreenshotAreaTool(), PomodoroTool(), ScreenNavigationTool()]) {
+    init(
+        tools: [any KeyMasterTool] = [
+            ScreenshotAreaTool(),
+            PomodoroTool(),
+            ScreenNavigationTool(),
+            ApplicationCommandPaletteTool()
+        ]
+    ) {
         self.tools = tools
         toolsByID = Dictionary(uniqueKeysWithValues: tools.map { ($0.id, $0) })
     }

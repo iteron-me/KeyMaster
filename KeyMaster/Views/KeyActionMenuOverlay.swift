@@ -31,7 +31,7 @@ struct KeyActionMenuContent: View {
         }
         .frame(
             width: ActionMenuMetrics.contentWidth(hasSubmenu: true),
-            height: ActionMenuMetrics.maxHeight,
+            height: ActionMenuMetrics.maxHeight(toolCount: ToolRegistry.shared.tools.count),
             alignment: .leading
         )
         .padding(ActionMenuMetrics.contentPadding)
@@ -994,7 +994,8 @@ private struct CommandActionPicker: View {
         }
         .frame(
             width: ActionMenuMetrics.submenuWidth,
-            height: ActionMenuMetrics.submenuHeight - ActionMenuMetrics.padding * 2,
+            height: ActionMenuMetrics.commandSubmenuHeight(toolCount: toolRows.count)
+                - ActionMenuMetrics.padding * 2,
             alignment: .top
         )
         .padding(ActionMenuMetrics.padding)
@@ -1008,29 +1009,23 @@ private struct CommandActionPicker: View {
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 4)
 
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ForEach(toolRows) { row in
-                        ActionMenuRow(
-                            title: row.title,
-                            subtitle: row.subtitle,
-                            systemImage: row.systemImage,
-                            image: nil,
-                            tint: .orange,
-                            isSelected: row.isSelected,
-                            select: row.select,
-                            delete: nil
-                        )
-                        .help(row.subtitle)
-                    }
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(toolRows) { row in
+                    ActionMenuRow(
+                        title: row.title,
+                        subtitle: row.subtitle,
+                        systemImage: row.systemImage,
+                        image: nil,
+                        tint: .orange,
+                        isSelected: row.isSelected,
+                        select: row.select,
+                        delete: nil
+                    )
+                    .help(row.subtitle)
                 }
-                .padding(.vertical, 2)
-                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
-            .contentShape(Rectangle())
-            .background(Color.primary.opacity(0.001))
-            .defaultScrollAnchor(.top)
-            .frame(height: ActionMenuMetrics.toolListHeight)
+            .padding(.vertical, 2)
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
     }
 }
@@ -1504,18 +1499,25 @@ enum ActionMenuMetrics {
     static let menuGap: CGFloat = 8
     static let totalWidth: CGFloat = primaryMenuOuterWidth + submenuOuterWidth + menuGap
     static let appListHeight: CGFloat = 176
-    static let toolListHeight: CGFloat = 130
     static let commandHistoryListHeight: CGFloat = 76
     static let historyListHeight: CGFloat = 172
     static let primaryHeight: CGFloat = 184
     static let submenuHeight: CGFloat = 286
-    static let maxHeight: CGFloat = submenuHeight
     static let rowHeight: CGFloat = 34
     static let historyRowHeight: CGFloat = 42
     static let padding: CGFloat = 8
+    static let baseVisibleToolCount = 3
 
     static func contentWidth(hasSubmenu: Bool) -> CGFloat {
         hasSubmenu ? totalWidth : primaryMenuOuterWidth
+    }
+
+    static func commandSubmenuHeight(toolCount: Int) -> CGFloat {
+        submenuHeight + CGFloat(max(0, toolCount - baseVisibleToolCount)) * historyRowHeight
+    }
+
+    static func maxHeight(toolCount: Int) -> CGFloat {
+        max(submenuHeight, commandSubmenuHeight(toolCount: toolCount))
     }
 
     static func contentHeight(activeKind: ActionKind?) -> CGFloat {
