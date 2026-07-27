@@ -161,6 +161,8 @@ JSON uses pretty printed, sorted keys and ISO-8601 dates.
 
 ## Development Guidance
 
+- For KeyMaster UI implementation or visual refinement, load and follow
+  `.agents/skills/keymaster-ui-design/SKILL.md` before editing.
 - Keep `project.yml` and the generated Xcode project in sync when project
   structure changes.
 - Keep `AppState` as the coordination boundary between SwiftUI and services

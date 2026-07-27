@@ -111,6 +111,61 @@ paletteShape.fill(.ultraThinMaterial)
     .overlay { paletteShape.fill(Color.white.opacity(0.52)) }
 ```
 
+### Calendar Todo month grid
+
+The month view uses seven edge-to-edge columns aligned with the weekday header.
+Generate the smallest complete-week grid that covers the month, with a minimum
+of five rows; do not always render 42 days or divide the available height by six.
+
+```swift
+let rowCount = max(5, Int(ceil(Double(leadingDays + dayCount) / 7)))
+let days = calendarDays(count: rowCount * 7)
+let rowHeight = availableHeight / CGFloat(rowCount)
+```
+
+Keep dates in the upper-left, mute adjacent-month dates, and render Todos as
+full-width tinted event rows inside the cell. Date/blank-space selection opens
+quick add; event-row selection opens the editor and must not also trigger add.
+Use localized short weekday names for the main month and very-short names only
+for compact year-view mini-months.
+
+Draw directional grid borders with explicit one-point rectangles. Do not use
+`Divider` inside an overlay: outside a stack it may keep a horizontal layout
+and create stray lines across each day cell.
+
+```swift
+Rectangle().frame(height: 1) // horizontal border
+Rectangle().frame(width: 1)  // vertical border
+```
+
+### Calendar Todo direct controls
+
+The calendar view chooser presents day, week, month, and year directly in one
+custom popover. Do not wrap a `Picker` inside a `Menu`; that creates an
+unnecessary second interaction layer. Keep Todo import/export controls out of
+the calendar toolbar.
+
+Task add and edit forms use plain text controls inside restrained custom
+surfaces. Quick add has one accent Add action. Edit places a destructive Delete
+opposite the accent Save action; neither form needs a redundant Cancel button
+because Esc and normal popover dismissal already close without saving. Retain
+the native `DatePicker` because its date semantics and accessibility are useful.
+
+Make the entire visible Todo event row the editor button in day, week, and month
+views. Attach the edit popover to that row, not the calendar root, and use
+`arrowEdge: .trailing` so the editor opens immediately to the row's right. This
+edge is verified against this app's macOS runtime behavior; `.leading` places
+the popover on the left.
+
+```swift
+TextField("Task title", text: $title)
+    .textFieldStyle(.plain)
+    .background(CalendarTodoFormStyle.fieldBackground)
+
+Button("Save", action: save)
+    .buttonStyle(CalendarTodoFormButtonStyle(isPrimary: true))
+```
+
 ---
 
 ## Common Mistakes

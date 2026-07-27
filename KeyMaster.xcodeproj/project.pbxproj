@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		03033F7F2F98C1407F3C8F1B /* PomodoroPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */; };
 		050A19D1A8B1145050A55482 /* ApplicationMenuSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9859A3D4B36CAE3B90E7D5B7 /* ApplicationMenuSearchTests.swift */; };
+		07DFA2FA5349C24CF5BC053B /* CalendarTodoStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A21C086C88C01EE2344A2B5 /* CalendarTodoStoreTests.swift */; };
 		0A4AEB6A54B7FD404C01F09B /* ApplicationMenuSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D06D244225F5D1E7F25E56 /* ApplicationMenuSession.swift */; };
 		0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */; };
 		1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */; };
@@ -22,8 +23,10 @@
 		40147960E2FDEBFA20BFB5EA /* ScreenNavigationElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82E59C8A34B937658B9E5B7 /* ScreenNavigationElement.swift */; };
 		44E1293BF9190B9C0364BB7A /* HintGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50524E87A9761519B2F99E47 /* HintGenerator.swift */; };
 		45507EFD8571217D3C2ED3B0 /* ToolRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */; };
+		45CC35B1756FABCC212CAC57 /* CalendarTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D54DCA5AD6D6D301F4BD9CC /* CalendarTodo.swift */; };
 		4E14B391A322F6997A6FFFE0 /* ToolInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */; };
 		512D783FD19996050D41EF7F /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */; };
+		608F31F7D6621C4D5DC99F66 /* CalendarTodoNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEAC1B462D1B9589CE2FE8D /* CalendarTodoNavigation.swift */; };
 		7003E11EF4876A9C30ED8235 /* HintGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C115C57E64202760A3F9F5 /* HintGeneratorTests.swift */; };
 		7659D4BA2B55D959C6BBD825 /* ScreenshotAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */; };
 		7E5B6C9E1882DFF0DBE7D840 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */; };
@@ -48,8 +51,10 @@
 		CA13724193A8FA8D1559732F /* ScreenshotAreaTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */; };
 		CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */; };
 		D158972090D943DA7DA9B28A /* PomodoroTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */; };
+		D17A9283BB62368D611CA05A /* CalendarTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29BBC7A52C9E006C31067B33 /* CalendarTodoView.swift */; };
 		D1A44AAA3FB9684DAD1E6501 /* KeyRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC89F1E60A7C117C835DF14B /* KeyRule.swift */; };
 		D69589B3B7EFAB0BB1712234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0B86899C080457524A9DC /* Assets.xcassets */; };
+		D88D0BF5BC85D6620401DAFB /* CalendarTodoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB8F596FB5014FD0FB51DFC /* CalendarTodoStore.swift */; };
 		DA63B211ACC3E504E1FA2B46 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */; };
 		DC17841117CEC18A922D436D /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */; };
 		E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */; };
@@ -58,6 +63,7 @@
 		F0BECF3AA5CF6DB0974177C7 /* KeyMasterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */; };
 		F4A27B2C731E91416A36E95E /* ScreenNavigationKeyboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25202BB9F7A9E754B840F65F /* ScreenNavigationKeyboardMonitor.swift */; };
 		F76B858D3D5DDB39569F5BE0 /* AccessibilityElementExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB2137A0FD88C3D8DDE92F12 /* AccessibilityElementExecutor.swift */; };
+		F86BA052FBCCC5CCA06A5BD9 /* CalendarTodoTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95037F046F5CADF42BCC583D /* CalendarTodoTool.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,13 +82,16 @@
 		0DF73DBAAE83BC97B532C0DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1664DA511C08DD1D10BB1920 /* AccessibilityElementScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityElementScanner.swift; sourceTree = "<group>"; };
 		25202BB9F7A9E754B840F65F /* ScreenNavigationKeyboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationKeyboardMonitor.swift; sourceTree = "<group>"; };
+		29BBC7A52C9E006C31067B33 /* CalendarTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoView.swift; sourceTree = "<group>"; };
 		3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApp.swift; sourceTree = "<group>"; };
 		3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolInvocation.swift; sourceTree = "<group>"; };
+		3BEAC1B462D1B9589CE2FE8D /* CalendarTodoNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoNavigation.swift; sourceTree = "<group>"; };
 		3EB6A961A633A1369F9096BF /* KeyboardLayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutView.swift; sourceTree = "<group>"; };
 		403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDiscoveryService.swift; sourceTree = "<group>"; };
 		40731C791BF8043E94E0CCA0 /* KeyCaptureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureMonitor.swift; sourceTree = "<group>"; };
 		417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotService.swift; sourceTree = "<group>"; };
 		49A16685DD138BA1D57125D8 /* KeyMasterApplicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApplicationDelegate.swift; sourceTree = "<group>"; };
+		4A21C086C88C01EE2344A2B5 /* CalendarTodoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoStoreTests.swift; sourceTree = "<group>"; };
 		4CDC26EE89D5A289DA0CAA93 /* KeyMasterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyMasterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		50524E87A9761519B2F99E47 /* HintGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintGenerator.swift; sourceTree = "<group>"; };
 		586B332C98AD2165DA525008 /* PomodoroTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTimer.swift; sourceTree = "<group>"; };
@@ -96,7 +105,9 @@
 		725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
 		7D9CBB0A330821F9FE234D84 /* ScreenNavigationOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationOverlayController.swift; sourceTree = "<group>"; };
 		8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotServiceTests.swift; sourceTree = "<group>"; };
+		95037F046F5CADF42BCC583D /* CalendarTodoTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoTool.swift; sourceTree = "<group>"; };
 		9859A3D4B36CAE3B90E7D5B7 /* ApplicationMenuSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMenuSearchTests.swift; sourceTree = "<group>"; };
+		9D54DCA5AD6D6D301F4BD9CC /* CalendarTodo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodo.swift; sourceTree = "<group>"; };
 		9FBAB84C5E4A105401F71144 /* ScreenshotAreaTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotAreaTool.swift; sourceTree = "<group>"; };
 		A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroControlPanelView.swift; sourceTree = "<group>"; };
 		A43B379338C6A1DDD65E8A40 /* ScreenNavigationOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationOverlayView.swift; sourceTree = "<group>"; };
@@ -124,6 +135,7 @@
 		F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardEventEngine.swift; sourceTree = "<group>"; };
 		F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuPopoverPresenter.swift; sourceTree = "<group>"; };
 		F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateConfigurationTests.swift; sourceTree = "<group>"; };
+		FFB8F596FB5014FD0FB51DFC /* CalendarTodoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -214,6 +226,7 @@
 				3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */,
 				057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */,
 				0AFB6ABEB0BBC4A9EAF43394 /* ApplicationCommands */,
+				E99C272B9779C533EAECD91C /* CalendarTodo */,
 				B851A2D2B7C79FECEAFF2602 /* Pomodoro */,
 				90043EB7A7296A6729E43ADE /* ScreenNavigation */,
 				D474E23340F0ED8A39458F77 /* Screenshot */,
@@ -263,6 +276,7 @@
 			children = (
 				9859A3D4B36CAE3B90E7D5B7 /* ApplicationMenuSearchTests.swift */,
 				F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */,
+				4A21C086C88C01EE2344A2B5 /* CalendarTodoStoreTests.swift */,
 				F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */,
 				B5C115C57E64202760A3F9F5 /* HintGeneratorTests.swift */,
 				8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */,
@@ -296,6 +310,18 @@
 				725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E99C272B9779C533EAECD91C /* CalendarTodo */ = {
+			isa = PBXGroup;
+			children = (
+				9D54DCA5AD6D6D301F4BD9CC /* CalendarTodo.swift */,
+				3BEAC1B462D1B9589CE2FE8D /* CalendarTodoNavigation.swift */,
+				FFB8F596FB5014FD0FB51DFC /* CalendarTodoStore.swift */,
+				95037F046F5CADF42BCC583D /* CalendarTodoTool.swift */,
+				29BBC7A52C9E006C31067B33 /* CalendarTodoView.swift */,
+			);
+			path = CalendarTodo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -397,6 +423,11 @@
 				817978FFA5C9A553AB759B4D /* ApplicationCommandPalettePanel.swift in Sources */,
 				3A207855CBCF19EDAF85571B /* ApplicationCommandPaletteTool.swift in Sources */,
 				0A4AEB6A54B7FD404C01F09B /* ApplicationMenuSession.swift in Sources */,
+				45CC35B1756FABCC212CAC57 /* CalendarTodo.swift in Sources */,
+				608F31F7D6621C4D5DC99F66 /* CalendarTodoNavigation.swift in Sources */,
+				D88D0BF5BC85D6620401DAFB /* CalendarTodoStore.swift in Sources */,
+				F86BA052FBCCC5CCA06A5BD9 /* CalendarTodoTool.swift in Sources */,
+				D17A9283BB62368D611CA05A /* CalendarTodoView.swift in Sources */,
 				EEAA891D47CEEB4CBAA1EE14 /* ConfigurationArchiveService.swift in Sources */,
 				AE35D8DDFBA0EE818990D27D /* ContentView.swift in Sources */,
 				44E1293BF9190B9C0364BB7A /* HintGenerator.swift in Sources */,
@@ -441,6 +472,7 @@
 			files = (
 				25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */,
 				050A19D1A8B1145050A55482 /* ApplicationMenuSearchTests.swift in Sources */,
+				07DFA2FA5349C24CF5BC053B /* CalendarTodoStoreTests.swift in Sources */,
 				CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */,
 				7003E11EF4876A9C30ED8235 /* HintGeneratorTests.swift in Sources */,
 				1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */,

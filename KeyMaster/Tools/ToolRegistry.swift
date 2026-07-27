@@ -11,6 +11,7 @@ final class ToolRegistry {
         tools: [any KeyMasterTool] = [
             ScreenshotAreaTool(),
             PomodoroTool(),
+            CalendarTodoTool(),
             ScreenNavigationTool(),
             ApplicationCommandPaletteTool()
         ]

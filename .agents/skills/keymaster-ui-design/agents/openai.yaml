@@ -1,0 +1,4 @@
+interface:
+  display_name: "KeyMaster UI Design"
+  short_description: "Design modern, concise KeyMaster interfaces"
+  default_prompt: "Use $keymaster-ui-design to design or refine a KeyMaster interface."
