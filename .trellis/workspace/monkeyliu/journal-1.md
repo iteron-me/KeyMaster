@@ -206,3 +206,36 @@ Added a keyboard-only Spotlight-style palette for searching and invoking the fro
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: Add calendar Todo tool
+
+**Date**: 2026-07-27
+**Task**: Add calendar Todo tool
+**Branch**: `main`
+
+### Summary
+
+Added the built-in calendar Todo window with day, week, month, and year views; local persistence; direct add/edit/delete interactions; modern fixed-toolbar UI; runtime-verified right-side task popovers; tests and UI design guidance.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3b8277d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
