@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ScreenshotSelectionView: View {
     let screenImage: CGImage?
+    let activate: () -> Void
     let copy: (CGRect, [ScreenshotAnnotation]) -> Void
     let pin: (CGRect, [ScreenshotAnnotation]) -> Void
     let cancel: () -> Void
@@ -384,6 +385,7 @@ struct ScreenshotSelectionView: View {
     private func handleHover(_ phase: HoverPhase) {
         switch phase {
         case .active(let location):
+            activate()
             mouseLocation = location
             if copiedColorHex != nil {
                 copiedColorHex = nil

@@ -39,6 +39,10 @@ static func capture(
   for X and Y.
 - Copy, pin, and future save paths must crop `screenImage`; they must not capture
   the live display again.
+- Annotated crops must be rasterized into a bitmap representation before copy or
+  pin. Do not hand a lazy drawing-handler `NSImage` to the pasteboard.
+- Copy must write PNG pasteboard data. If rasterization, PNG encoding, or the
+  pasteboard write fails, throw `ScreenshotError.exportFailed` and show an alert.
 - A display without a frozen image must not receive a transparent selection
   window.
 - Selection windows must complete layout and display while transparent, then be
@@ -54,6 +58,8 @@ static func capture(
 | Selection is empty after clamping | `ScreenshotError.emptySelection` |
 | Frozen image cannot produce a crop | `ScreenshotError.emptyCapture` |
 | Initial display capture fails | Omit that display's selection window |
+| Annotated export cannot rasterize or encode PNG | `ScreenshotError.exportFailed` |
+| Clipboard PNG write fails | Show an alert and keep the overlay open |
 
 ### 5. Good / Base / Bad Cases
 
@@ -66,6 +72,8 @@ static func capture(
 - Bad: order each hosting window as it is created, then call
   `makeKeyAndOrderFront`, allowing an unrendered first frame or a second ordering
   transition to become visible.
+- Bad: copy a large annotated crop as a lazy drawing-handler `NSImage`. Chat
+  apps then paste nothing because PNG/TIFF encoding fails.
 
 ### 6. Tests Required
 
@@ -77,6 +85,8 @@ static func capture(
 - Assert empty selections return `ScreenshotError.emptySelection`.
 - When changing annotations, verify their exported positions against the same
   frozen crop.
+- Assert annotated exports keep a bitmap representation and can encode PNG.
+- Assert copy writes PNG pasteboard data.
 
 ### 7. Wrong vs Correct
 
@@ -93,6 +103,16 @@ let image = try ScreenshotService.capture(
     from: frozenScreenImage,
     displaySize: displaySize
 )
+
+// Wrong: copy a lazy annotated NSImage that cannot encode PNG.
+return NSImage(size: imageSize, flipped: true) { rect in
+    image.draw(...)
+    return true
+}
+
+// Correct: rasterize first, then write PNG pasteboard data.
+let image = try rasterizedAnnotatedImage(...)
+try ScreenshotService.copyToPasteboard(image)
 
 // Correct: render before reveal, then activate without reordering.
 window.alphaValue = 0

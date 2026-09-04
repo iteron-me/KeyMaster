@@ -49,7 +49,7 @@ enum ScreenshotService {
             return image
         }
 
-        return annotatedImage(
+        return try annotatedImage(
             image,
             annotations: annotations,
             requestedRect: requestedRect,
@@ -92,10 +92,23 @@ enum ScreenshotService {
         }
     }
 
-    static func copyToPasteboard(_ image: NSImage) {
-        let pasteboard = NSPasteboard.general
+    static func copyToPasteboard(
+        _ image: NSImage,
+        pasteboard: NSPasteboard = .general
+    ) throws {
+        guard let pngData = pngData(from: image) else {
+            throw ScreenshotError.exportFailed
+        }
+
+        let tiffData = image.tiffRepresentation
         pasteboard.clearContents()
-        pasteboard.writeObjects([image])
+        pasteboard.declareTypes(tiffData == nil ? [.png] : [.png, .tiff], owner: nil)
+        guard pasteboard.setData(pngData, forType: .png) else {
+            throw ScreenshotError.exportFailed
+        }
+        if let tiffData {
+            pasteboard.setData(tiffData, forType: .tiff)
+        }
     }
 
     private static func clamped(_ rect: CGRect, to size: CGSize) -> CGRect {
@@ -131,7 +144,7 @@ enum ScreenshotService {
         annotations: [ScreenshotAnnotation],
         requestedRect: CGRect,
         captureRect: CGRect
-    ) -> NSImage {
+    ) throws -> NSImage {
         let imageSize = image.size
         let scaleX = imageSize.width / max(captureRect.width, 1)
         let scaleY = imageSize.height / max(captureRect.height, 1)
@@ -147,7 +160,9 @@ enum ScreenshotService {
             )
         }
 
-        return NSImage(size: imageSize, flipped: true) { targetRect in
+        // Rasterize immediately. Lazy drawing-handler images often fail to encode
+        // PNG/TIFF for large annotated crops, so chat apps paste nothing.
+        return try rasterizedImage(size: imageSize) { targetRect in
             image.draw(
                 in: targetRect,
                 from: sourceRect,
@@ -168,8 +183,68 @@ enum ScreenshotService {
                     drawText(text)
                 }
             }
-            return true
         }
+    }
+
+    private static func rasterizedImage(
+        size: CGSize,
+        draw: (CGRect) -> Void
+    ) throws -> NSImage {
+        let width = max(Int(size.width.rounded(.toNearestOrAwayFromZero)), 1)
+        let height = max(Int(size.height.rounded(.toNearestOrAwayFromZero)), 1)
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            throw ScreenshotError.exportFailed
+        }
+
+        // Match NSImage(flipped: true): y = 0 is the top edge. The flipped
+        // flag alone does not change the CGContext CTM, so flip it explicitly.
+        context.translateBy(x: 0, y: CGFloat(height))
+        context.scaleBy(x: 1, y: -1)
+
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(cgContext: context, flipped: true)
+        defer {
+            NSGraphicsContext.restoreGraphicsState()
+        }
+
+        draw(CGRect(x: 0, y: 0, width: width, height: height))
+        guard let cgImage = context.makeImage() else {
+            throw ScreenshotError.exportFailed
+        }
+
+        return NSImage(cgImage: cgImage, size: CGSize(width: width, height: height))
+    }
+
+    private static func pngData(from image: NSImage) -> Data? {
+        if let bitmap = image.representations.compactMap({ $0 as? NSBitmapImageRep }).first,
+           let pngData = bitmap.representation(using: .png, properties: [:]) {
+            return pngData
+        }
+
+        var proposedRect = NSRect(origin: .zero, size: image.size)
+        if let cgImage = image.cgImage(forProposedRect: &proposedRect, context: nil, hints: nil) {
+            let bitmap = NSBitmapImageRep(cgImage: cgImage)
+            if let pngData = bitmap.representation(using: .png, properties: [:]) {
+                return pngData
+            }
+        }
+
+        guard
+            let tiffData = image.tiffRepresentation,
+            let bitmap = NSBitmapImageRep(data: tiffData)
+        else {
+            return nil
+        }
+
+        return bitmap.representation(using: .png, properties: [:])
     }
 
     private static func renderedAnnotation(
@@ -263,15 +338,18 @@ enum ScreenshotError: LocalizedError {
     case displayNotFound
     case emptySelection
     case emptyCapture
+    case exportFailed
 
     var errorDescription: String? {
         switch self {
         case .displayNotFound:
-            "The selected display could not be found."
+            "找不到所选屏幕。"
         case .emptySelection:
-            "The selected screen area is empty."
+            "所选截图区域为空。"
         case .emptyCapture:
-            "The selected screen area could not be captured."
+            "无法截取所选区域。"
+        case .exportFailed:
+            "图片未能保存到剪贴板，请缩小选区后重试。"
         }
     }
 }

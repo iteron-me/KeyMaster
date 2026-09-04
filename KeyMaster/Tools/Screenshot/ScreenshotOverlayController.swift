@@ -41,8 +41,21 @@ final class ScreenshotOverlayController {
                 return nil
             }
 
+            let window = ScreenshotOverlayWindow(
+                contentRect: NSRect(origin: .zero, size: target.screen.frame.size),
+                styleMask: .borderless,
+                backing: .buffered,
+                defer: false,
+                screen: target.screen
+            )
             let view = ScreenshotSelectionView(
                 screenImage: screenImage,
+                activate: { [weak window] in
+                    guard window?.isKeyWindow == false else {
+                        return
+                    }
+                    window?.makeKey()
+                },
                 copy: { [weak self] rect, annotations in
                     self?.copySelection(
                         rect,
@@ -69,13 +82,6 @@ final class ScreenshotOverlayController {
             controller.view.frame = NSRect(origin: .zero, size: target.screen.frame.size)
             controller.view.wantsLayer = true
 
-            let window = ScreenshotOverlayWindow(
-                contentRect: target.screen.frame,
-                styleMask: .borderless,
-                backing: .buffered,
-                defer: false,
-                screen: target.screen
-            )
             window.contentViewController = controller
             window.isReleasedWhenClosed = false
             window.isOpaque = false
@@ -109,7 +115,8 @@ final class ScreenshotOverlayController {
             }
         }
 
-        let keyWindow = windows[0]
+        let mouseLocation = NSEvent.mouseLocation
+        let keyWindow = windows.first { $0.screen?.frame.contains(mouseLocation) == true } ?? windows[0]
         DispatchQueue.main.async { [weak keyWindow] in
             guard keyWindow?.isVisible == true else {
                 return
@@ -144,8 +151,6 @@ final class ScreenshotOverlayController {
         from screenImage: CGImage,
         displaySize: CGSize
     ) {
-        closeSelection()
-
         do {
             let image = try ScreenshotService.capture(
                 rect: rect,
@@ -153,9 +158,11 @@ final class ScreenshotOverlayController {
                 from: screenImage,
                 displaySize: displaySize
             )
-            ScreenshotService.copyToPasteboard(image)
+            try ScreenshotService.copyToPasteboard(image)
+            closeSelection()
         } catch {
             assertionFailure("Failed to capture screenshot: \(error)")
+            showScreenshotFailureAlert(title: "截图保存失败", error: error)
         }
     }
 
@@ -166,8 +173,6 @@ final class ScreenshotOverlayController {
         displaySize: CGSize,
         screenFrame: CGRect
     ) {
-        closeSelection()
-
         do {
             let image = try ScreenshotService.capture(
                 rect: rect,
@@ -176,9 +181,23 @@ final class ScreenshotOverlayController {
                 displaySize: displaySize
             )
             ScreenshotPinController.shared.pin(image, sourceRect: rect, screenFrame: screenFrame)
+            closeSelection()
         } catch {
             assertionFailure("Failed to pin screenshot: \(error)")
+            showScreenshotFailureAlert(title: "贴图失败", error: error)
         }
+    }
+
+    private func showScreenshotFailureAlert(title: String, error: Error) {
+        NSApp.activate(ignoringOtherApps: true)
+
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = title
+        alert.informativeText = error.localizedDescription
+        alert.addButton(withTitle: "好")
+        alert.window.level = NSWindow.Level(rawValue: NSWindow.Level.screenSaver.rawValue + 1)
+        alert.runModal()
     }
 
     private func closeSelection() {
