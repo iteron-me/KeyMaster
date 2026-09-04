@@ -24,15 +24,15 @@ struct CalendarTodoView: View {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
-        .frame(minWidth: 760, minHeight: 560)
+        .frame(minWidth: 720, minHeight: 520)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .background(Color(nsColor: .windowBackgroundColor))
     }
 
     private var toolbar: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             Text(CalendarTodoLayout.periodTitle(mode: state.viewMode, day: state.selectedDay))
-                .font(.system(size: 24, weight: .semibold))
+                .font(.system(size: 21, weight: .semibold))
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -65,11 +65,14 @@ struct CalendarTodoView: View {
 
                 Divider().frame(height: 20)
 
-                Button("Today") {
+                Button {
                     state.goToToday()
+                } label: {
+                    Text("Today")
+                        .frame(width: 52, height: 28)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .frame(width: 58, height: 32)
 
                 Divider().frame(height: 20)
 
@@ -80,8 +83,8 @@ struct CalendarTodoView: View {
             .background(Color.primary.opacity(0.045), in: RoundedRectangle(cornerRadius: 7))
 
         }
-        .padding(.horizontal, 20)
-        .frame(height: 64)
+        .padding(.horizontal, 16)
+        .frame(height: 56)
         .fixedSize(horizontal: false, vertical: true)
         .background(.bar)
     }
@@ -123,7 +126,8 @@ struct CalendarTodoView: View {
     ) -> some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .frame(width: 34, height: 32)
+                .frame(width: 30, height: 28)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(.secondary)
@@ -419,12 +423,12 @@ private struct CalendarTodoMonthCell: View {
                 HStack {
                     Text(CalendarTodoLayout.dayTitle(day))
                         .font(.system(size: 13, weight: CalendarTodoLayout.isToday(day) ? .semibold : .regular))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(CalendarTodoLayout.isToday(day) ? Color.white : Color.primary)
                         .padding(.horizontal, CalendarTodoLayout.isToday(day) ? 6 : 0)
                         .frame(height: 24)
                         .background {
                             if CalendarTodoLayout.isToday(day) {
-                                Capsule().fill(Color.primary.opacity(0.07))
+                                Capsule().fill(Color.accentColor)
                             }
                         }
                     Spacer(minLength: 0)
@@ -625,7 +629,10 @@ private struct CalendarTodoMiniMonth: View {
             .buttonStyle(.plain)
 
             LazyVGrid(columns: columns, spacing: 2) {
-                ForEach(CalendarTodoLayout.weekdaySymbols(compact: true), id: \.self) { symbol in
+                ForEach(
+                    Array(CalendarTodoLayout.weekdaySymbols(compact: true).enumerated()),
+                    id: \.offset
+                ) { _, symbol in
                     Text(symbol)
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundStyle(.secondary)
@@ -871,7 +878,7 @@ private struct CalendarTodoToolbarControlStyle: ButtonStyle {
         configuration.label
             .font(.system(size: 12, weight: .medium))
             .padding(.horizontal, 10)
-            .frame(height: 32)
+            .frame(height: 28)
             .background {
                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                     .fill(Color.primary.opacity(configuration.isPressed ? 0.10 : 0.05))

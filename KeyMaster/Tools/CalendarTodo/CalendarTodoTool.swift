@@ -66,6 +66,6 @@ final class CalendarTodoWindowController: NSObject, NSWindowDelegate {
         return window
     }
 
-    private static let initialSize = NSSize(width: 980, height: 720)
-    private static let minimumSize = NSSize(width: 760, height: 560)
+    private static let initialSize = NSSize(width: 900, height: 660)
+    private static let minimumSize = NSSize(width: 720, height: 520)
 }
