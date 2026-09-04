@@ -359,7 +359,7 @@ private struct BindingAppIcon: View {
     }
 }
 
-private struct FlowLayout: Layout {
+struct FlowLayout: Layout {
     let spacing: CGFloat
     let rowSpacing: CGFloat
 

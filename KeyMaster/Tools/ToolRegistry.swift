@@ -13,11 +13,13 @@ final class ToolRegistry {
             PomodoroTool(),
             CalendarTodoTool(),
             ScreenNavigationTool(),
-            ApplicationCommandPaletteTool()
+            ApplicationCommandPaletteTool(),
+            ActionPaletteTool()
         ]
     ) {
         self.tools = tools
-        toolsByID = Dictionary(uniqueKeysWithValues: tools.map { ($0.id, $0) })
+        let runnableTools = tools + [WindowManagementTool()]
+        toolsByID = Dictionary(uniqueKeysWithValues: runnableTools.map { ($0.id, $0) })
     }
 
     func tool(for id: String) -> (any KeyMasterTool)? {

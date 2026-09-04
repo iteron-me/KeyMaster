@@ -131,6 +131,20 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         menu.addItem(launchAtLoginItem)
         menu.addItem(.separator())
 
+        let windowManagementItem = NSMenuItem(
+            title: "Window Management...",
+            action: #selector(showWindowManagement),
+            keyEquivalent: ""
+        )
+        windowManagementItem.image = NSImage(
+            systemSymbolName: "rectangle.split.2x1",
+            accessibilityDescription: "Window Management"
+        )
+        windowManagementItem.target = self
+        windowManagementItem.isEnabled = true
+        menu.addItem(windowManagementItem)
+        menu.addItem(.separator())
+
         let importItem = NSMenuItem(
             title: "Import Configuration...",
             action: #selector(importConfiguration),
@@ -158,6 +172,11 @@ final class KeyMasterApplicationDelegate: NSObject, NSApplicationDelegate, NSWin
         menu.addItem(exportItem)
 
         NSMenu.popUpContextMenu(menu, with: event, for: button)
+    }
+
+    @objc
+    private func showWindowManagement() {
+        WindowManagementWindowController.shared.show(appState: appState)
     }
 
     private var launchAtLoginMenuItemState: NSControl.StateValue {

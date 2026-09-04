@@ -13,6 +13,7 @@
 		0A4AEB6A54B7FD404C01F09B /* ApplicationMenuSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D06D244225F5D1E7F25E56 /* ApplicationMenuSession.swift */; };
 		0EC04153CC44DE976F0A3068 /* ScreenshotOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */; };
 		1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */; };
+		1D09A8164B69B522519FA9E1 /* WindowManagementWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5E5FC97B85969D16E3D452 /* WindowManagementWindow.swift */; };
 		225B61AEF514C10A1B47F421 /* ScreenNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689109BC6C192B591032FA77 /* ScreenNavigationController.swift */; };
 		235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA090695FE18585EC9213272 /* AppIconCache.swift */; };
 		25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */; };
@@ -26,8 +27,11 @@
 		45CC35B1756FABCC212CAC57 /* CalendarTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D54DCA5AD6D6D301F4BD9CC /* CalendarTodo.swift */; };
 		4E14B391A322F6997A6FFFE0 /* ToolInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */; };
 		512D783FD19996050D41EF7F /* WindowGlassConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */; };
+		54B8F757C750F8030CFB8475 /* ActionPaletteTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509A433B8521493F9342C50F /* ActionPaletteTool.swift */; };
 		608F31F7D6621C4D5DC99F66 /* CalendarTodoNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEAC1B462D1B9589CE2FE8D /* CalendarTodoNavigation.swift */; };
 		7003E11EF4876A9C30ED8235 /* HintGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C115C57E64202760A3F9F5 /* HintGeneratorTests.swift */; };
+		71158E10C84C7CE704725786 /* ActionPalettePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4963D6DDBC9B9E1134760DC /* ActionPalettePanel.swift */; };
+		73047D24DBFB588B0C2AAFBF /* WindowManagementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B16CF4A0D6495FB8CB16433 /* WindowManagementTests.swift */; };
 		7659D4BA2B55D959C6BBD825 /* ScreenshotAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF32BC3C5160D8E96AD5 /* ScreenshotAnnotation.swift */; };
 		7E5B6C9E1882DFF0DBE7D840 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */; };
 		7EC3A62CAD0F6C996F132D7E /* PomodoroControlPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */; };
@@ -36,6 +40,7 @@
 		8A0BC9D4280EA63CDB6C66AC /* ScreenNavigationTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56273B8967AD4D5A0014045 /* ScreenNavigationTool.swift */; };
 		8AB4B18856591F6FEE25B57B /* PomodoroTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 586B332C98AD2165DA525008 /* PomodoroTimer.swift */; };
 		8BD155AFC62847A5FDA955F4 /* AccessibilityElementScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1664DA511C08DD1D10BB1920 /* AccessibilityElementScanner.swift */; };
+		8D675683E19A164D3266BD90 /* ActionPaletteSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6530838C133C372B3AFFAE68 /* ActionPaletteSelection.swift */; };
 		91B337850FDC6E48CDCD1859 /* AppDiscoveryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 403889DDE3A044BE45B1EDA5 /* AppDiscoveryService.swift */; };
 		928B5E50D77B602E4ABB672D /* KeyboardLayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EB6A961A633A1369F9096BF /* KeyboardLayoutView.swift */; };
 		9BF1A5928A74B6D9BFEEE0AC /* KeyActionMenuPopoverPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B81786FD6A712505B37E14 /* KeyActionMenuPopoverPresenter.swift */; };
@@ -56,7 +61,9 @@
 		D69589B3B7EFAB0BB1712234 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0CC0B86899C080457524A9DC /* Assets.xcassets */; };
 		D88D0BF5BC85D6620401DAFB /* CalendarTodoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFB8F596FB5014FD0FB51DFC /* CalendarTodoStore.swift */; };
 		DA63B211ACC3E504E1FA2B46 /* LiquidGlassStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65C4007F3CDFD598BAFB469 /* LiquidGlassStyle.swift */; };
+		DB8DD98DD12658E8CA0601C4 /* WindowManagementTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3343482BD95526FDBA3AA4 /* WindowManagementTool.swift */; };
 		DC17841117CEC18A922D436D /* KeyboardEventEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F196AA6A1933DFB35C8E85B7 /* KeyboardEventEngine.swift */; };
+		E04957F4A8CB751A2DB293C8 /* ActionPaletteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE75445BB147A7A2FF0292C /* ActionPaletteTests.swift */; };
 		E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70A66B6B4BC0A974FC6A701 /* ActionDispatcher.swift */; };
 		EE6B738F02DB9708490F9D80 /* ScreenshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417165275BB1BBD4D6D81DAB /* ScreenshotService.swift */; };
 		EEAA891D47CEEB4CBAA1EE14 /* ConfigurationArchiveService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8A717A21437D4055BECB8 /* ConfigurationArchiveService.swift */; };
@@ -78,11 +85,13 @@
 
 /* Begin PBXFileReference section */
 		057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolRegistry.swift; sourceTree = "<group>"; };
+		0A3343482BD95526FDBA3AA4 /* WindowManagementTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagementTool.swift; sourceTree = "<group>"; };
 		0CC0B86899C080457524A9DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0DF73DBAAE83BC97B532C0DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		1664DA511C08DD1D10BB1920 /* AccessibilityElementScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityElementScanner.swift; sourceTree = "<group>"; };
 		25202BB9F7A9E754B840F65F /* ScreenNavigationKeyboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationKeyboardMonitor.swift; sourceTree = "<group>"; };
 		29BBC7A52C9E006C31067B33 /* CalendarTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoView.swift; sourceTree = "<group>"; };
+		2FE75445BB147A7A2FF0292C /* ActionPaletteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionPaletteTests.swift; sourceTree = "<group>"; };
 		3303E1C6CBCA10B1FAEF35A9 /* KeyMasterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterApp.swift; sourceTree = "<group>"; };
 		3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolInvocation.swift; sourceTree = "<group>"; };
 		3BEAC1B462D1B9589CE2FE8D /* CalendarTodoNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoNavigation.swift; sourceTree = "<group>"; };
@@ -94,16 +103,19 @@
 		4A21C086C88C01EE2344A2B5 /* CalendarTodoStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoStoreTests.swift; sourceTree = "<group>"; };
 		4CDC26EE89D5A289DA0CAA93 /* KeyMasterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeyMasterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		50524E87A9761519B2F99E47 /* HintGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HintGenerator.swift; sourceTree = "<group>"; };
+		509A433B8521493F9342C50F /* ActionPaletteTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionPaletteTool.swift; sourceTree = "<group>"; };
 		586B332C98AD2165DA525008 /* PomodoroTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTimer.swift; sourceTree = "<group>"; };
 		5B3EEBDA49A0E68CCCFCE3E9 /* ApplicationCommandPaletteTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCommandPaletteTool.swift; sourceTree = "<group>"; };
 		60B88B5AD58FDB1AD92BE7DB /* KeyCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCatalog.swift; sourceTree = "<group>"; };
 		6212A49DC018B42250E2D364 /* PomodoroPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroPanelController.swift; sourceTree = "<group>"; };
 		64D034DC6860C3A76043E7A9 /* ScreenshotOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotOverlayController.swift; sourceTree = "<group>"; };
+		6530838C133C372B3AFFAE68 /* ActionPaletteSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionPaletteSelection.swift; sourceTree = "<group>"; };
 		654B2DF82B03871803F4B047 /* ScreenshotPinController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotPinController.swift; sourceTree = "<group>"; };
 		689109BC6C192B591032FA77 /* ScreenNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationController.swift; sourceTree = "<group>"; };
 		70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMasterTool.swift; sourceTree = "<group>"; };
 		725907F2AE60A5A837615311 /* WindowGlassConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowGlassConfigurator.swift; sourceTree = "<group>"; };
 		7D9CBB0A330821F9FE234D84 /* ScreenNavigationOverlayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationOverlayController.swift; sourceTree = "<group>"; };
+		8B16CF4A0D6495FB8CB16433 /* WindowManagementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagementTests.swift; sourceTree = "<group>"; };
 		8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotServiceTests.swift; sourceTree = "<group>"; };
 		95037F046F5CADF42BCC583D /* CalendarTodoTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTodoTool.swift; sourceTree = "<group>"; };
 		9859A3D4B36CAE3B90E7D5B7 /* ApplicationMenuSearchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMenuSearchTests.swift; sourceTree = "<group>"; };
@@ -112,6 +124,7 @@
 		A0ABA5BF991FB8233067F96B /* PomodoroControlPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroControlPanelView.swift; sourceTree = "<group>"; };
 		A43B379338C6A1DDD65E8A40 /* ScreenNavigationOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationOverlayView.swift; sourceTree = "<group>"; };
 		AC04A8B0F61B5B488DAF7F67 /* KeyRuleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRuleStore.swift; sourceTree = "<group>"; };
+		AD5E5FC97B85969D16E3D452 /* WindowManagementWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagementWindow.swift; sourceTree = "<group>"; };
 		AFEEAD6E3FE7690E3DC0EFF3 /* PomodoroTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroTool.swift; sourceTree = "<group>"; };
 		B1D06D244225F5D1E7F25E56 /* ApplicationMenuSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationMenuSession.swift; sourceTree = "<group>"; };
 		B56273B8967AD4D5A0014045 /* ScreenNavigationTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenNavigationTool.swift; sourceTree = "<group>"; };
@@ -127,6 +140,7 @@
 		D1D8A717A21437D4055BECB8 /* ConfigurationArchiveService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationArchiveService.swift; sourceTree = "<group>"; };
 		DB2137A0FD88C3D8DDE92F12 /* AccessibilityElementExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityElementExecutor.swift; sourceTree = "<group>"; };
 		E0E5DFC6DB30E1E5C4714B2E /* KeyActionMenuOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyActionMenuOverlay.swift; sourceTree = "<group>"; };
+		E4963D6DDBC9B9E1134760DC /* ActionPalettePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionPalettePanel.swift; sourceTree = "<group>"; };
 		E8CC5ABB18BD1EBAB025B0C9 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		ED710B70AE977E1EEDF5AAC0 /* AnchoredFloatingWindowPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnchoredFloatingWindowPresenter.swift; sourceTree = "<group>"; };
 		EDA285A92B8F026F3A2505DA /* ApplicationCommandPalettePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCommandPalettePanel.swift; sourceTree = "<group>"; };
@@ -179,6 +193,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		60759FC35DF39BE248C4CCDF /* ActionPalette */ = {
+			isa = PBXGroup;
+			children = (
+				E4963D6DDBC9B9E1134760DC /* ActionPalettePanel.swift */,
+				6530838C133C372B3AFFAE68 /* ActionPaletteSelection.swift */,
+				509A433B8521493F9342C50F /* ActionPaletteTool.swift */,
+			);
+			path = ActionPalette;
+			sourceTree = "<group>";
+		};
 		6F5D2734C298C3D05CF79922 /* KeyMaster */ = {
 			isa = PBXGroup;
 			children = (
@@ -225,11 +249,13 @@
 				70AACBDF14E904A23A9722F0 /* KeyMasterTool.swift */,
 				3A26A58165B41F72DB0ED79E /* ToolInvocation.swift */,
 				057C3376C77FB90DE50BDAC6 /* ToolRegistry.swift */,
+				60759FC35DF39BE248C4CCDF /* ActionPalette */,
 				0AFB6ABEB0BBC4A9EAF43394 /* ApplicationCommands */,
 				E99C272B9779C533EAECD91C /* CalendarTodo */,
 				B851A2D2B7C79FECEAFF2602 /* Pomodoro */,
 				90043EB7A7296A6729E43ADE /* ScreenNavigation */,
 				D474E23340F0ED8A39458F77 /* Screenshot */,
+				F9A650E9B46E2764EBB31DF6 /* WindowManagement */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -274,12 +300,14 @@
 		C472E5382651BB0D77D67DE9 /* KeyMasterTests */ = {
 			isa = PBXGroup;
 			children = (
+				2FE75445BB147A7A2FF0292C /* ActionPaletteTests.swift */,
 				9859A3D4B36CAE3B90E7D5B7 /* ApplicationMenuSearchTests.swift */,
 				F6ADBAC5611A47B1F45A49B8 /* AppStateConfigurationTests.swift */,
 				4A21C086C88C01EE2344A2B5 /* CalendarTodoStoreTests.swift */,
 				F022291732D0DD9A28511FAE /* ConfigurationArchiveServiceTests.swift */,
 				B5C115C57E64202760A3F9F5 /* HintGeneratorTests.swift */,
 				8B6F714D25B2D2CAC301C499 /* ScreenshotServiceTests.swift */,
+				8B16CF4A0D6495FB8CB16433 /* WindowManagementTests.swift */,
 			);
 			path = KeyMasterTests;
 			sourceTree = "<group>";
@@ -322,6 +350,15 @@
 				29BBC7A52C9E006C31067B33 /* CalendarTodoView.swift */,
 			);
 			path = CalendarTodo;
+			sourceTree = "<group>";
+		};
+		F9A650E9B46E2764EBB31DF6 /* WindowManagement */ = {
+			isa = PBXGroup;
+			children = (
+				0A3343482BD95526FDBA3AA4 /* WindowManagementTool.swift */,
+				AD5E5FC97B85969D16E3D452 /* WindowManagementWindow.swift */,
+			);
+			path = WindowManagement;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -416,6 +453,9 @@
 				F76B858D3D5DDB39569F5BE0 /* AccessibilityElementExecutor.swift in Sources */,
 				8BD155AFC62847A5FDA955F4 /* AccessibilityElementScanner.swift in Sources */,
 				E797ADB5C1C2FB8BC1DD8E0E /* ActionDispatcher.swift in Sources */,
+				71158E10C84C7CE704725786 /* ActionPalettePanel.swift in Sources */,
+				8D675683E19A164D3266BD90 /* ActionPaletteSelection.swift in Sources */,
+				54B8F757C750F8030CFB8475 /* ActionPaletteTool.swift in Sources */,
 				A3AFFD042A9CEE6EBE8A2A9B /* AnchoredFloatingWindowPresenter.swift in Sources */,
 				91B337850FDC6E48CDCD1859 /* AppDiscoveryService.swift in Sources */,
 				235869D99FAAB706025AB2FA /* AppIconCache.swift in Sources */,
@@ -463,6 +503,8 @@
 				4E14B391A322F6997A6FFFE0 /* ToolInvocation.swift in Sources */,
 				45507EFD8571217D3C2ED3B0 /* ToolRegistry.swift in Sources */,
 				512D783FD19996050D41EF7F /* WindowGlassConfigurator.swift in Sources */,
+				DB8DD98DD12658E8CA0601C4 /* WindowManagementTool.swift in Sources */,
+				1D09A8164B69B522519FA9E1 /* WindowManagementWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -470,12 +512,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E04957F4A8CB751A2DB293C8 /* ActionPaletteTests.swift in Sources */,
 				25BA81AC7A6B88404339C97A /* AppStateConfigurationTests.swift in Sources */,
 				050A19D1A8B1145050A55482 /* ApplicationMenuSearchTests.swift in Sources */,
 				07DFA2FA5349C24CF5BC053B /* CalendarTodoStoreTests.swift in Sources */,
 				CC5D0E8C22DB9C14C22537CE /* ConfigurationArchiveServiceTests.swift in Sources */,
 				7003E11EF4876A9C30ED8235 /* HintGeneratorTests.swift in Sources */,
 				1333D8EAFA11812E6F25C2C8 /* ScreenshotServiceTests.swift in Sources */,
+				73047D24DBFB588B0C2AAFBF /* WindowManagementTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

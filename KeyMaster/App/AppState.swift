@@ -28,6 +28,7 @@ final class AppState: ObservableObject {
     private var installedAppsReloadTask: Task<Void, Never>?
     private var isReloadingInstalledApps = false
     private var hasLoadedInstalledApps = false
+    private var isShortcutCaptureActive = false
 
     init(
         ruleStore: KeyRuleStore = FileKeyRuleStore(),
@@ -62,6 +63,10 @@ final class AppState: ObservableObject {
         rulesByShortcut[ShortcutKey(modifiers: modifiers, keyCode: key.keyCode)]
     }
 
+    func rule(for trigger: KeyTrigger) -> KeyRule? {
+        rulesByShortcut[ShortcutKey(modifiers: trigger.modifiers, keyCode: trigger.keyCode)]
+    }
+
     func rules(for key: KeyboardKey) -> [KeyRule] {
         rulesByKeyCode[key.keyCode] ?? []
     }
@@ -83,7 +88,10 @@ final class AppState: ObservableObject {
     }
 
     func saveRule(for key: KeyboardKey, modifiers: Set<ModifierKey>, action: KeyAction) {
-        let trigger = trigger(for: key, modifiers: modifiers)
+        saveRule(trigger: trigger(for: key, modifiers: modifiers), action: action)
+    }
+
+    func saveRule(trigger: KeyTrigger, action: KeyAction) {
         recordHistory(for: action)
 
         if let index = rules.firstIndex(where: { $0.trigger == trigger }) {
@@ -103,6 +111,15 @@ final class AppState: ObservableObject {
             )
         )
         persistRules()
+        syncKeyboardEngine()
+    }
+
+    func setShortcutCaptureActive(_ isActive: Bool) {
+        guard isShortcutCaptureActive != isActive else {
+            return
+        }
+
+        isShortcutCaptureActive = isActive
         syncKeyboardEngine()
     }
 
@@ -271,7 +288,7 @@ final class AppState: ObservableObject {
     }
 
     private func syncKeyboardEngine() {
-        guard permissionStatus.canRunShortcutEngine else {
+        guard permissionStatus.canRunShortcutEngine, !isShortcutCaptureActive else {
             keyboardEngine.stop()
             isEngineRunning = false
             return
